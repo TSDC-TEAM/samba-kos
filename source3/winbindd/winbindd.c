@@ -51,7 +51,6 @@
 #include "lib/gencache.h"
 #include "rpc_server/rpc_config.h"
 #include "lib/global_contexts.h"
-#include "source3/lib/substitute.h"
 
 #undef DBGC_CLASS
 #define DBGC_CLASS DBGC_WINBIND
@@ -1710,13 +1709,21 @@ int main(int argc, const char **argv)
 
 	if (log_stdout && cmdline_daemon_cfg->fork) {
 		d_fprintf(stderr, "\nERROR: "
-			  "Can't log to stdout (-S) unless daemon is in "
-			  "foreground (-F) or interactive (-i)\n\n");
+			  "Can't log to stdout (-S) unless daemon is in foreground +(-F) or interactive (-i)\n\n");
 		poptPrintUsage(pc, stderr, 0);
 		exit(1);
 	}
 
 	poptFreeContext(pc);
+
+	if (is_default_dyn_LOGFILEBASE()) {
+		char *lfile = NULL;
+		if (asprintf(&lfile,"%s/log.winbindd",
+				get_dyn_LOGFILEBASE()) > 0) {
+			lp_set_logfile(lfile);
+			SAFE_FREE(lfile);
+		}
+	}
 
 	reopen_logs();
 

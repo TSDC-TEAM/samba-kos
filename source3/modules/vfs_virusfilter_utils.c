@@ -25,7 +25,6 @@ struct iovec;
 #include "lib/util/iov_buf.h"
 #include <tevent.h>
 #include "lib/tsocket/tsocket.h"
-#include "source3/lib/substitute.h"
 
 int virusfilter_debug_class = DBGC_VFS;
 

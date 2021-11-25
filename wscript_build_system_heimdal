@@ -1,5 +1,4 @@
 from waflib import Logs
 
-if bld.__class__.__name__ != "ClangDbContext":
-    Logs.info("\tSelected system Heimdal build")
+Logs.info("\tSelected system Heimdal build")
 bld.RECURSE('source4/heimdal_build')

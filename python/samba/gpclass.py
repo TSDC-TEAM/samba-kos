@@ -19,12 +19,10 @@ import sys
 import os, shutil
 import errno
 import tdb
-import pwd
 sys.path.insert(0, "bin/python")
 from samba import NTSTATUSError
 from configparser import ConfigParser
 from io import StringIO
-import traceback
 from samba.common import get_bytes
 from abc import ABCMeta, abstractmethod
 import xml.etree.ElementTree as etree
@@ -295,12 +293,11 @@ class GPOStorage:
 class gp_ext(object):
     __metaclass__ = ABCMeta
 
-    def __init__(self, logger, lp, creds, username, store):
+    def __init__(self, logger, lp, creds, store):
         self.logger = logger
         self.lp = lp
         self.creds = creds
-        self.username = username
-        self.gp_db = store.get_gplog(username)
+        self.gp_db = store.get_gplog(creds.get_username())
 
     @abstractmethod
     def process_group_policy(self, deleted_gpo_list, changed_gpo_list):
@@ -366,12 +363,11 @@ def get_dc_hostname(creds, lp):
 ''' Fetch a list of GUIDs for applicable GPOs '''
 
 
-def get_gpo_list(dc_hostname, creds, lp, username):
+def get_gpo_list(dc_hostname, creds, lp):
     gpos = []
     ads = gpo.ADS_STRUCT(dc_hostname, lp, creds)
     if ads.connect():
-        # username is DOM\\SAM, but get_gpo_list expects SAM
-        gpos = ads.get_gpo_list(username.split('\\')[-1])
+        gpos = ads.get_gpo_list(creds.get_username())
     return gpos
 
 
@@ -436,10 +432,10 @@ def gpo_version(lp, path):
     return int(gpo.gpo_get_sysvol_gpt_version(gpt_path)[1])
 
 
-def apply_gp(lp, creds, logger, store, gp_extensions, username, target, force=False):
-    gp_db = store.get_gplog(username)
+def apply_gp(lp, creds, logger, store, gp_extensions, force=False):
+    gp_db = store.get_gplog(creds.get_username())
     dc_hostname = get_dc_hostname(creds, lp)
-    gpos = get_gpo_list(dc_hostname, creds, lp, username)
+    gpos = get_gpo_list(dc_hostname, creds, lp)
     del_gpos = get_deleted_gpos_list(gp_db, gpos)
     try:
         check_refresh_gpo_list(dc_hostname, lp, creds, gpos)
@@ -467,16 +463,11 @@ def apply_gp(lp, creds, logger, store, gp_extensions, username, target, force=Fa
     store.start()
     for ext in gp_extensions:
         try:
-            ext = ext(logger, lp, creds, username, store)
-            if target == 'Computer':
-                ext.process_group_policy(del_gpos, changed_gpos)
-            else:
-                drop_privileges(creds.get_principal(), ext.process_group_policy,
-                                del_gpos, changed_gpos)
+            ext = ext(logger, lp, creds, store)
+            ext.process_group_policy(del_gpos, changed_gpos)
         except Exception as e:
             logger.error('Failed to apply extension  %s' % str(ext))
-            logger.error('Message was: %s: %s' % (type(e).__name__, str(e)))
-            logger.debug(traceback.format_exc())
+            logger.error('Message was: ' + str(e))
             continue
     for gpo_obj in gpos:
         if not gpo_obj.file_sys_path:
@@ -488,20 +479,16 @@ def apply_gp(lp, creds, logger, store, gp_extensions, username, target, force=Fa
     store.commit()
 
 
-def unapply_gp(lp, creds, logger, store, gp_extensions, username, target):
-    gp_db = store.get_gplog(username)
+def unapply_gp(lp, creds, logger, store, gp_extensions):
+    gp_db = store.get_gplog(creds.get_username())
     gp_db.state(GPOSTATE.UNAPPLY)
     # Treat all applied gpos as deleted
     del_gpos = gp_db.get_applied_settings(gp_db.get_applied_guids())
     store.start()
     for ext in gp_extensions:
         try:
-            ext = ext(logger, lp, creds, username, store)
-            if target == 'Computer':
-                ext.process_group_policy(del_gpos, [])
-            else:
-                drop_privileges(username, ext.process_group_policy,
-                                del_gpos, [])
+            ext = ext(logger, lp, creds, store)
+            ext.process_group_policy(del_gpos, [])
         except Exception as e:
             logger.error('Failed to unapply extension  %s' % str(ext))
             logger.error('Message was: ' + str(e))
@@ -513,16 +500,16 @@ def __rsop_vals(vals, level=4):
     if type(vals) == dict:
         ret = [' '*level + '[ %s ] = %s' % (k, __rsop_vals(v, level+2))
                 for k, v in vals.items()]
-        return '\n' + '\n'.join(ret)
+        return '\n'.join(ret)
     elif type(vals) == list:
         ret = [' '*level + '[ %s ]' % __rsop_vals(v, level+2) for v in vals]
-        return '\n' + '\n'.join(ret)
+        return '\n'.join(ret)
     else:
         return vals
 
-def rsop(lp, creds, logger, store, gp_extensions, username, target):
+def rsop(lp, creds, logger, store, gp_extensions, target):
     dc_hostname = get_dc_hostname(creds, lp)
-    gpos = get_gpo_list(dc_hostname, creds, lp, username)
+    gpos = get_gpo_list(dc_hostname, creds, lp)
     check_refresh_gpo_list(dc_hostname, lp, creds, gpos)
 
     print('Resultant Set of Policy')
@@ -534,7 +521,7 @@ def rsop(lp, creds, logger, store, gp_extensions, username, target):
         print('GPO: %s' % gpo.display_name)
         print('='*term_width)
         for ext in gp_extensions:
-            ext = ext(logger, lp, creds, username, store)
+            ext = ext(logger, lp, creds, store)
             cse_name_m = re.findall("'([\w\.]+)'", str(type(ext)))
             if len(cse_name_m) > 0:
                 cse_name = cse_name_m[-1].split('.')[-1]
@@ -545,7 +532,7 @@ def rsop(lp, creds, logger, store, gp_extensions, username, target):
             for section, settings in ext.rsop(gpo).items():
                 print('    Policy Type: %s' % section)
                 print('    ' + ('-'*int(term_width/2)))
-                print(__rsop_vals(settings).lstrip('\n'))
+                print(__rsop_vals(settings))
                 print('    ' + ('-'*int(term_width/2)))
             print('  ' + ('-'*int(term_width/2)))
         print('%s\n' % ('='*term_width))
@@ -627,45 +614,3 @@ def unregister_gp_extension(guid, smb_conf=None):
     atomic_write_conf(lp, parser)
 
     return True
-
-
-def set_privileges(username, uid, gid):
-    '''
-    Set current process privileges
-    '''
-
-    os.setegid(gid)
-    os.seteuid(uid)
-
-
-def drop_privileges(username, func, *args):
-    '''
-    Run supplied function with privileges for specified username.
-    '''
-    current_uid = os.getuid()
-
-    if not current_uid == 0:
-        raise Exception('Not enough permissions to drop privileges')
-
-    user_uid = pwd.getpwnam(username).pw_uid
-    user_gid = pwd.getpwnam(username).pw_gid
-
-    # Drop privileges
-    set_privileges(username, user_uid, user_gid)
-
-    # We need to catch exception in order to be able to restore
-    # privileges later in this function
-    out = None
-    exc = None
-    try:
-        out = func(*args)
-    except Exception as e:
-        exc = e
-
-    # Restore privileges
-    set_privileges('root', current_uid, 0)
-
-    if exc:
-        raise exc
-
-    return out

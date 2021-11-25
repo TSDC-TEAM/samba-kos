@@ -45,7 +45,6 @@
 #include "smb1_utils.h"
 #include "libcli/smb/smb2_posix.h"
 #include "lib/util/string_wrappers.h"
-#include "source3/lib/substitute.h"
 
 #define DIR_ENTRY_SAFETY_MARGIN 4096
 
@@ -1589,7 +1588,6 @@ struct smbd_dirptr_lanman2_state {
 	bool check_mangled_names;
 	bool has_wild;
 	bool got_exact_match;
-	bool case_sensitive;
 };
 
 static bool smbd_dirptr_lanman2_match_fn(TALLOC_CTX *ctx,
@@ -1643,12 +1641,12 @@ static bool smbd_dirptr_lanman2_match_fn(TALLOC_CTX *ctx,
 	}
 
 	got_match = exact_match(state->has_wild,
-				state->case_sensitive,
+				state->conn->case_sensitive,
 				fname, mask);
 	state->got_exact_match = got_match;
 	if (!got_match) {
 		got_match = mask_match(fname, mask,
-				       state->case_sensitive);
+				       state->conn->case_sensitive);
 	}
 
 	if(!got_match && state->check_mangled_names &&
@@ -1667,12 +1665,12 @@ static bool smbd_dirptr_lanman2_match_fn(TALLOC_CTX *ctx,
 		}
 
 		got_match = exact_match(state->has_wild,
-					state->case_sensitive,
+					state->conn->case_sensitive,
 					mangled_name, mask);
 		state->got_exact_match = got_match;
 		if (!got_match) {
 			got_match = mask_match(mangled_name, mask,
-					       state->case_sensitive);
+					       state->conn->case_sensitive);
 		}
 	}
 
@@ -2483,7 +2481,6 @@ NTSTATUS smbd_dirptr_lanman2_entry(TALLOC_CTX *ctx,
 	}
 	state.has_wild = dptr_has_wild(dirptr);
 	state.got_exact_match = false;
-	state.case_sensitive = dptr_case_sensitive(dirptr);
 
 	*got_exact_match = false;
 
@@ -2995,7 +2992,7 @@ total_data=%u (should be %u)\n", (unsigned int)total_data, (unsigned int)IVAL(pd
 		 directory,lp_dont_descend(talloc_tos(), lp_sub, SNUM(conn))));
 	if (in_list(directory,
 		    lp_dont_descend(talloc_tos(), lp_sub, SNUM(conn)),
-			dptr_case_sensitive(fsp->dptr))) {
+			conn->case_sensitive)) {
 		dont_descend = True;
 	}
 
@@ -3370,8 +3367,7 @@ total_data=%u (should be %u)\n", (unsigned int)total_data, (unsigned int)IVAL(pd
 
 	DEBUG(8,("dirpath=<%s> dontdescend=<%s>\n",
 		 directory,lp_dont_descend(ctx, lp_sub, SNUM(conn))));
-	if (in_list(directory,lp_dont_descend(ctx, lp_sub, SNUM(conn)),
-			dptr_case_sensitive(fsp->dptr)))
+	if (in_list(directory,lp_dont_descend(ctx, lp_sub, SNUM(conn)),conn->case_sensitive))
 		dont_descend = True;
 
 	p = pdata;
@@ -3390,7 +3386,6 @@ total_data=%u (should be %u)\n", (unsigned int)total_data, (unsigned int)IVAL(pd
 
 	if(!continue_bit && resume_name && *resume_name) {
 		SMB_STRUCT_STAT st;
-		bool posix_open = (fsp->posix_flags & FSP_POSIX_FLAGS_OPEN);
 
 		long current_pos = 0;
 		/*
@@ -3399,8 +3394,7 @@ total_data=%u (should be %u)\n", (unsigned int)total_data, (unsigned int)IVAL(pd
 		 * could be mangled. Ensure we check the unmangled name.
 		 */
 
-		if (!posix_open &&
-				mangle_is_mangled(resume_name, conn->params)) {
+		if (mangle_is_mangled(resume_name, conn->params)) {
 			char *new_resume_name = NULL;
 			mangle_lookup_name_from_8_3(ctx,
 						resume_name,
@@ -10317,8 +10311,8 @@ void reply_trans2(struct smb_request *req)
 
 	if (state->total_data) {
 
-		if (smb_buffer_oob(state->total_data, 0, dscnt)
-		    || smb_buffer_oob(smb_len(req->inbuf), dsoff, dscnt)) {
+		if (trans_oob(state->total_data, 0, dscnt)
+		    || trans_oob(smb_len(req->inbuf), dsoff, dscnt)) {
 			goto bad_param;
 		}
 
@@ -10339,8 +10333,8 @@ void reply_trans2(struct smb_request *req)
 
 	if (state->total_param) {
 
-		if (smb_buffer_oob(state->total_param, 0, pscnt)
-		    || smb_buffer_oob(smb_len(req->inbuf), psoff, pscnt)) {
+		if (trans_oob(state->total_param, 0, pscnt)
+		    || trans_oob(smb_len(req->inbuf), psoff, pscnt)) {
 			goto bad_param;
 		}
 
@@ -10461,16 +10455,16 @@ void reply_transs2(struct smb_request *req)
 		goto bad_param;
 
 	if (pcnt) {
-		if (smb_buffer_oob(state->total_param, pdisp, pcnt)
-		    || smb_buffer_oob(smb_len(req->inbuf), poff, pcnt)) {
+		if (trans_oob(state->total_param, pdisp, pcnt)
+		    || trans_oob(smb_len(req->inbuf), poff, pcnt)) {
 			goto bad_param;
 		}
 		memcpy(state->param+pdisp,smb_base(req->inbuf)+poff,pcnt);
 	}
 
 	if (dcnt) {
-		if (smb_buffer_oob(state->total_data, ddisp, dcnt)
-		    || smb_buffer_oob(smb_len(req->inbuf), doff, dcnt)) {
+		if (trans_oob(state->total_data, ddisp, dcnt)
+		    || trans_oob(smb_len(req->inbuf), doff, dcnt)) {
 			goto bad_param;
 		}
 		memcpy(state->data+ddisp, smb_base(req->inbuf)+doff,dcnt);

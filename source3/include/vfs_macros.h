@@ -283,17 +283,10 @@
 #define SMB_VFS_NEXT_LOCK(handle, fsp, op, offset, count, type) \
 	smb_vfs_call_lock((handle)->next, (fsp), (op), (offset), (count), (type))
 
-#define SMB_VFS_FILESYSTEM_SHAREMODE(fsp, share_access, access_mask) \
-	smb_vfs_call_filesystem_sharemode((fsp)->conn->vfs_handles, \
-					  (fsp), \
-					  (share_access), \
-					  (access_mask))
-#define SMB_VFS_NEXT_FILESYSTEM_SHAREMODE(handle, fsp, share_access, \
-					  access_mask) \
-	smb_vfs_call_filesystem_sharemode((handle)->next, \
-					  (fsp), \
-					  (share_access), \
-					  (access_mask))
+#define SMB_VFS_KERNEL_FLOCK(fsp, share_access, access_mask) \
+	smb_vfs_call_kernel_flock((fsp)->conn->vfs_handles, (fsp), (share_access), (access_mask))
+#define SMB_VFS_NEXT_KERNEL_FLOCK(handle, fsp, share_access, access_mask)	\
+	smb_vfs_call_kernel_flock((handle)->next, (fsp), (share_access), (access_mask))
 
 #define SMB_VFS_FCNTL(fsp, cmd, ...) \
 	smb_vfs_call_fcntl((fsp)->conn->vfs_handles, (fsp), (cmd), (__VA_ARGS__))
@@ -431,10 +424,10 @@
 #define SMB_VFS_NEXT_OFFLOAD_READ_SEND(mem_ctx, ev, handle, fsp, fsctl, ttl, offset, to_copy) \
 	smb_vfs_call_offload_read_send((mem_ctx), (ev), (handle)->next, (fsp), (fsctl), (ttl), (offset), (to_copy))
 
-#define SMB_VFS_OFFLOAD_READ_RECV(req, conn, mem_ctx, flags, xferlen, token_blob) \
-	smb_vfs_call_offload_read_recv((req), (conn)->vfs_handles, (mem_ctx), (flags), (xferlen), (token_blob))
-#define SMB_VFS_NEXT_OFFLOAD_READ_RECV(req, handle, mem_ctx, flags, xferlen, token_blob) \
-	smb_vfs_call_offload_read_recv((req), (handle)->next, (mem_ctx), flags, xferlen, (token_blob))
+#define SMB_VFS_OFFLOAD_READ_RECV(req, conn, mem_ctx, token_blob) \
+	smb_vfs_call_offload_read_recv((req), (conn)->vfs_handles, (mem_ctx), (token_blob))
+#define SMB_VFS_NEXT_OFFLOAD_READ_RECV(req, handle, mem_ctx, token_blob) \
+	smb_vfs_call_offload_read_recv((req), (handle)->next, (mem_ctx), (token_blob))
 
 #define SMB_VFS_OFFLOAD_WRITE_SEND(conn, mem_ctx, ev, fsctl, token, transfer_offset, dest_fsp, dest_off, num) \
 	smb_vfs_call_offload_write_send((conn)->vfs_handles, (mem_ctx), (ev), (fsctl), (token), (transfer_offset), (dest_fsp), (dest_off), (num))

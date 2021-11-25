@@ -77,15 +77,12 @@ esac
 # $LIB_FUZZING_ENGINE is provided by the oss-fuzz "compile" command
 #
 
-# --disable-new-dtags linker flag creates fuzzer binaries with RPATH
-# header instead of RUNPATH header. Modern linkers use RUNPATH by
-# default.
 ./configure -C --without-gettext --enable-debug --enable-developer \
             --enable-libfuzzer \
 	    $SANITIZER_ARG \
 	    --disable-warnings-as-errors \
 	    --abi-check-disable \
-	    "--fuzz-target-ldflags=-Wl,--disable-new-dtags $LIB_FUZZING_ENGINE" \
+	    --fuzz-target-ldflags="$LIB_FUZZING_ENGINE" \
 	    --nonshared-binary=ALL \
 	    "$@" \
 	    LINK_CC="$CXX"
@@ -257,32 +254,22 @@ do
     cp $x $OUT/
     bin=`basename $x`
 
-    # This means the copied libraries are found on the runner.
+    # Changing RPATH (not RUNPATH, but we can't tell here which was
+    # set) is critical, otherwise libraries used by libraries won't be
+    # found on the oss-fuzz target host.  Sadly this is only possible
+    # with clang or ld.bfd on Ubuntu 16.04 (this script is only run on
+    # that).
     #
-    # The binaries should we built with RPATH, not RUNPATH, to allow
-    # libraries used by libraries to be found. This command retains the
-    # RPATH/RUNPATH header and only changes the path. We later verify this
-    # in the check_build.sh script.
+    # chrpath --convert only allows RPATH to be changed to RUNPATH,
+    # not the other way around, and we really don't want RUNPATH.
+    #
+    # This means the copied libraries are found on the runner
     chrpath -r '$ORIGIN/lib' $OUT/$bin
 
     # Truncate the original binary to save space
     echo -n > $x
 
 done
-
-# Strip RUNPATH: or RPATH: entries from shared libraries copied over to $OUT/lib.
-# When those libraries get loaded and have further dependencies, a RUNPATH: header
-# will cause the dynamic linker to search in the runpath, and not in $OUT/lib,
-# and there's no way it will be found in the fuzzing env.
-#
-# So how is the indirect depedency found in $OUT/lib? Well, suppose the fuzzer binary
-# links library A which links library B. During linking, both A and B as listed in the
-# executable file's runtime dependencies (This was pioneered in Fedora 13 in 2010, but
-# is common behavior now). So we have the fuzzer binary with RPATH set to $OUT/lib, and
-# a dependency on library B, and it will therefor find library B in $OUT/lib. On the
-# hand, if we keep the RUNPATH in library A, and load A first, it will try loading
-# library B as a dependency of A from the wrong place.
-chrpath -d $OUT/lib/*
 
 # Grap the seeds dictionary from github and put the seed zips in place
 # beside their executables.

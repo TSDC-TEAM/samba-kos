@@ -31,7 +31,6 @@
 #include "locking/share_mode_lock.h"
 #include "smbd/smbd.h"
 #include "smbd/globals.h"
-#include "smbd/smbXsrv_open.h"
 #include "fake_file.h"
 #include "rpc_client/rpc_client.h"
 #include "../librpc/gen_ndr/ndr_spoolss_c.h"
@@ -51,7 +50,6 @@
 #include "libcli/smb/smb2_posix.h"
 #include "lib/util/string_wrappers.h"
 #include "source3/printing/rap_jobid.h"
-#include "source3/lib/substitute.h"
 
 /****************************************************************************
  Ensure we check the path in *exactly* the same way as W2K for a findfirst/findnext
@@ -3289,7 +3287,6 @@ NTSTATUS unlink_internals(connection_struct *conn,
 	struct smb_filename *smb_fname_dir = NULL;
 	TALLOC_CTX *ctx = talloc_tos();
 	int ret;
-	bool posix_pathname = (smb_fname->flags & SMB_FILENAME_POSIX_PATH);
 
 	/* Split up the directory from the filename/mask. */
 	status = split_fname_dir_mask(ctx, smb_fname->base_name,
@@ -3308,7 +3305,6 @@ NTSTATUS unlink_internals(connection_struct *conn,
 	 */
 
 	if (!VALID_STAT(smb_fname->st) &&
-	    !posix_pathname &&
 	    mangle_is_mangled(fname_mask, conn->params)) {
 		char *new_mask = NULL;
 		mangle_lookup_name_from_8_3(ctx, fname_mask,
@@ -3361,9 +3357,6 @@ NTSTATUS unlink_internals(connection_struct *conn,
 		long offset = 0;
 		const char *dname = NULL;
 		char *talloced = NULL;
-		bool case_sensitive =
-			(smb_fname->flags & SMB_FILENAME_POSIX_PATH) ?
-			true : conn->case_sensitive;
 
 		if ((dirtype & SAMBA_ATTRIBUTES_MASK) == FILE_ATTRIBUTE_DIRECTORY) {
 			status = NT_STATUS_OBJECT_NAME_INVALID;
@@ -3432,7 +3425,7 @@ NTSTATUS unlink_internals(connection_struct *conn,
 			}
 
 			if(!mask_match(dname, fname_mask,
-				       case_sensitive)) {
+				       conn->case_sensitive)) {
 				TALLOC_FREE(frame);
 				TALLOC_FREE(talloced);
 				continue;
@@ -7584,10 +7577,6 @@ NTSTATUS rename_internals_fsp(connection_struct *conn,
 	uint32_t access_mask = SEC_DIR_ADD_FILE;
 	bool dst_exists, old_is_stream, new_is_stream;
 	int ret;
-	bool case_sensitive = (fsp->posix_flags & FSP_POSIX_FLAGS_OPEN) ?
-				true : conn->case_sensitive;
-	bool case_preserve = (fsp->posix_flags & FSP_POSIX_FLAGS_OPEN) ?
-				true : conn->case_preserve;
 
 	status = check_name(conn, smb_fname_dst_in);
 	if (!NT_STATUS_IS_OK(status)) {
@@ -7618,7 +7607,7 @@ NTSTATUS rename_internals_fsp(connection_struct *conn,
 	 * the rename (user is trying to change the case of the
 	 * filename).
 	 */
-	if (!case_sensitive && case_preserve &&
+	if (!conn->case_sensitive && conn->case_preserve &&
 	    strequal(fsp->fsp_name->base_name, smb_fname_dst->base_name) &&
 	    strequal(fsp->fsp_name->stream_name, smb_fname_dst->stream_name)) {
 		char *fname_dst_parent = NULL;
@@ -8042,11 +8031,6 @@ NTSTATUS rename_internals(TALLOC_CTX *ctx,
 	int rc;
 	bool src_has_wild = false;
 	bool dest_has_wild = false;
-	bool posix_pathname = (smb_fname_src->flags & SMB_FILENAME_POSIX_PATH);
-	bool case_sensitive = posix_pathname ? true : conn->case_sensitive;
-	bool case_preserve = posix_pathname ? true : conn->case_preserve;
-	bool short_case_preserve = posix_pathname ? true :
-					conn->short_case_preserve;
 
 	/*
 	 * Split the old name into directory and last component
@@ -8089,7 +8073,6 @@ NTSTATUS rename_internals(TALLOC_CTX *ctx,
 	 */
 
 	if (!VALID_STAT(smb_fname_src->st) &&
-	    !posix_pathname &&
 	    mangle_is_mangled(fname_src_mask, conn->params)) {
 		char *new_mask = NULL;
 		mangle_lookup_name_from_8_3(ctx, fname_src_mask, &new_mask,
@@ -8100,7 +8083,7 @@ NTSTATUS rename_internals(TALLOC_CTX *ctx,
 		}
 	}
 
-	if (posix_pathname) {
+	if (smb_fname_src->flags & SMB_FILENAME_POSIX_PATH) {
 		status = make_smb2_posix_create_ctx(talloc_tos(), &posx, 0777);
 		if (!NT_STATUS_IS_OK(status)) {
 			DBG_WARNING("make_smb2_posix_create_ctx failed: %s\n",
@@ -8137,8 +8120,8 @@ NTSTATUS rename_internals(TALLOC_CTX *ctx,
 			  "case_preserve = %d, short case preserve = %d, "
 			  "directory = %s, newname = %s, "
 			  "last_component_dest = %s\n",
-			  case_sensitive, case_preserve,
-			  short_case_preserve,
+			  conn->case_sensitive, conn->case_preserve,
+			  conn->short_case_preserve,
 			  smb_fname_str_dbg(smb_fname_src),
 			  smb_fname_str_dbg(smb_fname_dst),
 			  dst_original_lcomp));
@@ -8291,7 +8274,7 @@ NTSTATUS rename_internals(TALLOC_CTX *ctx,
 			}
 		}
 
-		if(!mask_match(dname, fname_src_mask, case_sensitive)) {
+		if(!mask_match(dname, fname_src_mask, conn->case_sensitive)) {
 			TALLOC_FREE(talloced);
 			continue;
 		}
@@ -8808,7 +8791,6 @@ void reply_copy(struct smb_request *req)
 		ucf_flags_from_smb_request(req);
 	uint32_t ucf_flags_dst = UCF_ALWAYS_ALLOW_WCARD_LCOMP |
 		ucf_flags_from_smb_request(req);
-	bool posix_pathnames = req->posix_pathnames;
 	TALLOC_CTX *ctx = talloc_tos();
 
 	START_PROFILE(SMBcopy);
@@ -8902,7 +8884,7 @@ void reply_copy(struct smb_request *req)
 		goto out;
 	}
 
-	if (!posix_pathnames) {
+	if (!req->posix_pathnames) {
 		char *orig_src_lcomp = NULL;
 		char *orig_dst_lcomp = NULL;
 		/*
@@ -8943,7 +8925,6 @@ void reply_copy(struct smb_request *req)
 	 * Tine Smukavec <valentin.smukavec@hermes.si>.
 	 */
 	if (!VALID_STAT(smb_fname_src->st) &&
-	    !posix_pathnames &&
 	    mangle_is_mangled(fname_src_mask, conn->params)) {
 		char *new_mask = NULL;
 		mangle_lookup_name_from_8_3(ctx, fname_src_mask,
@@ -9086,8 +9067,7 @@ void reply_copy(struct smb_request *req)
 			}
 
 			if(!mask_match(dname, fname_src_mask,
-				       posix_pathnames ?
-					true : conn->case_sensitive)) {
+				       conn->case_sensitive)) {
 				TALLOC_FREE(talloced);
 				continue;
 			}

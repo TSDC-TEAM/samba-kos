@@ -99,7 +99,7 @@ gid_t sec_initial_gid(void)
 /**
  * @brief Check if we are running in root mode.
  *
- * @return Return whether Samba has root privileges
+ * @return If we samba root privileges it returns true, false otehrwise.
  */
 bool root_mode(void)
 {

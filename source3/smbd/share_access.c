@@ -23,7 +23,6 @@
 #include "../libcli/security/security.h"
 #include "passdb/lookup_sid.h"
 #include "auth.h"
-#include "source3/lib/substitute.h"
 
 /*
  * We dropped NIS support in 2021, but need to keep configs working.

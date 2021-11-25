@@ -59,7 +59,6 @@ struct smb_Dir {
 	struct name_cache_entry *name_cache;
 	unsigned int name_cache_index;
 	unsigned int file_number;
-	bool case_sensitive;
 	files_struct *fsp; /* Back pointer to containing fsp, only
 			      set from OpenDir_fsp(). */
 };
@@ -397,11 +396,6 @@ void dptr_set_priv(struct dptr_struct *dptr)
 	dptr->priv = true;
 }
 
-bool dptr_case_sensitive(struct dptr_struct *dptr)
-{
-	return dptr->dir_hnd->case_sensitive;
-}
-
 /****************************************************************************
  Return the next visible file name, skipping veto'd and invisible files.
 ****************************************************************************/
@@ -482,7 +476,7 @@ static char *dptr_ReadDirName(TALLOC_CTX *ctx,
 	 * providing case sensitive semantics or the underlying
 	 * filesystem is case sensitive.
 	 */
-	if (dptr->dir_hnd->case_sensitive ||
+	if (dptr->conn->case_sensitive ||
 	    !(dptr->conn->fs_capabilities & FILE_CASE_SENSITIVE_SEARCH))
 	{
 		goto clean;
@@ -1362,14 +1356,6 @@ bool is_visible_fsp(struct files_struct *fsp)
 	hide_special = lp_hide_special_files(SNUM(fsp->conn));
 	hide_new_files_timeout = lp_hide_new_files_timeout(SNUM(fsp->conn));
 
-	if (!hide_unreadable &&
-	    !hide_unwriteable &&
-	    !hide_special &&
-	    (hide_new_files_timeout == 0))
-	{
-		return true;
-	}
-
 	if (fsp->base_fsp != NULL) {
 		/* Only operate on non-stream files. */
 		fsp = fsp->base_fsp;
@@ -1555,11 +1541,6 @@ static struct smb_Dir *OpenDir_fsp(TALLOC_CTX *mem_ctx, connection_struct *conn,
 		goto fail;
 	}
 	dir_hnd->fsp = fsp;
-	if (fsp->posix_flags & FSP_POSIX_FLAGS_OPEN) {
-		dir_hnd->case_sensitive = true;
-	} else {
-		dir_hnd->case_sensitive = conn->case_sensitive;
-	}
 
 	talloc_set_destructor(dir_hnd, smb_Dir_destructor);
 
@@ -1726,7 +1707,7 @@ static bool SearchDir(struct smb_Dir *dir_hnd, const char *name, long *poffset)
 	if (dir_hnd->name_cache_size && dir_hnd->name_cache) {
 		for (i = dir_hnd->name_cache_index; i >= 0; i--) {
 			struct name_cache_entry *e = &dir_hnd->name_cache[i];
-			if (e->name && (dir_hnd->case_sensitive ? (strcmp(e->name, name) == 0) : strequal(e->name, name))) {
+			if (e->name && (conn->case_sensitive ? (strcmp(e->name, name) == 0) : strequal(e->name, name))) {
 				*poffset = e->offset;
 				SeekDir(dir_hnd, e->offset);
 				return True;
@@ -1735,7 +1716,7 @@ static bool SearchDir(struct smb_Dir *dir_hnd, const char *name, long *poffset)
 		for (i = dir_hnd->name_cache_size - 1;
 				i > dir_hnd->name_cache_index; i--) {
 			struct name_cache_entry *e = &dir_hnd->name_cache[i];
-			if (e->name && (dir_hnd->case_sensitive ? (strcmp(e->name, name) == 0) : strequal(e->name, name))) {
+			if (e->name && (conn->case_sensitive ? (strcmp(e->name, name) == 0) : strequal(e->name, name))) {
 				*poffset = e->offset;
 				SeekDir(dir_hnd, e->offset);
 				return True;
@@ -1748,7 +1729,7 @@ static bool SearchDir(struct smb_Dir *dir_hnd, const char *name, long *poffset)
 	dir_hnd->file_number = 0;
 	*poffset = START_OF_DIRECTORY_OFFSET;
 	while ((entry = ReadDirName(dir_hnd, poffset, NULL, &talloced))) {
-		if (dir_hnd->case_sensitive ? (strcmp(entry, name) == 0) : strequal(entry, name)) {
+		if (conn->case_sensitive ? (strcmp(entry, name) == 0) : strequal(entry, name)) {
 			TALLOC_FREE(talloced);
 			return True;
 		}
@@ -1941,59 +1922,16 @@ NTSTATUS can_delete_directory_fsp(files_struct *fsp)
 			break;
 		}
 
+		/*
+		 * is_visible_fsp() always returns true
+		 * for the symlink/MSDFS case.
+		 */
+
 		if (S_ISLNK(smb_dname_full->st.st_ex_mode)) {
-			/* Could it be an msdfs link ? */
-			if (lp_host_msdfs() &&
-			    lp_msdfs_root(SNUM(conn))) {
-				struct smb_filename *smb_dname;
-				smb_dname = synthetic_smb_fname(talloc_tos(),
-							dname,
-							NULL,
-							&smb_dname_full->st,
-							fsp->fsp_name->twrp,
-							fsp->fsp_name->flags);
-				if (smb_dname == NULL) {
-					TALLOC_FREE(talloced);
-					TALLOC_FREE(fullname);
-					TALLOC_FREE(smb_dname_full);
-					status = NT_STATUS_NO_MEMORY;
-					break;
-				}
-				if (is_msdfs_link(fsp, smb_dname)) {
-					TALLOC_FREE(talloced);
-					TALLOC_FREE(fullname);
-					TALLOC_FREE(smb_dname_full);
-					TALLOC_FREE(smb_dname);
-					DBG_DEBUG("got msdfs link name %s "
-						"- can't delete directory %s\n",
-						dname,
-						fsp_str_dbg(fsp));
-					status = NT_STATUS_DIRECTORY_NOT_EMPTY;
-					break;
-				}
-				TALLOC_FREE(smb_dname);
-			}
-			/* Not a DFS link - could it be a dangling symlink ? */
-			ret = SMB_VFS_STAT(conn, smb_dname_full);
-			if (ret == -1 && (errno == ENOENT || errno == ELOOP)) {
-				/*
-				 * Dangling symlink.
-				 * Allow if "delete veto files = yes"
-				 */
-				if (lp_delete_veto_files(SNUM(conn))) {
-					TALLOC_FREE(talloced);
-					TALLOC_FREE(fullname);
-					TALLOC_FREE(smb_dname_full);
-					continue;
-				}
-			}
-			DBG_DEBUG("got symlink name %s - "
-				"can't delete directory %s\n",
-				dname,
-				fsp_str_dbg(fsp));
 			TALLOC_FREE(talloced);
 			TALLOC_FREE(fullname);
 			TALLOC_FREE(smb_dname_full);
+			DBG_DEBUG("got name %s - can't delete\n", dname);
 			status = NT_STATUS_DIRECTORY_NOT_EMPTY;
 			break;
 		}

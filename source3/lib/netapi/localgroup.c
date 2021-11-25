@@ -52,8 +52,11 @@ static NTSTATUS libnetapi_samr_lookup_and_open_alias(TALLOC_CTX *mem_ctx,
 					 &user_rids,
 					 &name_types,
 					 &result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
 		return status;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		return result;
 	}
 	if (user_rids.count != 1) {
 		return NT_STATUS_INVALID_NETWORK_RESPONSE;
@@ -107,7 +110,11 @@ static NTSTATUS libnetapi_samr_open_alias_queryinfo(TALLOC_CTX *mem_ctx,
 				       rid,
 				       &alias_handle,
 				       &result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		status = result;
 		goto done;
 	}
 
@@ -116,7 +123,11 @@ static NTSTATUS libnetapi_samr_open_alias_queryinfo(TALLOC_CTX *mem_ctx,
 					    level,
 					    &_alias_info,
 					    &result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		status = result;
 		goto done;
 	}
 
@@ -228,10 +239,15 @@ WERROR NetLocalGroupAdd_r(struct libnetapi_ctx *ctx,
 					    &alias_handle,
 					    &rid,
 					    &result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
 		werr = ntstatus_to_werror(status);
 		goto done;
 	}
+	if (!NT_STATUS_IS_OK(result)) {
+		werr = ntstatus_to_werror(result);
+		goto done;
+	}
+
 
 	if (r->in.level == 1 && info1->lgrpi1_comment) {
 
@@ -244,8 +260,12 @@ WERROR NetLocalGroupAdd_r(struct libnetapi_ctx *ctx,
 						  ALIASINFODESCRIPTION,
 						  &alias_info,
 						  &result);
-		if (any_nt_status_not_ok(status, result, &status)) {
+		if (!NT_STATUS_IS_OK(status)) {
 			werr = ntstatus_to_werror(status);
+			goto done;
+		}
+		if (!NT_STATUS_IS_OK(result)) {
+			werr = ntstatus_to_werror(result);
 			goto done;
 		}
 	}
@@ -363,8 +383,12 @@ WERROR NetLocalGroupDel_r(struct libnetapi_ctx *ctx,
 	status = dcerpc_samr_DeleteDomAlias(b, talloc_tos(),
 					    &alias_handle,
 					    &result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
 		werr = ntstatus_to_werror(status);
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		werr = ntstatus_to_werror(result);
 		goto done;
 	}
 
@@ -540,8 +564,12 @@ WERROR NetLocalGroupGetInfo_r(struct libnetapi_ctx *ctx,
 					    ALIASINFOALL,
 					    &alias_info,
 					    &result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
 		werr = ntstatus_to_werror(status);
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		werr = ntstatus_to_werror(result);
 		goto done;
 	}
 
@@ -722,8 +750,12 @@ WERROR NetLocalGroupSetInfo_r(struct libnetapi_ctx *ctx,
 					  alias_level,
 					  alias_info,
 					  &result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
 		werr = ntstatus_to_werror(status);
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		werr = ntstatus_to_werror(result);
 		goto done;
 	}
 
@@ -834,8 +866,12 @@ WERROR NetLocalGroupEnum_r(struct libnetapi_ctx *ctx,
 					     2,
 					     &builtin_info,
 					     &result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
 		werr = ntstatus_to_werror(status);
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		werr = ntstatus_to_werror(result);
 		goto done;
 	}
 
@@ -848,8 +884,12 @@ WERROR NetLocalGroupEnum_r(struct libnetapi_ctx *ctx,
 					     2,
 					     &domain_info,
 					     &result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
 		werr = ntstatus_to_werror(status);
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		werr = ntstatus_to_werror(result);
 		goto done;
 	}
 
@@ -864,8 +904,12 @@ WERROR NetLocalGroupEnum_r(struct libnetapi_ctx *ctx,
 					       r->in.prefmaxlen,
 					       &entries_read,
 					       &result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
 		werr = ntstatus_to_werror(status);
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		werr = ntstatus_to_werror(result);
 		goto done;
 	}
 
@@ -901,8 +945,12 @@ WERROR NetLocalGroupEnum_r(struct libnetapi_ctx *ctx,
 					       r->in.prefmaxlen,
 					       &entries_read,
 					       &result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
 		werr = ntstatus_to_werror(status);
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		werr = ntstatus_to_werror(result);
 		goto done;
 	}
 
@@ -1211,8 +1259,12 @@ static WERROR NetLocalGroupModifyMembers_r(struct libnetapi_ctx *ctx,
 						       &alias_handle,
 						       &current_sids,
 						       &result);
-		if (any_nt_status_not_ok(status, result, &status)) {
+		if (!NT_STATUS_IS_OK(status)) {
 			werr = ntstatus_to_werror(status);
+			goto done;
+		}
+		if (!NT_STATUS_IS_OK(result)) {
+			werr = ntstatus_to_werror(result);
 			goto done;
 		}
 
@@ -1268,8 +1320,12 @@ static WERROR NetLocalGroupModifyMembers_r(struct libnetapi_ctx *ctx,
 						    &alias_handle,
 						    &add_sids[i],
 						    &result);
-		if (any_nt_status_not_ok(status, result, &status)) {
+		if (!NT_STATUS_IS_OK(status)) {
 			werr = ntstatus_to_werror(status);
+			goto done;
+		}
+		if (!NT_STATUS_IS_OK(result)) {
+			werr = ntstatus_to_werror(result);
 			goto done;
 		}
 	}
@@ -1281,8 +1337,12 @@ static WERROR NetLocalGroupModifyMembers_r(struct libnetapi_ctx *ctx,
 						       &alias_handle,
 						       &del_sids[i],
 						       &result);
-		if (any_nt_status_not_ok(status, result, &status)) {
+		if (!NT_STATUS_IS_OK(status)) {
 			werr = ntstatus_to_werror(status);
+			goto done;
+		}
+		if (!NT_STATUS_IS_OK(result)) {
+			werr = ntstatus_to_werror(result);
 			goto done;
 		}
 	}

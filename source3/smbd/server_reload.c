@@ -58,16 +58,10 @@ void delete_and_reload_printers(void)
 	const char *pname;
 	bool ok;
 	time_t pcap_last_update;
-	TALLOC_CTX *frame = NULL;
+	TALLOC_CTX *frame = talloc_stackframe();
 	const struct loadparm_substitution *lp_sub =
 		loadparm_s3_global_substitution();
 
-	if (!lp_load_printers()) {
-		DBG_DEBUG("skipping printer reload: disabled\n");
-		return;
-	}
-
-	frame = talloc_stackframe();
 	ok = pcap_cache_loaded(&pcap_last_update);
 	if (!ok) {
 		DEBUG(1, ("pcap cache not loaded\n"));

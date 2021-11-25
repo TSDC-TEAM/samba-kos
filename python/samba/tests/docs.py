@@ -62,7 +62,7 @@ def check_or_set_smbconf_default(cmdline, topdir, param, default_param):
 
     return None
 
-def set_smbconf_arbitrary(cmdline, topdir, param, param_type, value_to_use):
+def set_smbconf_arbitary(cmdline, topdir, param, param_type, value_to_use):
     p = subprocess.Popen(cmdline,
                          stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE,
@@ -86,8 +86,7 @@ def set_smbconf_arbitrary(cmdline, topdir, param, param_type, value_to_use):
 
     return None
 
-def set_smbconf_arbitrary_opposite(cmdline, topdir, tempdir, section, param,
-                                   param_type, opposite_value, value_to_use):
+def set_smbconf_arbitary_opposite(cmdline, topdir, tempdir, section, param, opposite_value, value_to_use):
     g = tempfile.NamedTemporaryFile(mode='w', dir=tempdir, delete=False)
     try:
         towrite = section + "\n"
@@ -453,7 +452,7 @@ class SmbDotConfTests(TestCase):
                                      "--option",
                                      "%s = %s" % (param, value_to_use)]
 
-                future = executor.submit(set_smbconf_arbitrary, cmdline, self.topdir, param, param_type, value_to_use)
+                future = executor.submit(set_smbconf_arbitary, cmdline, self.topdir, param, param_type, value_to_use)
                 result_futures1.append(future)
 
                 opposite_value = opposite_arbitrary.get(param_type)
@@ -462,8 +461,7 @@ class SmbDotConfTests(TestCase):
                                      "--option",
                                      "%s = %s" % (param, value_to_use)]
 
-                future = executor.submit(set_smbconf_arbitrary_opposite, cmdline, self.topdir, self.tempdir,
-                                         section, param, param_type, opposite_value, value_to_use)
+                future = executor.submit(set_smbconf_arbitary_opposite, cmdline, self.topdir, self.tempdir, section, param, opposite_value, value_to_use)
                 result_futures2.append(future)
 
             for f in concurrent.futures.as_completed(result_futures1):

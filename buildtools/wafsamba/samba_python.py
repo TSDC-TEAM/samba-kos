@@ -7,6 +7,9 @@ from waflib.Configure import conf
 @conf
 def SAMBA_CHECK_PYTHON(conf, version=(3,6,0)):
 
+    if conf.env.enable_fuzzing:
+        version=(3,5,0)
+
     # enable tool to build python extensions
     if conf.env.HAVE_PYTHON_H:
         conf.check_python_version(version)

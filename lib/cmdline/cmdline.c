@@ -30,11 +30,6 @@ static struct cli_credentials *cmdline_creds;
 static samba_cmdline_load_config cmdline_load_config_fn;
 static struct samba_cmdline_daemon_cfg cmdline_daemon_cfg;
 
-static NTSTATUS (*cli_credentials_set_machine_account_fn)(
-	struct cli_credentials *cred,
-	struct loadparm_context *lp_ctx) =
-	cli_credentials_set_machine_account;
-
 /* PRIVATE */
 bool samba_cmdline_set_talloc_ctx(TALLOC_CTX *mem_ctx)
 {
@@ -72,8 +67,8 @@ bool samba_cmdline_init_common(TALLOC_CTX *mem_ctx)
 	fault_setup();
 
 	/*
-	 * Log to stderr by default.
-	 * This can be changed to stdout using the option: --debug-stdout
+	 * Log to stdout by default.
+	 * This can be changed to stderr using the option: --debug-stdout
 	 */
 	setup_logging(getprogname(), DEBUG_DEFAULT_STDERR);
 
@@ -125,13 +120,6 @@ struct cli_credentials *samba_cmdline_get_creds(void)
 struct samba_cmdline_daemon_cfg *samba_cmdline_get_daemon_cfg(void)
 {
 	return &cmdline_daemon_cfg;
-}
-
-void samba_cmdline_set_machine_account_fn(
-	NTSTATUS (*fn) (struct cli_credentials *cred,
-			struct loadparm_context *lp_ctx))
-{
-	cli_credentials_set_machine_account_fn = fn;
 }
 
 void samba_cmdline_burn(int argc, char *argv[])
@@ -804,8 +792,8 @@ static void popt_common_credentials_callback(poptContext popt_ctx,
 		if (machine_account_pending) {
 			NTSTATUS status;
 
-			status = cli_credentials_set_machine_account_fn(
-				creds, lp_ctx);
+			status = cli_credentials_set_machine_account(creds,
+								     lp_ctx);
 			if (!NT_STATUS_IS_OK(status)) {
 				fprintf(stderr,
 					"Failed to set machine account: %s\n",
@@ -1263,7 +1251,7 @@ static struct poptOption popt_legacy_s3[] = {
 	{
 		.longName   = "kerberos",
 		.shortName  = 'k',
-		.argInfo    = POPT_ARG_NONE,
+		.argInfo    = POPT_ARG_STRING,
 		.val        = 'k',
 		.descrip    = "DEPRECATED: Migrate to --use-kerberos",
 	},

@@ -1283,7 +1283,6 @@ static NTSTATUS open_file(files_struct *fsp,
 	bool creating = !file_existed && (flags & O_CREAT);
 	bool truncating = (flags & O_TRUNC);
 	bool open_fd = false;
-	bool posix_open = (fsp->posix_flags & FSP_POSIX_FLAGS_OPEN);
 
 	/*
 	 * Catch early an attempt to open an existing
@@ -1532,7 +1531,7 @@ static NTSTATUS open_file(files_struct *fsp,
 		}
 
 		if (S_ISLNK(smb_fname->st.st_ex_mode) &&
-		    !posix_open)
+		    !(fsp->posix_flags & FSP_POSIX_FLAGS_OPEN))
 		{
 			/*
 			 * Don't allow stat opens on symlinks directly unless
@@ -1574,7 +1573,7 @@ static NTSTATUS open_file(files_struct *fsp,
 						      access_mask);
 
 		if (NT_STATUS_EQUAL(status, NT_STATUS_OBJECT_NAME_NOT_FOUND) &&
-				posix_open &&
+				(fsp->posix_flags & FSP_POSIX_FLAGS_OPEN) &&
 				S_ISLNK(smb_fname->st.st_ex_mode)) {
 			/* This is a POSIX stat open for delete
 			 * or rename on a symlink that points
@@ -1608,7 +1607,7 @@ static NTSTATUS open_file(files_struct *fsp,
 	fsp->fsp_flags.is_directory = false;
 	if (conn->aio_write_behind_list &&
 	    is_in_path(smb_fname->base_name, conn->aio_write_behind_list,
-		       posix_open ? true: conn->case_sensitive)) {
+		       conn->case_sensitive)) {
 		fsp->fsp_flags.aio_write_behind = true;
 	}
 
@@ -4050,20 +4049,19 @@ static NTSTATUS open_file_ntcreate(connection_struct *conn,
 	    fsp_get_io_fd(fsp) != -1 &&
 	    lp_kernel_share_modes(SNUM(conn)))
 	{
-		int ret;
+		int ret_flock;
 		/*
 		 * Beware: streams implementing VFS modules may
 		 * implement streams in a way that fsp will have the
 		 * basefile open in the fsp fd, so lacking a distinct
-		 * fd for the stream the file-system sharemode will
-		 * apply on the basefile which is wrong. The actual
-		 * check is deferred to the VFS module implementing
-		 * the file-system sharemode call.
+		 * fd for the stream kernel_flock will apply on the
+		 * basefile which is wrong. The actual check is
+		 * deferred to the VFS module implementing the
+		 * kernel_flock call.
 		 */
-		ret = SMB_VFS_FILESYSTEM_SHAREMODE(fsp,
-						   share_access,
-						   access_mask);
-		if (ret == -1){
+		ret_flock = SMB_VFS_KERNEL_FLOCK(fsp, share_access, access_mask);
+		if(ret_flock == -1 ){
+
 			del_share_mode(lck, fsp);
 			TALLOC_FREE(lck);
 			fd_close(fsp);
@@ -5105,8 +5103,9 @@ static NTSTATUS inherit_new_acl(struct smb_filename *parent_dir_fname,
 	}
 
 	if (try_builtin_administrators) {
-		struct unixid ids = { .id = 0 };
+		struct unixid ids;
 
+		ZERO_STRUCT(ids);
 		ok = sids_to_unixids(&global_sid_Builtin_Administrators, 1, &ids);
 		if (ok) {
 			switch (ids.type) {
@@ -5127,8 +5126,9 @@ static NTSTATUS inherit_new_acl(struct smb_filename *parent_dir_fname,
 	}
 
 	if (try_system) {
-		struct unixid ids = { .id = 0 };
+		struct unixid ids;
 
+		ZERO_STRUCT(ids);
 		ok = sids_to_unixids(&global_sid_System, 1, &ids);
 		if (ok) {
 			switch (ids.type) {

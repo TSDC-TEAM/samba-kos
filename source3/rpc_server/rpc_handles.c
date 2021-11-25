@@ -35,6 +35,16 @@
 
 static size_t num_handles = 0;
 
+/* TODO
+ * the following prototypes are declared here to avoid
+ * code being moved about too much for a patch to be
+ * disrupted / less obvious.
+ *
+ * these functions, and associated functions that they
+ * call, should be moved behind a .so module-loading
+ * system _anyway_.  so that's the next step...
+ */
+
 int make_base_pipes_struct(TALLOC_CTX *mem_ctx,
 			   struct messaging_context *msg_ctx,
 			   const char *pipe_name,
@@ -148,15 +158,6 @@ static struct dcesrv_handle *find_policy_by_hnd_internal(
 
 	if (data_p) {
 		*data_p = NULL;
-	}
-
-	/*
-	 * Do not pass an empty policy_handle to dcesrv_handle_lookup() or
-	 * it will create a new empty handle
-	 */
-	if (ndr_policy_handle_empty(hnd)) {
-		p->fault_state = DCERPC_FAULT_CONTEXT_MISMATCH;
-		return NULL;
 	}
 
 	/*

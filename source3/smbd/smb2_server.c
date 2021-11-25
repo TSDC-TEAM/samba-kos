@@ -23,7 +23,6 @@
 #include "system/network.h"
 #include "smbd/smbd.h"
 #include "smbd/globals.h"
-#include "smbd/smbXsrv_open.h"
 #include "lib/param/param.h"
 #include "../libcli/smb/smb_common.h"
 #include "../lib/tsocket/tsocket.h"
@@ -34,7 +33,6 @@
 #include "lib/util/iov_buf.h"
 #include "auth.h"
 #include "libcli/smb/smbXcli_base.h"
-#include "source3/lib/substitute.h"
 
 #if defined(LINUX)
 /* SIOCOUTQ TIOCOUTQ are the same */

@@ -36,7 +36,7 @@ from samba.upgradehelpers import get_ldbs, get_paths
 
 __docformat__ = "restructuredText"
 
-parser = optparse.OptionParser("renamedc [options]")
+parser = optparse.OptionParser("provision [options]")
 sambaopts = options.SambaOptions(parser)
 parser.add_option_group(sambaopts)
 parser.add_option_group(options.VersionOptions(parser))

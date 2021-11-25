@@ -24,8 +24,8 @@
 #  ->  "3.0.0"                                         #
 ########################################################
 SAMBA_VERSION_MAJOR=4
-SAMBA_VERSION_MINOR=16
-SAMBA_VERSION_RELEASE=0
+SAMBA_VERSION_MINOR=15
+SAMBA_VERSION_RELEASE=2
 
 ########################################################
 # If a official release has a serious bug              #
@@ -77,7 +77,7 @@ SAMBA_VERSION_BETA_RELEASE=
 # e.g. SAMBA_VERSION_PRE_RELEASE=1                     #
 #  ->  "2.2.9pre1"                                     #
 ########################################################
-SAMBA_VERSION_PRE_RELEASE=1
+SAMBA_VERSION_PRE_RELEASE=
 
 ########################################################
 # For 'rc' releases the version will be                #
@@ -99,7 +99,7 @@ SAMBA_VERSION_RC_RELEASE=
 # e.g. SAMBA_VERSION_IS_SVN_SNAPSHOT=yes               #
 #  ->  "3.0.0-SVN-build-199"                           #
 ########################################################
-SAMBA_VERSION_IS_GIT_SNAPSHOT=yes
+SAMBA_VERSION_IS_GIT_SNAPSHOT=no
 
 ########################################################
 # This is for specifying a release nickname            #

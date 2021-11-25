@@ -73,7 +73,6 @@
 #include "passdb/machine_sid.h"
 #include "lib/util/tevent_ntstatus.h"
 #include "lib/util/string_wrappers.h"
-#include "source3/lib/substitute.h"
 
 static int vfs_full_audit_debug_level = DBGC_VFS;
 
@@ -152,7 +151,7 @@ typedef enum _vfs_op_type {
 	SMB_VFS_OP_FTRUNCATE,
 	SMB_VFS_OP_FALLOCATE,
 	SMB_VFS_OP_LOCK,
-	SMB_VFS_OP_FILESYSTEM_SHAREMODE,
+	SMB_VFS_OP_KERNEL_FLOCK,
 	SMB_VFS_OP_FCNTL,
 	SMB_VFS_OP_LINUX_SETLEASE,
 	SMB_VFS_OP_GETLOCK,
@@ -288,7 +287,7 @@ static struct {
 	{ SMB_VFS_OP_FTRUNCATE,	"ftruncate" },
 	{ SMB_VFS_OP_FALLOCATE,"fallocate" },
 	{ SMB_VFS_OP_LOCK,	"lock" },
-	{ SMB_VFS_OP_FILESYSTEM_SHAREMODE,	"filesystem_sharemode" },
+	{ SMB_VFS_OP_KERNEL_FLOCK,	"kernel_flock" },
 	{ SMB_VFS_OP_FCNTL,	"fcntl" },
 	{ SMB_VFS_OP_LINUX_SETLEASE, "linux_setlease" },
 	{ SMB_VFS_OP_GETLOCK,	"getlock" },
@@ -1768,19 +1767,19 @@ static bool smb_full_audit_lock(vfs_handle_struct *handle, files_struct *fsp,
 	return result;
 }
 
-static int smb_full_audit_filesystem_sharemode(struct vfs_handle_struct *handle,
-					       struct files_struct *fsp,
-					       uint32_t share_access,
-					       uint32_t access_mask)
+static int smb_full_audit_kernel_flock(struct vfs_handle_struct *handle,
+				       struct files_struct *fsp,
+				       uint32_t share_access,
+				       uint32_t access_mask)
 {
 	int result;
 
-	result = SMB_VFS_NEXT_FILESYSTEM_SHAREMODE(handle,
-						   fsp,
-						   share_access,
-						   access_mask);
+	result = SMB_VFS_NEXT_KERNEL_FLOCK(handle,
+					   fsp,
+					   share_access,
+					   access_mask);
 
-	do_log(SMB_VFS_OP_FILESYSTEM_SHAREMODE, (result >= 0), handle, "%s",
+	do_log(SMB_VFS_OP_KERNEL_FLOCK, (result >= 0), handle, "%s",
 	       fsp_str_do_log(fsp));
 
 	return result;
@@ -2235,14 +2234,12 @@ static NTSTATUS smb_full_audit_offload_read_recv(
 	struct tevent_req *req,
 	struct vfs_handle_struct *handle,
 	TALLOC_CTX *mem_ctx,
-	uint32_t *flags,
-	uint64_t *xferlen,
 	DATA_BLOB *_token_blob)
 {
 	NTSTATUS status;
 
 	status = SMB_VFS_NEXT_OFFLOAD_READ_RECV(req, handle, mem_ctx,
-						flags, xferlen, _token_blob);
+						_token_blob);
 
 	do_log(SMB_VFS_OP_OFFLOAD_READ_RECV, NT_STATUS_IS_OK(status), handle, "");
 
@@ -2941,7 +2938,7 @@ static struct vfs_fn_pointers vfs_full_audit_fns = {
 	.ftruncate_fn = smb_full_audit_ftruncate,
 	.fallocate_fn = smb_full_audit_fallocate,
 	.lock_fn = smb_full_audit_lock,
-	.filesystem_sharemode_fn = smb_full_audit_filesystem_sharemode,
+	.kernel_flock_fn = smb_full_audit_kernel_flock,
 	.fcntl_fn = smb_full_audit_fcntl,
 	.linux_setlease_fn = smb_full_audit_linux_setlease,
 	.getlock_fn = smb_full_audit_getlock,

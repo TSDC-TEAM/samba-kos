@@ -283,7 +283,7 @@ static struct ldb_parse_tree *build_equality_operation(
 	value = &el->u.equality.value;
 	length = (add_asterix) ? size + 2 : size + 1;
 	value->data = talloc_zero_array(el, uint8_t, length);
-	if (value->data == NULL) {
+	if (el == NULL) {
 		DBG_ERR("Unable to allocate value->data\n");
 		TALLOC_FREE(el);
 		return NULL;
@@ -292,10 +292,8 @@ static struct ldb_parse_tree *build_equality_operation(
 	value->length = length;
 	if (add_asterix) {
 		value->data[0] = '*';
-		if (name != NULL) {
-			memcpy(&value->data[1], name, size);
-		}
-	} else if (name != NULL) {
+		memcpy(&value->data[1], name, size);
+	} else {
 		memcpy(value->data, name, size);
 	}
 	return el;

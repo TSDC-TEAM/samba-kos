@@ -314,8 +314,7 @@ fail:
 }
 
 static NTSTATUS find_ncalrpc_default_endpoint(struct dcesrv_context *dce_ctx,
-				const struct ndr_interface_table *ndr_table,
-				struct dcesrv_endpoint **ep)
+					      struct dcesrv_endpoint **ep)
 {
 	TALLOC_CTX *tmp_ctx = NULL;
 	struct dcerpc_binding *binding = NULL;
@@ -325,25 +324,6 @@ static NTSTATUS find_ncalrpc_default_endpoint(struct dcesrv_context *dce_ctx,
 	tmp_ctx = talloc_new(dce_ctx);
 	if (tmp_ctx == NULL) {
 		return NT_STATUS_NO_MEMORY;
-	}
-
-	if (rpc_service_mode(ndr_table->name) == RPC_SERVICE_MODE_EXTERNAL) {
-		ep_description = talloc_asprintf(tmp_ctx, "ncalrpc:[%s]",
-				talloc_strdup_upper(tmp_ctx, ndr_table->name));
-		if (ep_description == NULL) {
-			status = NT_STATUS_NO_MEMORY;
-			goto out;
-		}
-
-		status = dcerpc_parse_binding(tmp_ctx, ep_description, &binding);
-		if (!NT_STATUS_IS_OK(status)) {
-			goto out;
-		}
-
-		status = dcesrv_find_endpoint(dce_ctx, binding, ep);
-		if (NT_STATUS_IS_OK(status)) {
-			goto out;
-		}
 	}
 
 	/*
@@ -400,7 +380,7 @@ static NTSTATUS make_internal_dcesrv_connection(TALLOC_CTX *mem_ctx,
 	conn->preferred_transfer = &ndr_transfer_syntax_ndr;
 	conn->transport.private_data = ncacn_conn;
 
-	status = find_ncalrpc_default_endpoint(conn->dce_ctx, ndr_table, &endpoint);
+	status = find_ncalrpc_default_endpoint(conn->dce_ctx, &endpoint);
 	if (!NT_STATUS_IS_OK(status)) {
 		goto fail;
 	}

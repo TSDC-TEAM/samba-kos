@@ -33,7 +33,7 @@ static bool smb3_sid_parse(const struct dom_sid *sid,
 	uint16_t encrypt;
 	uint16_t cipher;
 
-	if (sid->sub_auths[0] != global_sid_Samba_SMB3.sub_auths[0]) {
+	if (sid->sub_auths[0] != 1397571891) {
 		return false;
 	}
 
@@ -70,13 +70,18 @@ static bool smb3_sid_parse(const struct dom_sid *sid,
 bool dcerpc_is_transport_encrypted(struct auth_session_info *session_info)
 {
 	struct security_token *token = session_info->security_token;
-	struct dom_sid smb3_dom_sid = global_sid_Samba_SMB3;
+	struct dom_sid smb3_dom_sid;
 	const struct dom_sid *smb3_sid = NULL;
 	uint16_t dialect = 0;
 	uint16_t encrypt = 0;
 	uint16_t cipher = 0;
 	uint32_t i;
 	bool ok;
+
+	ok = dom_sid_parse(SID_SAMBA_SMB3, &smb3_dom_sid);
+	if (!ok) {
+		return false;
+	}
 
 	for (i = 0; i < token->num_sids; i++) {
 		int cmp;

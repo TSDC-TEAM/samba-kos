@@ -28,7 +28,6 @@
 #include "system/passwd.h" /* uid_wrapper */
 #include "ntdomain.h"
 #include "../libcli/auth/schannel.h"
-#include "librpc/rpc/dcesrv_core.h"
 #include "librpc/gen_ndr/ndr_netlogon.h"
 #include "librpc/gen_ndr/ndr_netlogon_scompat.h"
 #include "librpc/gen_ndr/ndr_samr_c.h"
@@ -50,12 +49,16 @@
 #include "lib/param/param.h"
 #include "libsmb/dsgetdcname.h"
 #include "lib/util/util_str_escape.h"
-#include "source3/lib/substitute.h"
 
 extern userdom_struct current_user_info;
 
 #undef DBGC_CLASS
 #define DBGC_CLASS DBGC_RPC_SRV
+
+struct netlogon_server_pipe_state {
+	struct netr_Credential client_challenge;
+	struct netr_Credential server_challenge;
+};
 
 /*************************************************************************
  _netr_LogonControl
@@ -184,7 +187,6 @@ static bool wb_check_trust_creds(const char *domain, WERROR *tc_status)
 WERROR _netr_LogonControl2Ex(struct pipes_struct *p,
 			     struct netr_LogonControl2Ex *r)
 {
-	struct dcesrv_call_state *dce_call = p->dce_call;
 	uint32_t flags = 0x0;
 	WERROR pdc_connection_status = WERR_OK;
 	uint32_t logon_attempts = 0x0;
@@ -201,7 +203,7 @@ WERROR _netr_LogonControl2Ex(struct pipes_struct *p,
 	NTSTATUS status;
 	struct netr_DsRGetDCNameInfo *dc_info;
 
-	switch (dce_call->pkt.u.request.opnum) {
+	switch (p->opnum) {
 	case NDR_NETR_LOGONCONTROL:
 		fn = "_netr_LogonControl";
 		break;
@@ -791,21 +793,16 @@ static NTSTATUS get_md4pw(struct samr_Password *md4pw, const char *mach_acct,
 NTSTATUS _netr_ServerReqChallenge(struct pipes_struct *p,
 				  struct netr_ServerReqChallenge *r)
 {
-	struct dcesrv_call_state *dce_call = p->dce_call;
-	struct netlogon_server_pipe_state *pipe_state = NULL;
-	NTSTATUS status;
-
-	pipe_state = dcesrv_iface_state_find_conn(
-		dce_call,
-		NETLOGON_SERVER_PIPE_STATE_MAGIC,
-		struct netlogon_server_pipe_state);
+	struct netlogon_server_pipe_state *pipe_state =
+		talloc_get_type(p->private_data, struct netlogon_server_pipe_state);
 
 	if (pipe_state) {
 		DEBUG(10,("_netr_ServerReqChallenge: new challenge requested. Clearing old state.\n"));
 		talloc_free(pipe_state);
+		p->private_data = NULL;
 	}
 
-	pipe_state = talloc(p->mem_ctx, struct netlogon_server_pipe_state);
+	pipe_state = talloc(p, struct netlogon_server_pipe_state);
 	NT_STATUS_HAVE_NO_MEMORY(pipe_state);
 
 	pipe_state->client_challenge = *r->in.credentials;
@@ -814,13 +811,7 @@ NTSTATUS _netr_ServerReqChallenge(struct pipes_struct *p,
 
 	*r->out.return_credentials = pipe_state->server_challenge;
 
-	status = dcesrv_iface_state_store_conn(
-		dce_call,
-		NETLOGON_SERVER_PIPE_STATE_MAGIC,
-		pipe_state);
-	if (!NT_STATUS_IS_OK(status)) {
-		return status;
-	}
+	p->private_data = pipe_state;
 
 	return NT_STATUS_OK;
 }
@@ -859,7 +850,6 @@ NTSTATUS _netr_ServerAuthenticate(struct pipes_struct *p,
 NTSTATUS _netr_ServerAuthenticate3(struct pipes_struct *p,
 				   struct netr_ServerAuthenticate3 *r)
 {
-	struct dcesrv_call_state *dce_call = p->dce_call;
 	NTSTATUS status;
 	uint32_t srv_flgs;
 	/* r->in.negotiate_flags is an aliased pointer to r->out.negotiate_flags,
@@ -870,7 +860,8 @@ NTSTATUS _netr_ServerAuthenticate3(struct pipes_struct *p,
 	struct dom_sid sid;
 	struct samr_Password mach_pwd;
 	struct netlogon_creds_CredentialState *creds;
-	struct netlogon_server_pipe_state *pipe_state = NULL;
+	struct netlogon_server_pipe_state *pipe_state =
+		talloc_get_type(p->private_data, struct netlogon_server_pipe_state);
 
 	/* According to Microsoft (see bugid #6099)
 	 * Windows 7 looks at the negotiate_flags
@@ -919,14 +910,7 @@ NTSTATUS _netr_ServerAuthenticate3(struct pipes_struct *p,
 			    NETLOGON_NEG_NEUTRALIZE_NT4_EMULATION;
 	}
 
-	/*
-	 * If weak cryto is disabled, do not announce that we support RC4.
-	 */
-	if (lp_weak_crypto() == SAMBA_WEAK_CRYPTO_DISALLOWED) {
-		srv_flgs &= ~NETLOGON_NEG_ARCFOUR;
-	}
-
-	switch (dce_call->pkt.u.request.opnum) {
+	switch (p->opnum) {
 		case NDR_NETR_SERVERAUTHENTICATE:
 			fn = "_netr_ServerAuthenticate";
 			break;
@@ -942,11 +926,6 @@ NTSTATUS _netr_ServerAuthenticate3(struct pipes_struct *p,
 
 	/* We use this as the key to store the creds: */
 	/* r->in.computer_name */
-
-	pipe_state = dcesrv_iface_state_find_conn(
-		dce_call,
-		NETLOGON_SERVER_PIPE_STATE_MAGIC,
-		struct netlogon_server_pipe_state);
 
 	if (!pipe_state) {
 		DEBUG(0,("%s: no challenge sent to client %s\n", fn,
@@ -1058,7 +1037,6 @@ static NTSTATUS netr_creds_server_step_check(struct pipes_struct *p,
 					     struct netr_Authenticator *return_authenticator,
 					     struct netlogon_creds_CredentialState **creds_out)
 {
-	struct dcesrv_call_state *dce_call = p->dce_call;
 	NTSTATUS status;
 	bool schannel_global_required = (lp_server_schannel() == true) ? true:false;
 	bool schannel_required = schannel_global_required;
@@ -1066,7 +1044,7 @@ static NTSTATUS netr_creds_server_step_check(struct pipes_struct *p,
 	struct loadparm_context *lp_ctx;
 	struct netlogon_creds_CredentialState *creds = NULL;
 	enum dcerpc_AuthType auth_type = DCERPC_AUTH_TYPE_NONE;
-	uint16_t opnum = dce_call->pkt.u.request.opnum;
+	uint16_t opnum = p->opnum;
 	const char *opname = "<unknown>";
 	static bool warned_global_once = false;
 
@@ -1737,7 +1715,6 @@ static NTSTATUS _netr_LogonSamLogon_base(struct pipes_struct *p,
 					 struct netr_LogonSamLogonEx *r,
 					 struct netlogon_creds_CredentialState *creds)
 {
-	struct dcesrv_call_state *dce_call = p->dce_call;
 	NTSTATUS status = NT_STATUS_OK;
 	union netr_LogonLevel *logon = r->in.logon;
 	const char *nt_username, *nt_domain, *nt_workstation;
@@ -1756,7 +1733,7 @@ static NTSTATUS _netr_LogonSamLogon_base(struct pipes_struct *p,
 	}
 #endif
 
-	switch (dce_call->pkt.u.request.opnum) {
+	switch (p->opnum) {
 		case NDR_NETR_LOGONSAMLOGON:
 			fn = "_netr_LogonSamLogon";
 			break;

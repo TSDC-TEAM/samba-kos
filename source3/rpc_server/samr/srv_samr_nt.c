@@ -35,7 +35,6 @@
 #include "system/passwd.h"
 #include "../libcli/auth/libcli_auth.h"
 #include "ntdomain.h"
-#include "librpc/rpc/dcesrv_core.h"
 #include "../librpc/gen_ndr/ndr_samr.h"
 #include "../librpc/gen_ndr/ndr_samr_scompat.h"
 #include "rpc_server/samr/srv_samr_util.h"
@@ -956,7 +955,7 @@ NTSTATUS _samr_EnumDomainUsers(struct pipes_struct *p,
 {
 	NTSTATUS status;
 	struct samr_info *dinfo;
-	uint32_t num_account;
+	int num_account;
 	uint32_t enum_context = *r->in.resume_handle;
 	enum remote_arch_types ra_type = get_remote_arch();
 	int max_sam_entries = (ra_type == RA_WIN95) ? MAX_SAM_ENTRIES_W95 : MAX_SAM_ENTRIES_W2K;
@@ -1459,8 +1458,7 @@ NTSTATUS _samr_QueryDisplayInfo(struct pipes_struct *p,
 	NTSTATUS disp_ret = NT_STATUS_UNSUCCESSFUL;
 	uint32_t num_account = 0;
 	enum remote_arch_types ra_type = get_remote_arch();
-	uint32_t max_sam_entries = (ra_type == RA_WIN95) ?
-		MAX_SAM_ENTRIES_W95 : MAX_SAM_ENTRIES_W2K;
+	int max_sam_entries = (ra_type == RA_WIN95) ? MAX_SAM_ENTRIES_W95 : MAX_SAM_ENTRIES_W2K;
 	struct samr_displayentry *entries = NULL;
 
 	DEBUG(5,("_samr_QueryDisplayInfo: %d\n", __LINE__));
@@ -1784,7 +1782,8 @@ NTSTATUS _samr_LookupNames(struct pipes_struct *p,
 	NTSTATUS status;
 	uint32_t *rid;
 	enum lsa_SidType *type;
-	uint32_t i, num_rids = r->in.num_names;
+	int i;
+	int num_rids = r->in.num_names;
 	struct samr_Ids rids, types;
 	uint32_t num_mapped = 0;
 	struct dom_sid_buf buf;
@@ -3892,15 +3891,13 @@ NTSTATUS _samr_CreateUser2(struct pipes_struct *p,
 		can_add_account = true;
 	} else if (acb_info & ACB_WSTRUST) {
 		needed_priv = SEC_PRIV_MACHINE_ACCOUNT;
-		can_add_account = security_token_has_privilege(
-			p->session_info->security_token, needed_priv);
+		can_add_account = security_token_has_privilege(p->session_info->security_token, SEC_PRIV_MACHINE_ACCOUNT);
 	} else if (acb_info & ACB_NORMAL &&
 		  (account[strlen(account)-1] != '$')) {
-		/* usrmgr.exe (and net rpc trustdom add) creates a normal user
+		/* usrmgr.exe (and net rpc trustdom grant) creates a normal user
 		   account for domain trusts and changes the ACB flags later */
 		needed_priv = SEC_PRIV_ADD_USERS;
-		can_add_account = security_token_has_privilege(
-			p->session_info->security_token, needed_priv);
+		can_add_account = security_token_has_privilege(p->session_info->security_token, SEC_PRIV_ADD_USERS);
 	} else if (lp_enable_privileges()) {
 		/* implicit assumption of a BDC or domain trust account here
 		 * (we already check the flags earlier) */
@@ -4052,7 +4049,6 @@ NTSTATUS _samr_Connect(struct pipes_struct *p,
 NTSTATUS _samr_Connect2(struct pipes_struct *p,
 			struct samr_Connect2 *r)
 {
-	struct dcesrv_call_state *dce_call = p->dce_call;
 	struct security_descriptor *psd = NULL;
 	uint32_t    acc_granted;
 	uint32_t    des_access = r->in.access_mask;
@@ -4060,7 +4056,7 @@ NTSTATUS _samr_Connect2(struct pipes_struct *p,
 	size_t    sd_size;
 	const char *fn = "_samr_Connect2";
 
-	switch (dce_call->pkt.u.request.opnum) {
+	switch (p->opnum) {
 	case NDR_SAMR_CONNECT2:
 		fn = "_samr_Connect2";
 		break;
@@ -4626,9 +4622,11 @@ static NTSTATUS set_user_info_18(struct samr_UserInfo18 *id18,
 	}
 
 	if (id18->nt_pwd_active) {
-		DATA_BLOB in = data_blob_const(id18->nt_pwd.hash, 16);
-		uint8_t outbuf[16] = { 0, };
-		DATA_BLOB out = data_blob_const(outbuf, sizeof(outbuf));
+
+		DATA_BLOB in, out;
+
+		in = data_blob_const(id18->nt_pwd.hash, 16);
+		out = data_blob_talloc_zero(mem_ctx, 16);
 
 		rc = sess_crypt_blob(&out, &in, session_key, SAMBA_GNUTLS_DECRYPT);
 		if (rc != 0) {
@@ -4644,9 +4642,11 @@ static NTSTATUS set_user_info_18(struct samr_UserInfo18 *id18,
 	}
 
 	if (id18->lm_pwd_active) {
-		DATA_BLOB in = data_blob_const(id18->lm_pwd.hash, 16);
-		uint8_t outbuf[16] = { 0, };
-		DATA_BLOB out = data_blob_const(outbuf, sizeof(outbuf));
+
+		DATA_BLOB in, out;
+
+		in = data_blob_const(id18->lm_pwd.hash, 16);
+		out = data_blob_talloc_zero(mem_ctx, 16);
 
 		rc = sess_crypt_blob(&out, &in, session_key, SAMBA_GNUTLS_DECRYPT);
 		if (rc != 0) {
@@ -4711,11 +4711,7 @@ static NTSTATUS set_user_info_21(struct samr_UserInfo21 *id21,
 
 	if (id21->fields_present & SAMR_FIELD_NT_PASSWORD_PRESENT) {
 		if (id21->nt_password_set) {
-			DATA_BLOB in = data_blob_const(
-				id21->nt_owf_password.array, 16);
-			uint8_t outbuf[16] = { 0, };
-			DATA_BLOB out = data_blob_const(
-				outbuf, sizeof(outbuf));
+			DATA_BLOB in, out;
 
 			if ((id21->nt_owf_password.length != 16) ||
 			    (id21->nt_owf_password.size != 16)) {
@@ -4725,6 +4721,9 @@ static NTSTATUS set_user_info_21(struct samr_UserInfo21 *id21,
 			if (!session_key->length) {
 				return NT_STATUS_NO_USER_SESSION_KEY;
 			}
+
+			in = data_blob_const(id21->nt_owf_password.array, 16);
+			out = data_blob_talloc_zero(mem_ctx, 16);
 
 			rc = sess_crypt_blob(&out, &in, session_key, SAMBA_GNUTLS_DECRYPT);
 			if (rc != 0) {
@@ -4739,11 +4738,7 @@ static NTSTATUS set_user_info_21(struct samr_UserInfo21 *id21,
 
 	if (id21->fields_present & SAMR_FIELD_LM_PASSWORD_PRESENT) {
 		if (id21->lm_password_set) {
-			DATA_BLOB in = data_blob_const(
-				id21->lm_owf_password.array, 16);
-			uint8_t outbuf[16] = { 0, };
-			DATA_BLOB out = data_blob_const(
-				outbuf, sizeof(outbuf));
+			DATA_BLOB in, out;
 
 			if ((id21->lm_owf_password.length != 16) ||
 			    (id21->lm_owf_password.size != 16)) {
@@ -4753,6 +4748,9 @@ static NTSTATUS set_user_info_21(struct samr_UserInfo21 *id21,
 			if (!session_key->length) {
 				return NT_STATUS_NO_USER_SESSION_KEY;
 			}
+
+			in = data_blob_const(id21->lm_owf_password.array, 16);
+			out = data_blob_talloc_zero(mem_ctx, 16);
 
 			rc = sess_crypt_blob(&out, &in, session_key, SAMBA_GNUTLS_DECRYPT);
 			if (rc != 0) {
@@ -6947,7 +6945,8 @@ NTSTATUS _samr_GetDisplayEnumerationIndex(struct pipes_struct *p,
 	struct samr_info *dinfo;
 	uint32_t max_entries = (uint32_t) -1;
 	uint32_t enum_context = 0;
-	uint32_t i, num_account = 0;
+	int i;
+	uint32_t num_account = 0;
 	struct samr_displayentry *entries = NULL;
 	NTSTATUS status;
 

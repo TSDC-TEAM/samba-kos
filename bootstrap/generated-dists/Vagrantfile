@@ -31,11 +31,11 @@ Vagrant.configure("2") do |config|
         v.vm.provision :shell, path: "debian10/locale.sh"
     end
 
-    config.vm.define "debian11" do |v|
-        v.vm.box = "debian/bullseye64"
-        v.vm.hostname = "debian11"
-        v.vm.provision :shell, path: "debian11/bootstrap.sh"
-        v.vm.provision :shell, path: "debian11/locale.sh"
+    config.vm.define "fedora33" do |v|
+        v.vm.box = "fedora/33-cloud-base"
+        v.vm.hostname = "fedora33"
+        v.vm.provision :shell, path: "fedora33/bootstrap.sh"
+        v.vm.provision :shell, path: "fedora33/locale.sh"
     end
 
     config.vm.define "fedora34" do |v|
@@ -43,13 +43,6 @@ Vagrant.configure("2") do |config|
         v.vm.hostname = "fedora34"
         v.vm.provision :shell, path: "fedora34/bootstrap.sh"
         v.vm.provision :shell, path: "fedora34/locale.sh"
-    end
-
-    config.vm.define "fedora35" do |v|
-        v.vm.box = "fedora/35-cloud-base"
-        v.vm.hostname = "fedora35"
-        v.vm.provision :shell, path: "fedora35/bootstrap.sh"
-        v.vm.provision :shell, path: "fedora35/locale.sh"
     end
 
     config.vm.define "opensuse151" do |v|
@@ -64,6 +57,13 @@ Vagrant.configure("2") do |config|
         v.vm.hostname = "opensuse152"
         v.vm.provision :shell, path: "opensuse152/bootstrap.sh"
         v.vm.provision :shell, path: "opensuse152/locale.sh"
+    end
+
+    config.vm.define "ubuntu1604" do |v|
+        v.vm.box = "ubuntu/xenial64"
+        v.vm.hostname = "ubuntu1604"
+        v.vm.provision :shell, path: "ubuntu1604/bootstrap.sh"
+        v.vm.provision :shell, path: "ubuntu1604/locale.sh"
     end
 
     config.vm.define "ubuntu1804" do |v|

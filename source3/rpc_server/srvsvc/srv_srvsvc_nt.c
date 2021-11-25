@@ -42,7 +42,6 @@
 #include "messages.h"
 #include "serverid.h"
 #include "lib/global_contexts.h"
-#include "source3/lib/substitute.h"
 
 extern const struct generic_mapping file_generic_mapping;
 

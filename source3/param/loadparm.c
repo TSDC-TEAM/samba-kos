@@ -76,7 +76,6 @@
 #include "lib/crypto/gnutls_helpers.h"
 #include "lib/util/string_wrappers.h"
 #include "auth/credentials/credentials.h"
-#include "source3/lib/substitute.h"
 
 #ifdef HAVE_SYS_SYSCTL_H
 #include <sys/sysctl.h>
@@ -247,7 +246,7 @@ static const struct loadparm_service _sDefault =
 	.map_readonly = MAP_READONLY_NO,
 	.directory_name_cache_size = 100,
 	.server_smb_encrypt = SMB_ENCRYPTION_DEFAULT,
-	.kernel_share_modes = false,
+	.kernel_share_modes = true,
 	.durable_handles = true,
 	.check_parent_directory_delete_on_close = false,
 	.param_opt = NULL,
@@ -676,7 +675,6 @@ static void init_globals(struct loadparm_context *lp_ctx, bool reinit_globals)
 	lpcfg_string_set(Globals.ctx, &Globals.log_level, "0");
 	Globals.debug_prefix_timestamp = false;
 	Globals.debug_hires_timestamp = true;
-	Globals.debug_syslog_format = false;
 	Globals.debug_pid = false;
 	Globals.debug_uid = false;
 	Globals.debug_class = false;

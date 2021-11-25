@@ -24,7 +24,7 @@
 #ifndef _RPC_PIPES_H_
 #define _RPC_PIPES_H_
 
-#include "source3/librpc/rpc/dcerpc.h"
+#include "librpc/rpc/dcerpc.h"
 
 struct dcesrv_ep_entry_list;
 struct tsocket_address;
@@ -66,6 +66,16 @@ struct pipes_struct {
 
 	/* handle database to use on this pipe. */
 	struct dcesrv_call_state *dce_call;
+
+	/* call id retrieved from the pdu header */
+	uint32_t call_id;
+
+	/* operation number retrieved from the rpc header */
+	uint16_t opnum;
+
+	/* private data for the interface implementation */
+	void *private_data;
+
 };
 
 int make_base_pipes_struct(TALLOC_CTX *mem_ctx,
@@ -92,6 +102,7 @@ void *_find_policy_by_hnd(struct pipes_struct *p,
 	(_type *)_find_policy_by_hnd((_p), (_hnd), (_hnd_type), (_pstatus));
 
 bool close_policy_hnd(struct pipes_struct *p, struct policy_handle *hnd);
+void close_policy_by_pipe(struct pipes_struct *p);
 bool pipe_access_check(struct pipes_struct *p);
 
 #endif /* _RPC_PIPES_H_ */

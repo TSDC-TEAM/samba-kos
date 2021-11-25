@@ -1561,7 +1561,7 @@ NTSTATUS wb_open_internal_pipe(TALLOC_CTX *mem_ctx,
 			       struct rpc_pipe_client **ret_pipe)
 {
 	struct rpc_pipe_client *cli = NULL;
-	const struct auth_session_info *session_info = NULL;
+	const struct auth_session_info *session_info;
 	NTSTATUS status = NT_STATUS_UNSUCCESSFUL;
 
 

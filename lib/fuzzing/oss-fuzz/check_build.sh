@@ -25,7 +25,8 @@ do
     # Confirm that the chrpath was reset to lib/ in the same directory
     # as the binary.  RPATH (not RUNPATH) is critical, otherwise
     # libraries used by libraries won't be found on the oss-fuzz
-    # target host.
+    # target host, but is only possible with clang or ld.bfd on Ubuntu
+    # 16.04 (this script is only run on that).
     chrpath -l $bin | grep 'RPATH=$ORIGIN/lib'
 
     # Confirm that we link to at least some libraries in this
