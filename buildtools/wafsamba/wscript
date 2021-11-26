@@ -314,12 +314,14 @@ def configure(conf):
     conf.CHECK_UNAME()
 
     # see if we can compile and run a simple C program
-    conf.CHECK_CODE('printf("hello world")',
-                    define='HAVE_SIMPLE_C_PROG',
-                    mandatory=True,
-                    execute=True,
-                    headers='stdio.h',
-                    msg='Checking simple C program')
+    # KOS: This check has been disabled coz kos-gcc can't
+    # build runnable execs
+    # conf.CHECK_CODE('printf("hello world")',
+    #                 define='HAVE_SIMPLE_C_PROG',
+    #                 mandatory=True,
+    #                 execute=True,
+    #                 headers='stdio.h',
+    #                 msg='Checking simple C program')
 
     # Try to find the right extra flags for -Werror behaviour
     for f in ["-Werror",       # GCC

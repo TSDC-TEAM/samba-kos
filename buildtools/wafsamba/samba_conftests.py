@@ -83,6 +83,9 @@ def CHECK_ICONV(conf, define='HAVE_NATIVE_ICONV'):
 
 @conf
 def CHECK_LARGEFILE(conf, define='HAVE_LARGEFILE'):
+    # KOS: @todo: tmp
+    return True
+
     '''see what we need for largefile support'''
     getconf_cflags = conf.CHECK_COMMAND(['getconf', 'LFS_CFLAGS']);
     if getconf_cflags is not False:
