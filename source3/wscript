@@ -1036,29 +1036,31 @@ syscall(SYS_setgroups32, 0, NULL);
                                 addmain=False,
                                 execute=True,
                                 msg="Checking whether setresuid is available")
-    if not seteuid:
-        seteuid = conf.CHECK_CODE('''
-                                #define AUTOCONF_TEST 1
-                                #define USE_SETEUID 1
-                                #include "../lib/util/setid.c"
-                                #include "./lib/util_sec.c"
-                                ''',
-                                'USE_SETEUID',
-                                addmain=False,
-                                execute=True,
-                                msg="Checking whether seteuid is available")
-    if not seteuid:
-        seteuid = conf.CHECK_CODE('''
-                                #define AUTOCONF_TEST 1
-                                #define USE_SETUIDX 1
-                                #include "../lib/util/setid.c"
-                                #include "./lib/util_sec.c"
-                                ''',
-                                'USE_SETUIDX',
-                                addmain=False,
-                                execute=True,
-                                mandatory=True,
-                                msg="Checking whether setuidx is available")
+
+    # KOS: @todo: tmp
+    # if not seteuid:
+    #     seteuid = conf.CHECK_CODE('''
+    #                             #define AUTOCONF_TEST 1
+    #                             #define USE_SETEUID 1
+    #                             #include "../lib/util/setid.c"
+    #                             #include "./lib/util_sec.c"
+    #                             ''',
+    #                             'USE_SETEUID',
+    #                             addmain=False,
+    #                             execute=True,
+    #                             msg="Checking whether seteuid is available")
+    # if not seteuid:
+    #     seteuid = conf.CHECK_CODE('''
+    #                             #define AUTOCONF_TEST 1
+    #                             #define USE_SETUIDX 1
+    #                             #include "../lib/util/setid.c"
+    #                             #include "./lib/util_sec.c"
+    #                             ''',
+    #                             'USE_SETUIDX',
+    #                             addmain=False,
+    #                             execute=True,
+    #                             mandatory=True,
+    #                             msg="Checking whether setuidx is available")
     # valgrind.h or valgrind/valgrind.h is checked in lib/replace/wscript
     if Options.options.developer:
         if conf.CONFIG_SET('HAVE_VALGRIND_H') or conf.CONFIG_SET('HAVE_VALGRIND_VALGRIND_H'):
