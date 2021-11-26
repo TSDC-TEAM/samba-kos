@@ -19,4 +19,4 @@ export RANLIB=${CROSS_PATH}-ranlib
 
 export LDFLAGS="-L${SDK_PREFIX}/sysroot-x86_64-pc-kos/lib/"
 
-./configure --without-ad-dc --without-ldap --disable-python --with-static-modules='ALL,!vfs_snapper' --without-systemd --without-json --without-libarchive --without-acl-support --without-ads --without-pam --enable-debug
+./configure --without-ad-dc --without-ldap --disable-python --with-static-modules='!vfs_snapper,ALL' --without-systemd --without-json --without-libarchive --without-acl-support --without-ads --without-pam --enable-debug
