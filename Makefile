@@ -115,6 +115,9 @@ bin/winbindd: FORCE
 bin/nmbd: FORCE
 	$(WAF) --targets=nmbd/nmbd
 
+bin/smbclient-v: FORCE
+	$(WAF) -vvv --targets=client/smbclient
+
 bin/smbclient: FORCE
 	$(WAF) --targets=client/smbclient
 
