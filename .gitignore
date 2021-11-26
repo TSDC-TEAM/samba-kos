@@ -86,3 +86,6 @@ python/samba/provision/kerberos_implementation.py
 # YouCompleteMe
 compile_commands.json
 .clangd/
+
+# Clion
+/.idea/**
