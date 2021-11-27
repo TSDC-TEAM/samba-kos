@@ -89,3 +89,4 @@ compile_commands.json
 
 # Clion
 /.idea/**
+/cmake-build-*/**
