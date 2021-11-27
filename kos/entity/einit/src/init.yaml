@@ -1,0 +1,6 @@
+entities:
+
+- name: env.Env
+
+# Below entities are included automatically by INIT_EXTERNAL_ENTITIES
+@INIT_EXTERNAL_ENTITIES@
