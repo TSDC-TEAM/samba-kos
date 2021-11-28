@@ -16,4 +16,5 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(PRODUCT_RESOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resources)
 set(PRODUCT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/entity)
 
+add_subdirectory(libs)
 add_subdirectory(entity)
