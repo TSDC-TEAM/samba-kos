@@ -31,7 +31,7 @@ target_include_directories(
         ${SMB_SRC_ROOT}/source4
         ${SMB_SRC_ROOT}/lib
         ${SMB_SRC_ROOT}/source4/lib
-        ${SMB_SRC_ROOT}/source4/include'
+        ${SMB_SRC_ROOT}/source4/include
         ${SMB_SRC_ROOT}/include
         ${SMB_SRC_ROOT}/bin/default/include
         ${SMB_SRC_ROOT}
