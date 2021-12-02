@@ -71,11 +71,11 @@ set_source_files_properties(${SMB_SRC_ROOT}/lib/talloc/talloc.c
         )
 set_source_files_properties(${SMB_SRC_ROOT}/lib/util/time_basic.c
         PROPERTIES
-        COMPILE_DEFINITIONS "STATIC_time_basic_MODULES=NULL' \"STATIC_time_basic_MODULES_PROTO=extern void __time_basic_dummy_module_proto(void)\""
+        COMPILE_DEFINITIONS "STATIC_time_basic_MODULES=NULL \"STATIC_time_basic_MODULES_PROTO=extern void __time_basic_dummy_module_proto(void)\""
         )
 set_source_files_properties(${SMB_SRC_ROOT}/lib/util/blocking.c
         PROPERTIES
-        COMPILE_DEFINITIONS "STATIC_socket_blocking_MODULES=NULL' \"STATIC_socket_blocking_MODULES_PROTO=extern void __socket_blocking_dummy_module_proto(void)\""
+        COMPILE_DEFINITIONS "STATIC_socket_blocking_MODULES=NULL \"STATIC_socket_blocking_MODULES_PROTO=extern void __socket_blocking_dummy_module_proto(void)\""
         )
 set_source_files_properties(${SMB_SRC_ROOT}/lib/util/iov_buf.c
         PROPERTIES
