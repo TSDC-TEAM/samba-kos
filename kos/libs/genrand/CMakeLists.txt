@@ -51,14 +51,4 @@ target_compile_options(
         -fPIC
         -fstack-protector-strong
         -fstack-clash-protection
-        -Wno-error=discarded-qualifiers
-        -Wno-error=cast-qual
-        -Wno-error=missing-field-initializers
-        -Wno-error=shadow
-        -Wno-error=implicit-fallthrough
-        -Wno-error=enum-compare
-        -Wno-error=unused-but-set-variable
-        -Wno-error=unused-const-variable
-        -Wno-error=unused-variable
-        -Wno-error=unused-result
 )
