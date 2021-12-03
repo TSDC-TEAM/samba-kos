@@ -1,8 +1,8 @@
 set(TARGET_NAME genrand)
 
 set(TARGET_SRC
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/emalloc.c
-        )
+        ${SMB_SRC_ROOT}/lib/util/genrand.c
+)
 
 add_library(
         ${TARGET_NAME}
