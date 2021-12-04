@@ -1,0 +1,154 @@
+set(TARGET_NAME samba-util)
+
+set(TARGET_SRC
+        ${SMB_SRC_ROOT}/lib/util/smb_strtox.c
+        ${SMB_SRC_ROOT}/dynconfig/dynconfig.c
+        ${SMB_SRC_ROOT}/lib/util/charset/iconv.c
+        ${SMB_SRC_ROOT}/lib/util/charset/weird.c
+        ${SMB_SRC_ROOT}/lib/util/charset/charset_macosxfs.c
+        ${SMB_SRC_ROOT}/lib/util/charset/util_unistr.c
+        ${SMB_SRC_ROOT}/lib/util/charset/pull_push.c
+        ${SMB_SRC_ROOT}/lib/util/charset/util_unistr_w.c
+        ${SMB_SRC_ROOT}/lib/util/charset/util_str.c
+        ${SMB_SRC_ROOT}/lib/util/charset/convert_string.c
+        ${SMB_SRC_ROOT}/lib/util/charset/codepoints.c
+        ${SMB_SRC_ROOT}/lib/util/tini.c
+        ${SMB_SRC_ROOT}/lib/util/tiniparser.c
+        ${SMB_SRC_ROOT}/lib/util/strv.c
+        ${SMB_SRC_ROOT}/lib/util/signal.c
+        ${SMB_SRC_ROOT}/lib/util/fault.c
+        ${SMB_SRC_ROOT}/lib/util/mkdir_p.c
+        ${SMB_SRC_ROOT}/lib/util/become_daemon.c
+        ${SMB_SRC_ROOT}/lib/util/pidfile.c
+        ${SMB_SRC_ROOT}/lib/util/bitmap.c
+        ${SMB_SRC_ROOT}/lib/util/select.c
+        ${SMB_SRC_ROOT}/lib/util/strv_util.c
+        ${SMB_SRC_ROOT}/lib/util/util_strlist.c
+        ${SMB_SRC_ROOT}/lib/util/util_file.c
+        ${SMB_SRC_ROOT}/lib/util/util_process.c
+        ${SMB_SRC_ROOT}/lib/util/substitute.c
+        ${SMB_SRC_ROOT}/lib/util/time.c
+        ${SMB_SRC_ROOT}/lib/util/idtree.c
+        ${SMB_SRC_ROOT}/lib/util/util.c
+        ${SMB_SRC_ROOT}/lib/util/sys_popen.c
+        ${SMB_SRC_ROOT}/lib/util/data_blob.c
+        ${SMB_SRC_ROOT}/lib/util/util_id.c
+        ${SMB_SRC_ROOT}/lib/util/unix_match.c
+        ${SMB_SRC_ROOT}/lib/util/tevent_debug.c
+        ${SMB_SRC_ROOT}/lib/util/tftw.c
+        ${SMB_SRC_ROOT}/lib/util/tfork.c
+        ${SMB_SRC_ROOT}/lib/util/talloc_stack.c
+        ${SMB_SRC_ROOT}/lib/util/talloc_keep_secret.c
+        ${SMB_SRC_ROOT}/lib/util/system.c
+        ${SMB_SRC_ROOT}/lib/util/smb_threads.c
+        ${SMB_SRC_ROOT}/lib/util/server_id.c
+        ${SMB_SRC_ROOT}/lib/util/rfc1738.c
+        ${SMB_SRC_ROOT}/lib/util/rbtree.c
+        ${SMB_SRC_ROOT}/lib/util/params.c
+        ${SMB_SRC_ROOT}/lib/util/ms_fnmatch.c
+        ${SMB_SRC_ROOT}/lib/util/memcache.c
+        ${SMB_SRC_ROOT}/lib/util/idtree_random.c
+        ${SMB_SRC_ROOT}/lib/util/getpass.c
+        ${SMB_SRC_ROOT}/lib/util/genrand_util.c
+        ${SMB_SRC_ROOT}/lib/util/fsusage.c
+        ${SMB_SRC_ROOT}/lib/util/dprintf.c
+        ${SMB_SRC_ROOT}/lib/util/base64.c
+        ${SMB_SRC_ROOT}/lib/util/util_net.c
+        ${SMB_SRC_ROOT}/lib/util/util_paths.c
+        ${SMB_SRC_ROOT}/lib/util/util_str_common.c
+        ${SMB_SRC_ROOT}/lib/util/util_strlist_v3.c
+        ${SMB_SRC_ROOT}/lib/util/util_str.c
+        ${SMB_SRC_ROOT}/lib/util/util_str_hex.c
+        ${SMB_SRC_ROOT}/lib/crypto/md4.c
+)
+
+add_library(
+        ${TARGET_NAME}
+        STATIC
+        ${TARGET_SRC}
+)
+
+target_include_directories(
+        ${TARGET_NAME}
+        PRIVATE
+        ${SMB_SRC_ROOT}
+        ${SMB_SRC_ROOT}/lib
+        ${SMB_SRC_ROOT}/lib/replace
+        ${SMB_SRC_ROOT}/lib/talloc
+        ${SMB_SRC_ROOT}/lib/tevent
+        ${SMB_SRC_ROOT}/include
+        ${SMB_SRC_ROOT}/include/public
+        ${SMB_SRC_ROOT}/source4
+        ${SMB_SRC_ROOT}/source4/lib
+        ${SMB_SRC_ROOT}/source4/include
+        ${SMB_SRC_ROOT}/source4/heimdal_build
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken
+        ${SMB_SRC_ROOT}/source4/heimdal/include
+        ${SMB_SRC_ROOT}/third_party/gpfs
+        ${SMB_SRC_ROOT}/bin/default/include
+        ${SMB_SRC_ROOT}/bin/default
+)
+
+target_compile_definitions(
+        ${TARGET_NAME}
+        PRIVATE
+        _SAMBA_BUILD_=4
+        HAVE_CONFIG_H=1
+        _GNU_SOURCE=1
+        _XOPEN_SOURCE_EXTENDED=1
+        HAVE_CONFIG_H=1
+        __STDC_WANT_LIB_EXT1__=1
+        _REENTRANT
+        "SBINDIR=\"/home/user/kasperskyos/samba/bin\""
+        "BINDIR=\"/home/user/kasperskyos/samba/bin\""
+        "LIBDIR=\"/usr/local/samba/lib\""
+        "LIBEXECDIR=\"/home/user/kasperskyos/samba/bin\""
+        "SAMBA_LIBEXECDIR=\"/home/user/kasperskyos/samba/bin\""
+        "DATADIR=\"/usr/local/samba/share\""
+        "SAMBA_DATADIR=\"/usr/local/samba/share/samba\""
+        "LOCALEDIR=\"/usr/local/samba/share/locale\""
+        "PYTHONDIR=\"/home/user/kasperskyos/samba/bin/python\""
+        "PYTHONARCHDIR=\"/home/user/kasperskyos/samba/bin/python\""
+        "PERL_LIB_INSTALL_DIR=\"/usr/local/samba/share/perl5\""
+        "PERL_ARCH_INSTALL_DIR=\"/usr/local/samba/lib/perl5\""
+        "INCLUDEDIR=\"/usr/local/samba/include\""
+        "SCRIPTSBINDIR=\"/home/user/kasperskyos/samba/source4/scripting/bin\""
+        "SETUPDIR=\"/home/user/kasperskyos/samba/source4/setup\""
+        "PKGCONFIGDIR=\"/usr/local/samba/lib/pkgconfig\""
+        "CODEPAGEDIR=\"/home/user/kasperskyos/samba/codepages\""
+        "PRIVATELIBDIR=\"/usr/local/samba/lib/private\""
+        "MODULESDIR=\"/home/user/kasperskyos/samba/bin/modules\""
+        "PAMMODULESDIR=\"/usr/local/samba/lib/security\""
+        "CONFIGDIR=\"/usr/local/samba/etc\""
+        "PRIVATE_DIR=\"/usr/local/samba/private\""
+        "BINDDNS_DIR=\"/usr/local/samba/bind-dns\""
+        "LOCKDIR=\"/usr/local/samba/var/lock\""
+        "PIDDIR=\"/usr/local/samba/var/run\""
+        "STATEDIR=\"/usr/local/samba/var/locks\""
+        "CACHEDIR=\"/usr/local/samba/var/cache\""
+        "LOGFILEBASE=\"/usr/local/samba/var\""
+        "SOCKET_DIR=\"/usr/local/samba/var/run\""
+        "PRIVILEGED_SOCKET_DIR=\"/usr/local/samba/var/lib\""
+        "WINBINDD_SOCKET_DIR=\"/usr/local/samba/var/run/winbindd\""
+        "NMBDSOCKETDIR=\"/usr/local/samba/var/run/nmbd\""
+        "NTP_SIGND_SOCKET_DIR=\"/usr/local/samba/var/lib/ntp_signd\""
+        "NCALRPCDIR=\"/usr/local/samba/var/run/ncalrpc\""
+        "CONFIGFILE=\"/usr/local/samba/etc/smb.conf\""
+        "LMHOSTSFILE=\"/usr/local/samba/etc/lmhosts\""
+        "SMB_PASSWD_FILE=\"/usr/local/samba/private/smbpasswd\""
+)
+
+set(DYNCONFIG_DEFS
+
+)
+
+#-D', '-DSBINDIR="/home/user/kasperskyos/samba/bin"', '-DLIBDIR="/usr/local/samba/lib"', '-DLIBEXECDIR="/home/user/kasperskyos/samba/bin"', '-DSAMBA_LIBEXECDIR="/home/user/kasperskyos/samba/bin"', '-DDATADIR="/usr/local/samba/share"', '-DSAMBA_DATADIR="/usr/local/samba/share/samba"', '-DLOCALEDIR="/usr/local/samba/share/locale"', '-DPYTHONDIR="/home/user/kasperskyos/samba/bin/python"', '-DPYTHONARCHDIR="/home/user/kasperskyos/samba/bin/python"', '-DPERL_LIB_INSTALL_DIR="/usr/local/samba/share/perl5"', '-DPERL_ARCH_INSTALL_DIR="/usr/local/samba/lib/perl5"', '-DINCLUDEDIR="/usr/local/samba/include"', '-DSCRIPTSBINDIR="/home/user/kasperskyos/samba/source4/scripting/bin"', '-DSETUPDIR="/home/user/kasperskyos/samba/source4/setup"', '-DPKGCONFIGDIR="/usr/local/samba/lib/pkgconfig"', '-DCODEPAGEDIR="/home/user/kasperskyos/samba/codepages"', '-DPRIVATELIBDIR="/usr/local/samba/lib/private"', '-DMODULESDIR="/home/user/kasperskyos/samba/bin/modules"', '-DPAMMODULESDIR="/usr/local/samba/lib/security"', '-DCONFIGDIR="/usr/local/samba/etc"', '-DPRIVATE_DIR="/usr/local/samba/private"', '-DBINDDNS_DIR="/usr/local/samba/bind-dns"', '-DLOCKDIR="/usr/local/samba/var/lock"', '-DPIDDIR="/usr/local/samba/var/run"', '-DSTATEDIR="/usr/local/samba/var/locks"', '-DCACHEDIR="/usr/local/samba/var/cache"', '-DLOGFILEBASE="/usr/local/samba/var"', '-DSOCKET_DIR="/usr/local/samba/var/run"', '-DPRIVILEGED_SOCKET_DIR="/usr/local/samba/var/lib"', '-DWINBINDD_SOCKET_DIR="/usr/local/samba/var/run/winbindd"', '-DNMBDSOCKETDIR="/usr/local/samba/var/run/nmbd"', '-DNTP_SIGND_SOCKET_DIR="/usr/local/samba/var/lib/ntp_signd"', '-DNCALRPCDIR="/usr/local/samba/var/run/ncalrpc"', '-DCONFIGFILE="/usr/local/samba/etc/smb.conf"', '-DLMHOSTSFILE="/usr/local/samba/etc/lmhosts"', '-DSMB_PASSWD_FILE="/usr/local/samba/private/smbpasswd"',
+
+target_compile_options(
+        ${TARGET_NAME}
+        PRIVATE
+        -MMD
+        -fPIC
+        -fstack-protector-strong
+        -fstack-clash-protection
+)
