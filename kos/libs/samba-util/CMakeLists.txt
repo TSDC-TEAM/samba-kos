@@ -138,12 +138,6 @@ target_compile_definitions(
         "SMB_PASSWD_FILE=\"/usr/local/samba/private/smbpasswd\""
 )
 
-set(DYNCONFIG_DEFS
-
-)
-
-#-D', '-DSBINDIR="/home/user/kasperskyos/samba/bin"', '-DLIBDIR="/usr/local/samba/lib"', '-DLIBEXECDIR="/home/user/kasperskyos/samba/bin"', '-DSAMBA_LIBEXECDIR="/home/user/kasperskyos/samba/bin"', '-DDATADIR="/usr/local/samba/share"', '-DSAMBA_DATADIR="/usr/local/samba/share/samba"', '-DLOCALEDIR="/usr/local/samba/share/locale"', '-DPYTHONDIR="/home/user/kasperskyos/samba/bin/python"', '-DPYTHONARCHDIR="/home/user/kasperskyos/samba/bin/python"', '-DPERL_LIB_INSTALL_DIR="/usr/local/samba/share/perl5"', '-DPERL_ARCH_INSTALL_DIR="/usr/local/samba/lib/perl5"', '-DINCLUDEDIR="/usr/local/samba/include"', '-DSCRIPTSBINDIR="/home/user/kasperskyos/samba/source4/scripting/bin"', '-DSETUPDIR="/home/user/kasperskyos/samba/source4/setup"', '-DPKGCONFIGDIR="/usr/local/samba/lib/pkgconfig"', '-DCODEPAGEDIR="/home/user/kasperskyos/samba/codepages"', '-DPRIVATELIBDIR="/usr/local/samba/lib/private"', '-DMODULESDIR="/home/user/kasperskyos/samba/bin/modules"', '-DPAMMODULESDIR="/usr/local/samba/lib/security"', '-DCONFIGDIR="/usr/local/samba/etc"', '-DPRIVATE_DIR="/usr/local/samba/private"', '-DBINDDNS_DIR="/usr/local/samba/bind-dns"', '-DLOCKDIR="/usr/local/samba/var/lock"', '-DPIDDIR="/usr/local/samba/var/run"', '-DSTATEDIR="/usr/local/samba/var/locks"', '-DCACHEDIR="/usr/local/samba/var/cache"', '-DLOGFILEBASE="/usr/local/samba/var"', '-DSOCKET_DIR="/usr/local/samba/var/run"', '-DPRIVILEGED_SOCKET_DIR="/usr/local/samba/var/lib"', '-DWINBINDD_SOCKET_DIR="/usr/local/samba/var/run/winbindd"', '-DNMBDSOCKETDIR="/usr/local/samba/var/run/nmbd"', '-DNTP_SIGND_SOCKET_DIR="/usr/local/samba/var/lib/ntp_signd"', '-DNCALRPCDIR="/usr/local/samba/var/run/ncalrpc"', '-DCONFIGFILE="/usr/local/samba/etc/smb.conf"', '-DLMHOSTSFILE="/usr/local/samba/etc/lmhosts"', '-DSMB_PASSWD_FILE="/usr/local/samba/private/smbpasswd"',
-
 target_compile_options(
         ${TARGET_NAME}
         PRIVATE
