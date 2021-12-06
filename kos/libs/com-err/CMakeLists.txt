@@ -1,9 +1,7 @@
 set(TARGET_NAME com-err)
 
 set(TARGET_SRC
-        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_misc.c
-        ${SMB_SRC_ROOT}/librpc/ndr/util.c
-        ${SMB_SRC_ROOT}/librpc/ndr/ndr_string.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/com_err/com_err.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/com_err/error.c
 )
 
