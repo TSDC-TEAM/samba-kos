@@ -2,7 +2,9 @@ set(TARGET_NAME samba-debug)
 
 set(TARGET_SRC
         ${SMB_SRC_ROOT}/lib/util/debug.c
-        )
+        ${SMB_SRC_ROOT}/lib/util/gpfswrap.c
+        ${SMB_SRC_ROOT}/lib/util/close_low_fd.c
+)
 
 add_library(
         ${TARGET_NAME}
