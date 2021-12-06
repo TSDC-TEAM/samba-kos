@@ -32,6 +32,7 @@ set(TARGET_SRC
         ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/parse_time.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/issuid.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/net_read.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/emalloc.c
 )
 
 add_library(
