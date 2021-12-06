@@ -1,21 +1,21 @@
 set(TARGET_NAME tdb)
 
 set(TARGET_SRC
-        ${SMB_SRC_ROOT}/lib/tdb/common/rescue.c
-        ${SMB_SRC_ROOT}/lib/tdb/common/mutex.c
-        ${SMB_SRC_ROOT}/lib/tdb/common/hash.c
-        ${SMB_SRC_ROOT}/lib/tdb/common/summary.c
-        ${SMB_SRC_ROOT}/lib/tdb/common/open.c
-        ${SMB_SRC_ROOT}/lib/tdb/common/transaction.c
-        ${SMB_SRC_ROOT}/lib/tdb/common/io.c
-        ${SMB_SRC_ROOT}/lib/tdb/common/dump.c
-        ${SMB_SRC_ROOT}/lib/tdb/common/freelist.c
-        ${SMB_SRC_ROOT}/lib/tdb/common/freelistcheck.c
-        ${SMB_SRC_ROOT}/lib/tdb/common/lock.c
-        ${SMB_SRC_ROOT}/lib/tdb/common/traverse.c
+        ${SMB_SRC_ROOT}/lib/tdb/common/check.c
         ${SMB_SRC_ROOT}/lib/tdb/common/error.c
         ${SMB_SRC_ROOT}/lib/tdb/common/tdb.c
-        ${SMB_SRC_ROOT}/lib/tdb/common/check.c
+        ${SMB_SRC_ROOT}/lib/tdb/common/traverse.c
+        ${SMB_SRC_ROOT}/lib/tdb/common/freelistcheck.c
+        ${SMB_SRC_ROOT}/lib/tdb/common/lock.c
+        ${SMB_SRC_ROOT}/lib/tdb/common/dump.c
+        ${SMB_SRC_ROOT}/lib/tdb/common/freelist.c
+        ${SMB_SRC_ROOT}/lib/tdb/common/io.c
+        ${SMB_SRC_ROOT}/lib/tdb/common/open.c
+        ${SMB_SRC_ROOT}/lib/tdb/common/transaction.c
+        ${SMB_SRC_ROOT}/lib/tdb/common/hash.c
+        ${SMB_SRC_ROOT}/lib/tdb/common/summary.c
+        ${SMB_SRC_ROOT}/lib/tdb/common/rescue.c
+        ${SMB_SRC_ROOT}/lib/tdb/common/mutex.c
 )
 
 add_library(
