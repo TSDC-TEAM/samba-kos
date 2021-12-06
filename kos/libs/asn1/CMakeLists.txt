@@ -3,19 +3,19 @@ set(TARGET_NAME asn1)
 set(TARGET_SRC
         ${SMB_SRC_ROOT}/source4/heimdal/lib/asn1/der_get.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/asn1/der_put.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/asn1/der_length.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/asn1/der_format.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/asn1/der_free.c
-        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/asn1/asn1_err.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/asn1/der_format.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/asn1/der_length.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/asn1/der_copy.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/asn1/der_cmp.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/asn1/timegm.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/asn1/extra.c
-        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/asn1/asn1_rfc2459_asn1.c
-        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/asn1/asn1_krb5_asn1.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/asn1/timegm.c
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/asn1/asn1_err.c
         ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/asn1/asn1_pkinit_asn1.c
         ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/asn1/asn1_cms_asn1.c
         ${SMB_SRC_ROOT}/bin/default/source4/heimdal_build/asn1.objlist.empty.c
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/asn1/asn1_rfc2459_asn1.c
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/asn1/asn1_krb5_asn1.c
 )
 
 add_library(
