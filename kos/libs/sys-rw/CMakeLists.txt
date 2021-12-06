@@ -3,10 +3,6 @@ set(TARGET_NAME sys-rw)
 set(TARGET_SRC
         ${SMB_SRC_ROOT}/lib/util/sys_rw.c
         ${SMB_SRC_ROOT}/lib/util/sys_rw_data.c
-        ${SMB_SRC_ROOT}/lib/util/genrand.c
-        ${SMB_SRC_ROOT}/lib/util/setid.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/get_window_size.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/getdtablesize.c
 )
 
 add_library(
