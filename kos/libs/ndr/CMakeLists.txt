@@ -1,10 +1,13 @@
 set(TARGET_NAME ndr)
 
 set(TARGET_SRC
-        ${SMB_SRC_ROOT}/librpc/ndr/ndr_misc.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_string.c
         ${SMB_SRC_ROOT}/librpc/ndr/ndr_basic.c
-        ${SMB_SRC_ROOT}/librpc/ndr/ndr.c
         ${SMB_SRC_ROOT}/librpc/ndr/uuid.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_misc.c
+        ${SMB_SRC_ROOT}/librpc/ndr/util.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_misc.c
 )
 
 add_library(
