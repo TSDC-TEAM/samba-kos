@@ -1,14 +1,14 @@
 set(TARGET_NAME ndr-nbt)
 
 set(TARGET_SRC
-        ${SMB_SRC_ROOT}/librpc/ndr/ndr_dns_utils.c
-        ${SMB_SRC_ROOT}/librpc/ndr/ndr_dns.c
-        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_dns.c
-        ${SMB_SRC_ROOT}/librpc/ndr/ndr_dnsp.c
-        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_dnsp.c
-        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_nbt.c
-        ${SMB_SRC_ROOT}/librpc/ndr/ndr_nbt.c
         ${SMB_SRC_ROOT}/libcli/nbt/nbtname.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_nbt.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_dnsp.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_dns.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_dns_utils.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_nbt.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_dnsp.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_dns.c
 )
 
 add_library(
