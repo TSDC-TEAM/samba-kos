@@ -191,7 +191,7 @@ target_include_directories(
         ${SMB_SRC_ROOT}/third_party/gpfs
         ${SMB_SRC_ROOT}/bin/default
         ${SMB_SRC_ROOT}/bin/default/include
-        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/asn1/
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/asn1
 )
 
 target_compile_definitions(
