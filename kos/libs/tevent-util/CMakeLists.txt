@@ -3,10 +3,8 @@ set(TARGET_NAME tevent-util)
 set(TARGET_SRC
         ${SMB_SRC_ROOT}/lib/util/tevent_unix.c
         ${SMB_SRC_ROOT}/lib/util/tevent_ntstatus.c
-        ${SMB_SRC_ROOT}/lib/util/tevent_req_profile.c
         ${SMB_SRC_ROOT}/lib/util/tevent_werror.c
-        ${SMB_SRC_ROOT}/lib/util/util_tdb.c
-        ${SMB_SRC_ROOT}/lib/tdb_wrap/tdb_wrap.c
+        ${SMB_SRC_ROOT}/lib/util/tevent_req_profile.c
 )
 
 add_library(
