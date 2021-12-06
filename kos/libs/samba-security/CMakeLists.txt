@@ -1,22 +1,22 @@
 set(TARGET_NAME samba-security)
 
 set(TARGET_SRC
-        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_security.c
-        ${SMB_SRC_ROOT}/librpc/ndr/ndr_sec_helper.c
         ${SMB_SRC_ROOT}/libcli/security/dom_sid.c
-        ${SMB_SRC_ROOT}/libcli/security/privileges.c
-        ${SMB_SRC_ROOT}/libcli/security/secdesc.c
-        ${SMB_SRC_ROOT}/libcli/security/session.c
-        ${SMB_SRC_ROOT}/libcli/security/util_sid.c
-        ${SMB_SRC_ROOT}/libcli/security/create_descriptor.c
-        ${SMB_SRC_ROOT}/libcli/security/object_tree.c
-        ${SMB_SRC_ROOT}/libcli/security/access_check.c
-        ${SMB_SRC_ROOT}/libcli/security/security_token.c
-        ${SMB_SRC_ROOT}/libcli/security/sddl.c
-        ${SMB_SRC_ROOT}/libcli/security/security_descriptor.c
         ${SMB_SRC_ROOT}/libcli/security/display_sec.c
-        ${SMB_SRC_ROOT}/libcli/security/secacl.c
         ${SMB_SRC_ROOT}/libcli/security/secace.c
+        ${SMB_SRC_ROOT}/libcli/security/secacl.c
+        ${SMB_SRC_ROOT}/libcli/security/security_descriptor.c
+        ${SMB_SRC_ROOT}/libcli/security/sddl.c
+        ${SMB_SRC_ROOT}/libcli/security/privileges.c
+        ${SMB_SRC_ROOT}/libcli/security/security_token.c
+        ${SMB_SRC_ROOT}/libcli/security/access_check.c
+        ${SMB_SRC_ROOT}/libcli/security/object_tree.c
+        ${SMB_SRC_ROOT}/libcli/security/create_descriptor.c
+        ${SMB_SRC_ROOT}/libcli/security/util_sid.c
+        ${SMB_SRC_ROOT}/libcli/security/session.c
+        ${SMB_SRC_ROOT}/libcli/security/secdesc.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_sec_helper.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_security.c
 )
 
 add_library(
