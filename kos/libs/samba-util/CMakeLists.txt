@@ -1,65 +1,65 @@
 set(TARGET_NAME samba-util)
 
 set(TARGET_SRC
-        ${SMB_SRC_ROOT}/lib/util/smb_strtox.c
         ${SMB_SRC_ROOT}/dynconfig/dynconfig.c
+        ${SMB_SRC_ROOT}/lib/crypto/md4.c
+        ${SMB_SRC_ROOT}/lib/util/tiniparser.c
+        ${SMB_SRC_ROOT}/lib/util/fault.c
+        ${SMB_SRC_ROOT}/lib/util/signal.c
+        ${SMB_SRC_ROOT}/lib/util/charset/codepoints.c
+        ${SMB_SRC_ROOT}/lib/util/charset/convert_string.c
+        ${SMB_SRC_ROOT}/lib/util/charset/util_str.c
+        ${SMB_SRC_ROOT}/lib/util/charset/util_unistr_w.c
+        ${SMB_SRC_ROOT}/lib/util/charset/pull_push.c
+        ${SMB_SRC_ROOT}/lib/util/charset/util_unistr.c
+        ${SMB_SRC_ROOT}/lib/util/strv.c
+        ${SMB_SRC_ROOT}/lib/util/util_str_hex.c
         ${SMB_SRC_ROOT}/lib/util/charset/iconv.c
         ${SMB_SRC_ROOT}/lib/util/charset/weird.c
         ${SMB_SRC_ROOT}/lib/util/charset/charset_macosxfs.c
-        ${SMB_SRC_ROOT}/lib/util/charset/util_unistr.c
-        ${SMB_SRC_ROOT}/lib/util/charset/pull_push.c
-        ${SMB_SRC_ROOT}/lib/util/charset/util_unistr_w.c
-        ${SMB_SRC_ROOT}/lib/util/charset/util_str.c
-        ${SMB_SRC_ROOT}/lib/util/charset/convert_string.c
-        ${SMB_SRC_ROOT}/lib/util/charset/codepoints.c
-        ${SMB_SRC_ROOT}/lib/util/tini.c
-        ${SMB_SRC_ROOT}/lib/util/tiniparser.c
-        ${SMB_SRC_ROOT}/lib/util/strv.c
-        ${SMB_SRC_ROOT}/lib/util/signal.c
-        ${SMB_SRC_ROOT}/lib/util/fault.c
-        ${SMB_SRC_ROOT}/lib/util/mkdir_p.c
-        ${SMB_SRC_ROOT}/lib/util/become_daemon.c
-        ${SMB_SRC_ROOT}/lib/util/pidfile.c
+        ${SMB_SRC_ROOT}/lib/util/data_blob.c
+        ${SMB_SRC_ROOT}/lib/util/util_file.c
+        ${SMB_SRC_ROOT}/lib/util/sys_popen.c
+        ${SMB_SRC_ROOT}/lib/util/time.c
+        ${SMB_SRC_ROOT}/lib/util/util.c
+        ${SMB_SRC_ROOT}/lib/util/idtree.c
+        ${SMB_SRC_ROOT}/lib/util/substitute.c
+        ${SMB_SRC_ROOT}/lib/util/util_process.c
+        ${SMB_SRC_ROOT}/lib/util/util_strlist.c
+        ${SMB_SRC_ROOT}/lib/util/strv_util.c
         ${SMB_SRC_ROOT}/lib/util/bitmap.c
         ${SMB_SRC_ROOT}/lib/util/select.c
-        ${SMB_SRC_ROOT}/lib/util/strv_util.c
-        ${SMB_SRC_ROOT}/lib/util/util_strlist.c
-        ${SMB_SRC_ROOT}/lib/util/util_file.c
-        ${SMB_SRC_ROOT}/lib/util/util_process.c
-        ${SMB_SRC_ROOT}/lib/util/substitute.c
-        ${SMB_SRC_ROOT}/lib/util/time.c
-        ${SMB_SRC_ROOT}/lib/util/idtree.c
-        ${SMB_SRC_ROOT}/lib/util/util.c
-        ${SMB_SRC_ROOT}/lib/util/sys_popen.c
-        ${SMB_SRC_ROOT}/lib/util/data_blob.c
-        ${SMB_SRC_ROOT}/lib/util/util_id.c
-        ${SMB_SRC_ROOT}/lib/util/unix_match.c
-        ${SMB_SRC_ROOT}/lib/util/tevent_debug.c
-        ${SMB_SRC_ROOT}/lib/util/tftw.c
-        ${SMB_SRC_ROOT}/lib/util/tfork.c
-        ${SMB_SRC_ROOT}/lib/util/talloc_stack.c
-        ${SMB_SRC_ROOT}/lib/util/talloc_keep_secret.c
-        ${SMB_SRC_ROOT}/lib/util/system.c
-        ${SMB_SRC_ROOT}/lib/util/smb_threads.c
-        ${SMB_SRC_ROOT}/lib/util/server_id.c
-        ${SMB_SRC_ROOT}/lib/util/rfc1738.c
-        ${SMB_SRC_ROOT}/lib/util/rbtree.c
-        ${SMB_SRC_ROOT}/lib/util/params.c
-        ${SMB_SRC_ROOT}/lib/util/ms_fnmatch.c
-        ${SMB_SRC_ROOT}/lib/util/memcache.c
-        ${SMB_SRC_ROOT}/lib/util/idtree_random.c
-        ${SMB_SRC_ROOT}/lib/util/getpass.c
-        ${SMB_SRC_ROOT}/lib/util/genrand_util.c
-        ${SMB_SRC_ROOT}/lib/util/fsusage.c
-        ${SMB_SRC_ROOT}/lib/util/dprintf.c
+        ${SMB_SRC_ROOT}/lib/util/pidfile.c
+        ${SMB_SRC_ROOT}/lib/util/become_daemon.c
+        ${SMB_SRC_ROOT}/lib/util/mkdir_p.c
+        ${SMB_SRC_ROOT}/lib/util/smb_strtox.c
+        ${SMB_SRC_ROOT}/lib/util/tini.c
         ${SMB_SRC_ROOT}/lib/util/base64.c
+        ${SMB_SRC_ROOT}/lib/util/dprintf.c
+        ${SMB_SRC_ROOT}/lib/util/fsusage.c
+        ${SMB_SRC_ROOT}/lib/util/genrand_util.c
+        ${SMB_SRC_ROOT}/lib/util/getpass.c
+        ${SMB_SRC_ROOT}/lib/util/idtree_random.c
+        ${SMB_SRC_ROOT}/lib/util/memcache.c
+        ${SMB_SRC_ROOT}/lib/util/ms_fnmatch.c
+        ${SMB_SRC_ROOT}/lib/util/params.c
+        ${SMB_SRC_ROOT}/lib/util/rbtree.c
+        ${SMB_SRC_ROOT}/lib/util/rfc1738.c
+        ${SMB_SRC_ROOT}/lib/util/server_id.c
+        ${SMB_SRC_ROOT}/lib/util/smb_threads.c
+        ${SMB_SRC_ROOT}/lib/util/system.c
+        ${SMB_SRC_ROOT}/lib/util/talloc_keep_secret.c
+        ${SMB_SRC_ROOT}/lib/util/talloc_stack.c
+        ${SMB_SRC_ROOT}/lib/util/tevent_debug.c
+        ${SMB_SRC_ROOT}/lib/util/tfork.c
+        ${SMB_SRC_ROOT}/lib/util/tftw.c
+        ${SMB_SRC_ROOT}/lib/util/unix_match.c
+        ${SMB_SRC_ROOT}/lib/util/util_id.c
         ${SMB_SRC_ROOT}/lib/util/util_net.c
         ${SMB_SRC_ROOT}/lib/util/util_paths.c
+        ${SMB_SRC_ROOT}/lib/util/util_str.c
         ${SMB_SRC_ROOT}/lib/util/util_str_common.c
         ${SMB_SRC_ROOT}/lib/util/util_strlist_v3.c
-        ${SMB_SRC_ROOT}/lib/util/util_str.c
-        ${SMB_SRC_ROOT}/lib/util/util_str_hex.c
-        ${SMB_SRC_ROOT}/lib/crypto/md4.c
 )
 
 add_library(
