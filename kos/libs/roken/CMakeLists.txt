@@ -1,38 +1,40 @@
 set(TARGET_NAME roken)
 
 set(TARGET_SRC
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/hex.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/dumpdata.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/bswap.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/ct.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/base64.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/socket.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/resolve.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/xfree.c
-        ${SMB_SRC_ROOT}/source4/heimdal_build/replace.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/rand.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/cloexec.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/roken_gethostby.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/h_errno.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/vis.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/erealloc.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/simple_exec.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/strcollect.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/ct.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/hex.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/bswap.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/dumpdata.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/emalloc.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/ecalloc.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/strpool.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/estrdup.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/getarg.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/get_window_size.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/getdtablesize.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/h_errno.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/issuid.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/net_read.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/net_write.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/parse_time.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/parse_units.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/vis.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/strlwr.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/strsep_copy.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/strsep.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/strupr.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/getarg.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/strpool.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/estrdup.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/erealloc.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/simple_exec.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/strcollect.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/rtbl.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/strlwr.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/parse_units.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/net_write.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/parse_time.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/issuid.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/net_read.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/emalloc.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/rand.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/cloexec.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/xfree.c
+        ${SMB_SRC_ROOT}/source4/heimdal_build/replace.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/resolve.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/socket.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken/roken_gethostby.c
 )
 
 add_library(
