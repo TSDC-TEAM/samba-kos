@@ -1,20 +1,20 @@
 set(TARGET_NAME wind)
 
 set(TARGET_SRC
-        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/wind/map_table.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/wind/map.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/wind/ldap.c
-        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/wind/bidi_table.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/wind/bidi.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/wind/utf8.c
-        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/wind/combining_table.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/wind/combining.c
-        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/wind/normalize_table.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/wind/normalize.c
-        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/wind/errorlist_table.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/wind/errorlist.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/wind/stringprep.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/wind/errorlist.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/wind/normalize.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/wind/combining.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/wind/utf8.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/wind/bidi.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/wind/ldap.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/wind/map.c
         ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/wind/wind_err.c
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/wind/errorlist_table.c
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/wind/normalize_table.c
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/wind/combining_table.c
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/wind/bidi_table.c
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/wind/map_table.c
 )
 
 add_library(
