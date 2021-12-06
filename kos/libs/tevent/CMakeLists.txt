@@ -1,22 +1,22 @@
 set(TARGET_NAME tevent)
 
 set(TARGET_SRC
-        ${SMB_SRC_ROOT}/lib/tevent/tevent_threads.c
-        ${SMB_SRC_ROOT}/lib/tevent/tevent_signal.c
-        ${SMB_SRC_ROOT}/lib/tevent/tevent_epoll.c
-        ${SMB_SRC_ROOT}/lib/tevent/tevent_standard.c
-        ${SMB_SRC_ROOT}/lib/tevent/tevent_timed.c
-        ${SMB_SRC_ROOT}/lib/tevent/tevent_wakeup.c
-        ${SMB_SRC_ROOT}/lib/tevent/tevent_util.c
         ${SMB_SRC_ROOT}/lib/tevent/tevent.c
-        ${SMB_SRC_ROOT}/lib/tevent/tevent_queue.c
-        ${SMB_SRC_ROOT}/lib/tevent/tevent_wrapper.c
-        ${SMB_SRC_ROOT}/lib/tevent/tevent_poll.c
-        ${SMB_SRC_ROOT}/lib/tevent/tevent_req.c
-        ${SMB_SRC_ROOT}/lib/tevent/tevent_immediate.c
         ${SMB_SRC_ROOT}/lib/tevent/tevent_debug.c
         ${SMB_SRC_ROOT}/lib/tevent/tevent_fd.c
-        )
+        ${SMB_SRC_ROOT}/lib/tevent/tevent_immediate.c
+        ${SMB_SRC_ROOT}/lib/tevent/tevent_queue.c
+        ${SMB_SRC_ROOT}/lib/tevent/tevent_req.c
+        ${SMB_SRC_ROOT}/lib/tevent/tevent_wrapper.c
+        ${SMB_SRC_ROOT}/lib/tevent/tevent_poll.c
+        ${SMB_SRC_ROOT}/lib/tevent/tevent_threads.c
+        ${SMB_SRC_ROOT}/lib/tevent/tevent_signal.c
+        ${SMB_SRC_ROOT}/lib/tevent/tevent_standard.c
+        ${SMB_SRC_ROOT}/lib/tevent/tevent_timed.c
+        ${SMB_SRC_ROOT}/lib/tevent/tevent_util.c
+        ${SMB_SRC_ROOT}/lib/tevent/tevent_wakeup.c
+        ${SMB_SRC_ROOT}/lib/tevent/tevent_epoll.c
+)
 
 add_library(
         ${TARGET_NAME}
