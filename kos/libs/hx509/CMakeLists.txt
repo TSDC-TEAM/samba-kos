@@ -1,37 +1,37 @@
 set(TARGET_NAME hx509)
 
 set(TARGET_SRC
-        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/hx509/asn1_ocsp_asn1.c
-        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/asn1/asn1_pkcs8_asn1.c
-        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/asn1/asn1_pkcs9_asn1.c
         ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/asn1/asn1_pkcs12_asn1.c
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/asn1/asn1_pkcs9_asn1.c
         ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/hx509/asn1_pkcs10_asn1.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/ks_p11.c
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/asn1/asn1_pkcs8_asn1.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/ca.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/ks_null.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/ks_keychain.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/ks_mem.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/lock.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/ks_file.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/cert.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/cms.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/collector.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/crypto.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/error.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/env.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/file.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/keyset.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/ks_dir.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/file.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/env.c
-        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/hx509/sel-gram.tab.c
-        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/hx509/sel-lex.lex.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/error.c
-        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/hx509/hx509_err.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/crypto.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/sel.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/revoke.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/collector.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/req.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/cms.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/print.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/peer.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/cert.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/name.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/ks_file.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/ks_keychain.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/ks_mem.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/ks_null.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/ks_p11.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/ks_p12.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/lock.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/name.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/peer.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/print.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/req.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/revoke.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509/sel.c
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/hx509/hx509_err.c
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/hx509/sel-lex.lex.c
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/hx509/sel-gram.tab.c
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/hx509/asn1_ocsp_asn1.c
 )
 
 add_library(
