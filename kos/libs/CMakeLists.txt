@@ -35,3 +35,5 @@ add_subdirectory(interfaces)
 add_subdirectory(events)
 add_subdirectory(ndr-samba)
 add_subdirectory(ldb)
+add_subdirectory(krb5samba)
+
