@@ -40,4 +40,5 @@ add_subdirectory(messages-dgm)
 add_subdirectory(server-id-db)
 add_subdirectory(messages-util)
 add_subdirectory(cluster)
+add_subdirectory(samba-sockets)
 
