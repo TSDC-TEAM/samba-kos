@@ -39,4 +39,5 @@ add_subdirectory(krb5samba)
 add_subdirectory(messages-dgm)
 add_subdirectory(server-id-db)
 add_subdirectory(messages-util)
+add_subdirectory(cluster)
 
