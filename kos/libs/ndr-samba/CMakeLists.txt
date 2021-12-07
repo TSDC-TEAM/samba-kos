@@ -1,0 +1,110 @@
+set(TARGET_NAME ndr-samba)
+
+set(TARGET_SRC
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_schannel.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_schannel.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_epmapper.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_compression.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_named_pipe_auth.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_smb2_lease_struct.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_orpc.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_orpc.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/ndr-samba.empty.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_mdssvc.c
+        ${SMB_SRC_ROOT}/bin/default/source3/librpc/gen_ndr/ndr_smbXsrv.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_drsuapi.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_drsuapi.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_witness.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_witness.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_idmap.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_fsrvp.c
+        ${SMB_SRC_ROOT}/bin/default/source3/librpc/gen_ndr/ndr_open_files.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_unixinfo.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_xattr.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_xattr.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_krb5ccache.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_ntlmssp.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_ntlmssp.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_dnsserver.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_dnsserver.c
+        ${SMB_SRC_ROOT}/lib/compression/lzxpress.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_drsblobs.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_drsblobs.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_auth.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_auth.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_ntprinting.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_ntprinting.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_mgmt.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_dcom.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_negoex.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_negoex.c
+)
+
+add_library(
+        ${TARGET_NAME}
+        STATIC
+        ${TARGET_SRC}
+)
+
+target_include_directories(
+        ${TARGET_NAME}
+        PRIVATE
+        ${SMB_SRC_ROOT}
+        ${SMB_SRC_ROOT}/lib
+        ${SMB_SRC_ROOT}/lib/replace
+        ${SMB_SRC_ROOT}/lib/talloc
+        ${SMB_SRC_ROOT}/lib/tevent
+        ${SMB_SRC_ROOT}/lib/tdb/include
+        ${SMB_SRC_ROOT}/include
+        ${SMB_SRC_ROOT}/include/public
+        ${SMB_SRC_ROOT}/source4
+        ${SMB_SRC_ROOT}/source4/lib
+        ${SMB_SRC_ROOT}/source4/include
+        ${SMB_SRC_ROOT}/source4/heimdal_build
+        ${SMB_SRC_ROOT}/source4/heimdal_build/include
+        ${SMB_SRC_ROOT}/source4/heimdal/lib
+        ${SMB_SRC_ROOT}/source4/heimdal/base
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/krb5
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/com_err
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/asn1
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/wind
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/gssapi
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/mech
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hcrypto
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hcrypto/libtommath
+        ${SMB_SRC_ROOT}/source4/heimdal/include
+        ${SMB_SRC_ROOT}/third_party/gpfs
+        ${SMB_SRC_ROOT}/bin/default
+        ${SMB_SRC_ROOT}/bin/default/include
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/asn1
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/wind
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/hx509
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/krb5
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/gssapi
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/gssapi/spnego
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/gssapi/krb5
+)
+
+target_compile_definitions(
+        ${TARGET_NAME}
+        PRIVATE
+        _SAMBA_BUILD_=4
+        HAVE_CONFIG_H=1
+        _GNU_SOURCE=1
+        _XOPEN_SOURCE_EXTENDED=1
+        HAVE_CONFIG_H=1
+        __STDC_WANT_LIB_EXT1__=1
+        _REENTRANT
+)
+
+target_compile_options(
+        ${TARGET_NAME}
+        PRIVATE
+        -MMD
+        -fPIC
+        -fstack-protector-strong
+        -fstack-clash-protection
+)
