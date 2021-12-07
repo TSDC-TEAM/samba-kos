@@ -37,4 +37,5 @@ add_subdirectory(ndr-samba)
 add_subdirectory(ldb)
 add_subdirectory(krb5samba)
 add_subdirectory(messages-dgm)
+add_subdirectory(server-id-db)
 
