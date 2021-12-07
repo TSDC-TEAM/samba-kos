@@ -1,7 +1,29 @@
-set(TARGET_NAME server-role)
+set(TARGET_NAME ndr-standard)
 
 set(TARGET_SRC
-        ${SMB_SRC_ROOT}/lib/param/loadparm_server_role.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_eventlog6.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_spoolss.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_atsvc.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_samr.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_winreg.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_dfs.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_wkssvc.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_eventlog.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_ntsvcs.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_server_id.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_initshutdown.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_echo.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_dssetup.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_netlogon.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_notify.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_srvsvc.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_svcctl.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_file_id.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_lsa.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/ndr-standard.empty.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_spoolss_buf.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_svcctl.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_netlogon.c
 )
 
 add_library(
@@ -53,8 +75,6 @@ target_compile_definitions(
         HAVE_CONFIG_H=1
         __STDC_WANT_LIB_EXT1__=1
         _REENTRANT
-        STATIC_server_role_MODULES=NULL
-        "STATIC_server_role_MODULES_PROTO=extern void __server_role_dummy_module_proto(void)"
 )
 
 target_compile_options(
