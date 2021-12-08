@@ -1,0 +1,163 @@
+set(TARGET_NAME smbconf)
+
+set(TARGET_SRC
+        ${SMB_SRC_ROOT}/source3/param/loadparm.c
+        ${SMB_SRC_ROOT}/source3/lib/sharesec.c
+        ${SMB_SRC_ROOT}/source3/lib/ldap_debug_handler.c
+        ${SMB_SRC_ROOT}/source3/lib/util_names.c
+        ${SMB_SRC_ROOT}/source3/registry/reg_backend_smbconf.c
+        ${SMB_SRC_ROOT}/source3/registry/reg_init_smbconf.c
+        ${SMB_SRC_ROOT}/source3/registry/reg_util_token.c
+        ${SMB_SRC_ROOT}/source3/registry/reg_api_util.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_messaging.c
+        ${SMB_SRC_ROOT}/source3/param/loadparm_ctx.c
+        ${SMB_SRC_ROOT}/source3/param/util.c
+        ${SMB_SRC_ROOT}/source3/lib/util_tdb.c
+        ${SMB_SRC_ROOT}/lib/async_req/async_sock.c
+        ${SMB_SRC_ROOT}/source3/lib/dbwrap/dbwrap_open.c
+        ${SMB_SRC_ROOT}/source3/lib/dbwrap/dbwrap_watch.c
+        ${SMB_SRC_ROOT}/source3/lib/g_lock.c
+        ${SMB_SRC_ROOT}/source3/registry/reg_api.c
+        ${SMB_SRC_ROOT}/source3/registry/reg_dispatcher.c
+        ${SMB_SRC_ROOT}/source3/registry/reg_cachehook.c
+        ${SMB_SRC_ROOT}/source3/registry/reg_objects.c
+        ${SMB_SRC_ROOT}/source3/registry/reg_util_internal.c
+        ${SMB_SRC_ROOT}/source3/lib/util_nttoken.c
+        ${SMB_SRC_ROOT}/source3/registry/reg_backend_db.c
+        ${SMB_SRC_ROOT}/source3/registry/reg_parse_internal.c
+        ${SMB_SRC_ROOT}/source3/registry/reg_parse.c
+        ${SMB_SRC_ROOT}/source3/lib/srprs.c
+        ${SMB_SRC_ROOT}/source3/registry/reg_init_basic.c
+        ${SMB_SRC_ROOT}/source3/lib/version.c
+        ${SMB_SRC_ROOT}/lib/smbconf/smbconf.c
+        ${SMB_SRC_ROOT}/lib/smbconf/smbconf_txt.c
+        ${SMB_SRC_ROOT}/lib/smbconf/smbconf_util.c
+        ${SMB_SRC_ROOT}/source3/lib/messages.c
+        ${SMB_SRC_ROOT}/source3/lib/util_cluster.c
+        ${SMB_SRC_ROOT}/source3/lib/id_cache.c
+        ${SMB_SRC_ROOT}/source3/lib/serverid.c
+        ${SMB_SRC_ROOT}/source3/lib/server_id_watch.c
+        ${SMB_SRC_ROOT}/source3/lib/server_id_db_util.c
+        ${SMB_SRC_ROOT}/source3/lib/addrchange.c
+        ${SMB_SRC_ROOT}/lib/util/debug_s3.c
+        ${SMB_SRC_ROOT}/source3/lib/dumpcore.c
+        ${SMB_SRC_ROOT}/source3/lib/interface.c
+        ${SMB_SRC_ROOT}/source3/lib/username.c
+        ${SMB_SRC_ROOT}/source3/lib/smbrun.c
+        ${SMB_SRC_ROOT}/source3/lib/wins_srv.c
+        ${SMB_SRC_ROOT}/source3/lib/substitute.c
+        ${SMB_SRC_ROOT}/source3/lib/substitute_generic.c
+        ${SMB_SRC_ROOT}/source3/lib/ms_fnmatch.c
+        ${SMB_SRC_ROOT}/source3/lib/tallocmsg.c
+        ${SMB_SRC_ROOT}/source3/lib/dmallocmsg.c
+        ${SMB_SRC_ROOT}/source3/lib/gencache.c
+        ${SMB_SRC_ROOT}/source3/lib/util_event.c
+        ${SMB_SRC_ROOT}/source3/lib/global_contexts.c
+        ${SMB_SRC_ROOT}/source3/lib/server_prefork.c
+        ${SMB_SRC_ROOT}/source3/lib/server_prefork_util.c
+        ${SMB_SRC_ROOT}/source3/lib/ldap_escape.c
+        ${SMB_SRC_ROOT}/source3/lib/system_smbd.c
+        ${SMB_SRC_ROOT}/source3/lib/audit.c
+        ${SMB_SRC_ROOT}/source3/lib/idmap_cache.c
+        ${SMB_SRC_ROOT}/source3/lib/namemap_cache.c
+        ${SMB_SRC_ROOT}/source3/lib/util_ea.c
+        ${SMB_SRC_ROOT}/source3/lib/background.c
+        ${SMB_SRC_ROOT}/lib/util/util_pw.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_server_id.c
+        ${SMB_SRC_ROOT}/source3/lib/system.c
+        ${SMB_SRC_ROOT}/source3/lib/sendfile.c
+        ${SMB_SRC_ROOT}/source3/lib/recvfile.c
+        ${SMB_SRC_ROOT}/source3/lib/time.c
+        ${SMB_SRC_ROOT}/source3/lib/util_sid.c
+        ${SMB_SRC_ROOT}/source3/lib/util_specialsids.c
+        ${SMB_SRC_ROOT}/source3/lib/util_file.c
+        ${SMB_SRC_ROOT}/source3/lib/util.c
+        ${SMB_SRC_ROOT}/source3/lib/util_path.c
+        ${SMB_SRC_ROOT}/source3/lib/util_matching.c
+        ${SMB_SRC_ROOT}/source3/lib/util_procid.c
+        ${SMB_SRC_ROOT}/source3/lib/util_sock.c
+        ${SMB_SRC_ROOT}/source3/lib/util_tsock.c
+        ${SMB_SRC_ROOT}/source3/lib/util_transfer_file.c
+        ${SMB_SRC_ROOT}/source3/lib/util_macstreams.c
+        ${SMB_SRC_ROOT}/source3/libsmb/errormap.c
+        ${SMB_SRC_ROOT}/source3/libsmb/smberr.c
+        ${SMB_SRC_ROOT}/source3/lib/errmap_unix.c
+        ${SMB_SRC_ROOT}/source3/lib/smbconf/smbconf_init.c
+        ${SMB_SRC_ROOT}/source3/lib/smbconf/smbconf_reg.c
+)
+
+add_library(
+        ${TARGET_NAME}
+        STATIC
+        ${TARGET_SRC}
+)
+
+target_include_directories(
+        ${TARGET_NAME}
+        PRIVATE
+        ${SMB_SRC_ROOT}
+        ${SMB_SRC_ROOT}/lib
+        ${SMB_SRC_ROOT}/lib/tsocket
+        ${SMB_SRC_ROOT}/lib/replace
+        ${SMB_SRC_ROOT}/lib/talloc
+        ${SMB_SRC_ROOT}/lib/tevent
+        ${SMB_SRC_ROOT}/lib/ldb-samba
+        ${SMB_SRC_ROOT}/lib/ldb/include
+        ${SMB_SRC_ROOT}/lib/tdb/include
+        ${SMB_SRC_ROOT}/include
+        ${SMB_SRC_ROOT}/include/public
+        ${SMB_SRC_ROOT}/source3
+        ${SMB_SRC_ROOT}/source3/lib
+        ${SMB_SRC_ROOT}/source3/include
+        ${SMB_SRC_ROOT}/source4
+        ${SMB_SRC_ROOT}/source4/heimdal_build
+        ${SMB_SRC_ROOT}/source4/heimdal_build/include
+        ${SMB_SRC_ROOT}/source4/heimdal/lib
+        ${SMB_SRC_ROOT}/source4/heimdal/base
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/krb5
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/com_err
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/asn1
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/wind
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/gssapi
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/mech
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hcrypto
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hcrypto/libtommath
+        ${SMB_SRC_ROOT}/source4/heimdal/include
+        ${SMB_SRC_ROOT}/third_party/gpfs
+        ${SMB_SRC_ROOT}/bin/default
+        ${SMB_SRC_ROOT}/bin/default/include
+        ${SMB_SRC_ROOT}/bin/default/lib/ldb/include
+        ${SMB_SRC_ROOT}/bin/default/librpc/
+        ${SMB_SRC_ROOT}/bin/default/source4
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/asn1
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/wind
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/hx509
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/krb5
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/gssapi
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/gssapi/spnego
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/gssapi/krb5
+)
+
+target_compile_definitions(
+        ${TARGET_NAME}
+        PRIVATE
+        _SAMBA_BUILD_=4
+        HAVE_CONFIG_H=1
+        _GNU_SOURCE=1
+        _XOPEN_SOURCE_EXTENDED=1
+        HAVE_CONFIG_H=1
+        __STDC_WANT_LIB_EXT1__=1
+        _REENTRANT
+)
+
+target_compile_options(
+        ${TARGET_NAME}
+        PRIVATE
+        -MMD
+        -fPIC
+        -fstack-protector-strong
+        -fstack-clash-protection
+)
