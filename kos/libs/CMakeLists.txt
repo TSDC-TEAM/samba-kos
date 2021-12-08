@@ -43,4 +43,5 @@ add_subdirectory(cluster)
 add_subdirectory(samba-sockets)
 add_subdirectory(MESSAGING-SEND)
 add_subdirectory(cli-ldap-common)
+add_subdirectory(cliauth)
 

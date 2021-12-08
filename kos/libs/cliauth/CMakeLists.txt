@@ -1,8 +1,18 @@
-set(TARGET_NAME cli-ldap-common)
+set(TARGET_NAME cliauth)
 
 set(TARGET_SRC
-        ${SMB_SRC_ROOT}/libcli/ldap/ldap_message.c
-        ${SMB_SRC_ROOT}/libcli/ldap/ldap_ndr.c
+        ${SMB_SRC_ROOT}/lib/util/util_str_escape.c
+        ${SMB_SRC_ROOT}/libcli/auth/pam_errors.c
+        ${SMB_SRC_ROOT}/bin/default/libcli/auth/cliauth.empty.c
+        ${SMB_SRC_ROOT}/libcli/auth/spnego_parse.c
+        ${SMB_SRC_ROOT}/libcli/auth/msrpc_parse.c
+        ${SMB_SRC_ROOT}/libcli/lsarpc/util_lsarpc.c
+        ${SMB_SRC_ROOT}/libcli/auth/credentials.c
+        ${SMB_SRC_ROOT}/libcli/auth/session.c
+        ${SMB_SRC_ROOT}/libcli/auth/smbencrypt.c
+        ${SMB_SRC_ROOT}/libcli/auth/smbdes.c
+        ${SMB_SRC_ROOT}/libcli/auth/schannel_state_tdb.c
+        ${SMB_SRC_ROOT}/libcli/auth/ntlm_check.c
 )
 
 add_library(
