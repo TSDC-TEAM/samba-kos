@@ -1,0 +1,91 @@
+set(TARGET_NAME ldbsamba)
+
+set(TARGET_SRC
+        ${SMB_SRC_ROOT}/lib/ldb-samba/ldb_wrap.c
+        ${SMB_SRC_ROOT}/lib/ldb-samba/ldif_handlers.c
+        ${SMB_SRC_ROOT}/lib/ldb-samba/ldb_matching_rules.c
+        ${SMB_SRC_ROOT}/source4/dsdb/schema/schema_init.c
+        ${SMB_SRC_ROOT}/source4/dsdb/schema/schema_set.c
+        ${SMB_SRC_ROOT}/source4/dsdb/schema/schema_query.c
+        ${SMB_SRC_ROOT}/source4/dsdb/schema/schema_syntax.c
+        ${SMB_SRC_ROOT}/source4/dsdb/schema/schema_description.c
+        ${SMB_SRC_ROOT}/source4/dsdb/schema/schema_convert_to_ol.c
+        ${SMB_SRC_ROOT}/source4/dsdb/schema/schema_inferiors.c
+        ${SMB_SRC_ROOT}/source4/dsdb/schema/schema_prefixmap.c
+        ${SMB_SRC_ROOT}/source4/dsdb/schema/schema_info_attr.c
+        ${SMB_SRC_ROOT}/source4/dsdb/schema/schema_filtered.c
+        ${SMB_SRC_ROOT}/source4/dsdb/schema/dsdb_dn.c
+)
+
+add_library(
+        ${TARGET_NAME}
+        STATIC
+        ${TARGET_SRC}
+)
+
+target_include_directories(
+        ${TARGET_NAME}
+        PRIVATE
+        ${SMB_SRC_ROOT}
+        ${SMB_SRC_ROOT}/lib
+        ${SMB_SRC_ROOT}/lib/replace
+        ${SMB_SRC_ROOT}/lib/talloc
+        ${SMB_SRC_ROOT}/lib/tevent
+        ${SMB_SRC_ROOT}/lib/ldb/include
+        ${SMB_SRC_ROOT}/lib/tdb/include
+        ${SMB_SRC_ROOT}/include
+        ${SMB_SRC_ROOT}/include/public
+        ${SMB_SRC_ROOT}/source4
+        ${SMB_SRC_ROOT}/source4/lib
+        ${SMB_SRC_ROOT}/source4/include
+        ${SMB_SRC_ROOT}/source4/heimdal_build
+        ${SMB_SRC_ROOT}/source4/heimdal_build/include
+        ${SMB_SRC_ROOT}/source4/heimdal/lib
+        ${SMB_SRC_ROOT}/source4/heimdal/base
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/krb5
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/com_err
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/asn1
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/wind
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/gssapi
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/mech
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hcrypto
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hcrypto/libtommath
+        ${SMB_SRC_ROOT}/source4/heimdal/include
+        ${SMB_SRC_ROOT}/third_party/gpfs
+        ${SMB_SRC_ROOT}/bin/default
+        ${SMB_SRC_ROOT}/bin/default/include
+        ${SMB_SRC_ROOT}/bin/default/lib/ldb/include
+        ${SMB_SRC_ROOT}/bin/default/librpc/
+        ${SMB_SRC_ROOT}/bin/default/source4
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/asn1
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/wind
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/hx509
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/krb5
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/gssapi
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/gssapi/spnego
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/gssapi/krb5
+)
+
+target_compile_definitions(
+        ${TARGET_NAME}
+        PRIVATE
+        _SAMBA_BUILD_=4
+        HAVE_CONFIG_H=1
+        _GNU_SOURCE=1
+        _XOPEN_SOURCE_EXTENDED=1
+        HAVE_CONFIG_H=1
+        __STDC_WANT_LIB_EXT1__=1
+        _REENTRANT
+)
+
+target_compile_options(
+        ${TARGET_NAME}
+        PRIVATE
+        -MMD
+        -fPIC
+        -fstack-protector-strong
+        -fstack-clash-protection
+)
