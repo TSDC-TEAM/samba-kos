@@ -45,4 +45,5 @@ add_subdirectory(MESSAGING-SEND)
 add_subdirectory(cli-ldap-common)
 add_subdirectory(cliauth)
 add_subdirectory(flag-mapping)
+add_subdirectory(common-auth)
 
