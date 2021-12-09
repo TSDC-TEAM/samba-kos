@@ -78,3 +78,86 @@ add_subdirectory(libsmb)
 add_subdirectory(ndr-samba4)
 add_subdirectory(cmdline)
 add_subdirectory(msrpc3)
+
+set(SAMBA_EXT_MODULES
+        cmdline
+        com-err
+        common-auth
+        dbwrap
+        dcerpc-binding
+        dcerpc-samba
+        events
+        flag-mapping
+        genrand
+        gensec
+        gse
+        gssapi
+        hcrypto
+        heimbase
+        hx509
+        interfaces
+        iov-buf
+        krb5
+        krb5samba
+        ldb
+        ldbsamba
+        libsmb
+        messages-dgm
+        messages-util
+        MESSAGING-SEND
+        msghdr
+        msrpc3
+        ndr
+        ndr-nbt
+        ndr-samba
+        ndr-samba4
+        ndr-standard
+        netif
+        replace
+        roken
+        samba3-util
+        samba-cluster-support
+        samba-credentials
+        samba-debug
+        samba-hostconfig
+        samba-modules
+        samba-security
+        samba-sockets
+        samba-util
+        samdb
+        samdb-common
+        secrets3
+        server-id-db
+        server-role
+        smbconf
+        smbd-shim
+        smb-transport
+        socket-blocking
+        sys-rw
+        talloc
+        talloc-report-printf
+        tdb
+        tdb-wrap
+        tevent
+        tevent-util
+        time-basic
+        util-reg
+        util-setid
+        util-tdb
+        wbclient
+        winbind-client
+        wind
+        PARENT_SCOPE
+)
+
+set(SAMBA_THIRD_PARTY_LIBS
+        pthread
+        m
+        dl
+        gnutls
+        z
+        popt
+        ncurses
+        tinfo
+        PARENT_SCOPE
+)
