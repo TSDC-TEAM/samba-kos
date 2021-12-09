@@ -1,0 +1,112 @@
+set(TARGET_NAME cli-smb-common)
+
+set(TARGET_SRC
+        ${SMB_SRC_ROOT}/libcli/smb/smb_signing.c
+        ${SMB_SRC_ROOT}/libcli/smb/smb_seal.c
+        ${SMB_SRC_ROOT}/libcli/smb/smb2_negotiate_context.c
+        ${SMB_SRC_ROOT}/libcli/smb/smb2_create_blob.c
+        ${SMB_SRC_ROOT}/libcli/smb/smb2_signing.c
+        ${SMB_SRC_ROOT}/libcli/smb/smb2_lease.c
+        ${SMB_SRC_ROOT}/libcli/smb/util.c
+        ${SMB_SRC_ROOT}/libcli/smb/smbXcli_base.c
+        ${SMB_SRC_ROOT}/libcli/smb/smb1cli_trans.c
+        ${SMB_SRC_ROOT}/libcli/smb/smb1cli_echo.c
+        ${SMB_SRC_ROOT}/libcli/smb/smb1cli_create.c
+        ${SMB_SRC_ROOT}/libcli/smb/smb1cli_session.c
+        ${SMB_SRC_ROOT}/libcli/smb/smb1cli_close.c
+        ${SMB_SRC_ROOT}/libcli/smb/smb1cli_write.c
+        ${SMB_SRC_ROOT}/libcli/smb/smb1cli_read.c
+        ${SMB_SRC_ROOT}/libcli/smb/smb2cli_session.c
+        ${SMB_SRC_ROOT}/libcli/smb/smb2cli_tcon.c
+        ${SMB_SRC_ROOT}/libcli/smb/smb2cli_create.c
+        ${SMB_SRC_ROOT}/libcli/smb/smb2cli_close.c
+        ${SMB_SRC_ROOT}/libcli/smb/smb2cli_read.c
+        ${SMB_SRC_ROOT}/libcli/smb/smb2cli_write.c
+        ${SMB_SRC_ROOT}/libcli/smb/smb2cli_flush.c
+        ${SMB_SRC_ROOT}/libcli/smb/smb2cli_set_info.c
+        ${SMB_SRC_ROOT}/libcli/smb/smb2cli_query_info.c
+        ${SMB_SRC_ROOT}/libcli/smb/smb2cli_notify.c
+        ${SMB_SRC_ROOT}/libcli/smb/smb2cli_query_directory.c
+        ${SMB_SRC_ROOT}/libcli/smb/smb2cli_ioctl.c
+        ${SMB_SRC_ROOT}/libcli/smb/smb2cli_echo.c
+        ${SMB_SRC_ROOT}/libcli/smb/smb2_posix.c
+        ${SMB_SRC_ROOT}/libcli/smb/tstream_smbXcli_np.c
+)
+
+add_library(
+        ${TARGET_NAME}
+        STATIC
+        ${TARGET_SRC}
+)
+
+target_include_directories(
+        ${TARGET_NAME}
+        PRIVATE
+        ${SMB_SRC_ROOT}
+        ${SMB_SRC_ROOT}/dynconfig
+        ${SMB_SRC_ROOT}/lib
+        ${SMB_SRC_ROOT}/lib/tsocket
+        ${SMB_SRC_ROOT}/lib/replace
+        ${SMB_SRC_ROOT}/lib/talloc
+        ${SMB_SRC_ROOT}/lib/tevent
+        ${SMB_SRC_ROOT}/lib/ldb-samba
+        ${SMB_SRC_ROOT}/lib/ldb/include
+        ${SMB_SRC_ROOT}/lib/tdb/include
+        ${SMB_SRC_ROOT}/include
+        ${SMB_SRC_ROOT}/include/public
+        ${SMB_SRC_ROOT}/source4
+        ${SMB_SRC_ROOT}/source4/include
+        ${SMB_SRC_ROOT}/source4/lib
+        ${SMB_SRC_ROOT}/source4/heimdal_build
+        ${SMB_SRC_ROOT}/source4/heimdal_build/include
+        ${SMB_SRC_ROOT}/source4/heimdal/lib
+        ${SMB_SRC_ROOT}/source4/heimdal/base
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/krb5
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/com_err
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/asn1
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/wind
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/gssapi
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/mech
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hcrypto
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hcrypto/libtommath
+        ${SMB_SRC_ROOT}/source4/heimdal/include
+        ${SMB_SRC_ROOT}/third_party/gpfs
+        ${SMB_SRC_ROOT}/bin/default/source3
+        ${SMB_SRC_ROOT}/bin/default
+        ${SMB_SRC_ROOT}/bin/default/include
+        ${SMB_SRC_ROOT}/bin/default/lib/ldb/include
+        ${SMB_SRC_ROOT}/bin/default/librpc/
+        ${SMB_SRC_ROOT}/bin/default/source3/librpc/gen_ndr
+        ${SMB_SRC_ROOT}/bin/default/source4
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/asn1
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/wind
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/hx509
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/krb5
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/gssapi
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/gssapi/spnego
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/gssapi/krb5
+)
+
+target_compile_definitions(
+        ${TARGET_NAME}
+        PRIVATE
+        _SAMBA_BUILD_=4
+        HAVE_CONFIG_H=1
+        _GNU_SOURCE=1
+        _XOPEN_SOURCE_EXTENDED=1
+        HAVE_CONFIG_H=1
+        __STDC_WANT_LIB_EXT1__=1
+        _REENTRANT
+)
+
+target_compile_options(
+        ${TARGET_NAME}
+        PRIVATE
+        -MMD
+        -fPIC
+        -fstack-protector-strong
+        -fstack-clash-protection
+)
