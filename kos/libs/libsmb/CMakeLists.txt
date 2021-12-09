@@ -1,0 +1,108 @@
+set(TARGET_NAME libsmb)
+
+set(TARGET_SRC
+        ${SMB_SRC_ROOT}/source3/libsmb/clientgen.c
+        ${SMB_SRC_ROOT}/source3/libsmb/cliconnect.c
+        ${SMB_SRC_ROOT}/source3/libsmb/clifile.c
+        ${SMB_SRC_ROOT}/source3/libsmb/clispnego.c
+        ${SMB_SRC_ROOT}/source3/libsmb/clirap.c
+        ${SMB_SRC_ROOT}/source3/libsmb/clierror.c
+        ${SMB_SRC_ROOT}/source3/libsmb/climessage.c
+        ${SMB_SRC_ROOT}/source3/libsmb/clireadwrite.c
+        ${SMB_SRC_ROOT}/source3/libsmb/clilist.c
+        ${SMB_SRC_ROOT}/source3/libsmb/cliprint.c
+        ${SMB_SRC_ROOT}/source3/libsmb/clitrans.c
+        ${SMB_SRC_ROOT}/source3/libsmb/clisecdesc.c
+        ${SMB_SRC_ROOT}/source3/libsmb/clistr.c
+        ${SMB_SRC_ROOT}/source3/libsmb/cliquota.c
+        ${SMB_SRC_ROOT}/source3/libsmb/clifsinfo.c
+        ${SMB_SRC_ROOT}/source3/libsmb/clidfs.c
+        ${SMB_SRC_ROOT}/source3/libsmb/clioplock.c
+        ${SMB_SRC_ROOT}/source3/libsmb/async_smb.c
+        ${SMB_SRC_ROOT}/source3/libsmb/reparse_symlink.c
+        ${SMB_SRC_ROOT}/source3/libsmb/clisymlink.c
+        ${SMB_SRC_ROOT}/source3/libsmb/smbsock_connect.c
+        ${SMB_SRC_ROOT}/source3/libsmb/cli_smb2_fnum.c
+        ${SMB_SRC_ROOT}/source3/libsmb/auth_generic.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_quota.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_ioctl.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_ioctl.c
+)
+
+add_library(
+        ${TARGET_NAME}
+        STATIC
+        ${TARGET_SRC}
+)
+
+target_include_directories(
+        ${TARGET_NAME}
+        PRIVATE
+        ${SMB_SRC_ROOT}
+        ${SMB_SRC_ROOT}/dynconfig
+        ${SMB_SRC_ROOT}/lib
+        ${SMB_SRC_ROOT}/lib/tsocket
+        ${SMB_SRC_ROOT}/lib/replace
+        ${SMB_SRC_ROOT}/lib/talloc
+        ${SMB_SRC_ROOT}/lib/tevent
+        ${SMB_SRC_ROOT}/lib/ldb-samba
+        ${SMB_SRC_ROOT}/lib/ldb/include
+        ${SMB_SRC_ROOT}/lib/tdb/include
+        ${SMB_SRC_ROOT}/include
+        ${SMB_SRC_ROOT}/include/public
+        ${SMB_SRC_ROOT}/source3
+        ${SMB_SRC_ROOT}/source3/include
+        ${SMB_SRC_ROOT}/source3/lib
+        ${SMB_SRC_ROOT}/source4/heimdal_build
+        ${SMB_SRC_ROOT}/source4/heimdal_build/include
+        ${SMB_SRC_ROOT}/source4/heimdal/lib
+        ${SMB_SRC_ROOT}/source4/heimdal/base
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/krb5
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/com_err
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/asn1
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/wind
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/gssapi
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/mech
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hcrypto
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hcrypto/libtommath
+        ${SMB_SRC_ROOT}/source4/heimdal/include
+        ${SMB_SRC_ROOT}/third_party/gpfs
+        ${SMB_SRC_ROOT}/bin/default/source3
+        ${SMB_SRC_ROOT}/bin/default
+        ${SMB_SRC_ROOT}/bin/default/include
+        ${SMB_SRC_ROOT}/bin/default/lib/ldb/include
+        ${SMB_SRC_ROOT}/bin/default/librpc/
+        ${SMB_SRC_ROOT}/bin/default/source3/librpc/gen_ndr
+        ${SMB_SRC_ROOT}/bin/default/source4
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/asn1
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/wind
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/hx509
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/krb5
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/gssapi
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/gssapi/spnego
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/gssapi/krb5
+)
+
+target_compile_definitions(
+        ${TARGET_NAME}
+        PRIVATE
+        _SAMBA_BUILD_=4
+        HAVE_CONFIG_H=1
+        _GNU_SOURCE=1
+        _XOPEN_SOURCE_EXTENDED=1
+        HAVE_CONFIG_H=1
+        __STDC_WANT_LIB_EXT1__=1
+        _REENTRANT
+)
+
+target_compile_options(
+        ${TARGET_NAME}
+        PRIVATE
+        -MMD
+        -fPIC
+        -fstack-protector-strong
+        -fstack-clash-protection
+)
