@@ -1,39 +1,33 @@
-project(smb)
-
-set(TARGET_NAME Smbclient)
+set(TARGET_NAME samba-errors)
 
 set(TARGET_SRC
-        ${SMB_SRC_ROOT}/lib/cmdline/cmdline_s3.c
-        ${SMB_SRC_ROOT}/source3/client/client.c
-        ${SMB_SRC_ROOT}/source3/client/clitar.c
-        ${SMB_SRC_ROOT}/source3/client/dnsbrowse.c
-        ${SMB_SRC_ROOT}/libcli/smbreadline/smbreadline.c
+        ${SMB_SRC_ROOT}/libcli/util/doserr.c
+        ${SMB_SRC_ROOT}/libcli/util/errormap.c
+        ${SMB_SRC_ROOT}/libcli/util/nterr.c
+        ${SMB_SRC_ROOT}/libcli/util/errmap_unix.c
+        ${SMB_SRC_ROOT}/libcli/util/hresult.c
 )
 
-set(TARGET_LIBS
-        ${SAMBA_EXT_MODULES}
-        ${SAMBA_THIRD_PARTY_LIBS}
+add_library(
+        ${TARGET_NAME}
+        STATIC
+        ${TARGET_SRC}
 )
-
-include(executable)
 
 target_include_directories(
         ${TARGET_NAME}
         PRIVATE
         ${SMB_SRC_ROOT}
         ${SMB_SRC_ROOT}/lib
-        ${SMB_SRC_ROOT}/lib/tsocket
         ${SMB_SRC_ROOT}/lib/replace
         ${SMB_SRC_ROOT}/lib/talloc
         ${SMB_SRC_ROOT}/lib/tevent
-        ${SMB_SRC_ROOT}/lib/ldb-samba
-        ${SMB_SRC_ROOT}/lib/ldb/include
         ${SMB_SRC_ROOT}/lib/tdb/include
         ${SMB_SRC_ROOT}/include
         ${SMB_SRC_ROOT}/include/public
-        ${SMB_SRC_ROOT}/source3
-        ${SMB_SRC_ROOT}/source3/lib
-        ${SMB_SRC_ROOT}/source3/include
+        ${SMB_SRC_ROOT}/source4
+        ${SMB_SRC_ROOT}/source4/lib
+        ${SMB_SRC_ROOT}/source4/include
         ${SMB_SRC_ROOT}/source4/heimdal_build
         ${SMB_SRC_ROOT}/source4/heimdal_build/include
         ${SMB_SRC_ROOT}/source4/heimdal/lib
@@ -44,25 +38,18 @@ target_include_directories(
         ${SMB_SRC_ROOT}/source4/heimdal/lib/asn1
         ${SMB_SRC_ROOT}/source4/heimdal/lib/wind
         ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/gssapi
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/mech
         ${SMB_SRC_ROOT}/source4/heimdal/lib/hcrypto
         ${SMB_SRC_ROOT}/source4/heimdal/lib/hcrypto/libtommath
         ${SMB_SRC_ROOT}/source4/heimdal/include
         ${SMB_SRC_ROOT}/third_party/gpfs
         ${SMB_SRC_ROOT}/bin/default
         ${SMB_SRC_ROOT}/bin/default/include
-        ${SMB_SRC_ROOT}/bin/default/lib/ldb/include
-        ${SMB_SRC_ROOT}/bin/default/librpc/
-        ${SMB_SRC_ROOT}/bin/default/source4
+        ${SMB_SRC_ROOT}/bin/default/libcli/util
+        ${SMB_SRC_ROOT}/bin/default/include/public/core
         ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/asn1
         ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/wind
         ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/hx509
         ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/krb5
-        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/gssapi
-        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/gssapi/spnego
-        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/gssapi/krb5
 )
 
 target_compile_definitions(
@@ -75,4 +62,13 @@ target_compile_definitions(
         HAVE_CONFIG_H=1
         __STDC_WANT_LIB_EXT1__=1
         _REENTRANT
+)
+
+target_compile_options(
+        ${TARGET_NAME}
+        PRIVATE
+        -MMD
+        -fPIC
+        -fstack-protector-strong
+        -fstack-clash-protection
 )
