@@ -9,7 +9,7 @@ set(TARGET_SRC
         ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/spnego/accept_sec_context.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/krb5/copy_ccache.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/krb5/delete_sec_context.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/krb5/init_sec_context.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/krb5/init_sec_contextDUP.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/krb5/context_time.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/krb5/init.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/krb5/address_to_krb5addr.c
@@ -41,8 +41,8 @@ set(TARGET_SRC
         ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/krb5/sequence.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/krb5/display_status.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/krb5/release_buffer.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/krb5/external.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/krb5/compat.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/krb5/externalDUP.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/krb5/compatDUP.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/krb5/creds.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/krb5/acquire_cred.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/krb5/release_cred.c
@@ -50,7 +50,7 @@ set(TARGET_SRC
         ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/krb5/set_cred_option.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/krb5/decapsulate.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/krb5/verify_mic.c
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/krb5/accept_sec_context.c
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/krb5/accept_sec_contextDUP.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/krb5/set_sec_context_option.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/krb5/process_context_token.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/krb5/prf.c

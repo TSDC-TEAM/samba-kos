@@ -34,7 +34,7 @@ set(TARGET_SRC
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_ODJ.c
         ${SMB_SRC_ROOT}/librpc/ndr/ndr_ODJ.c
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_ioctl.c
-        ${SMB_SRC_ROOT}/librpc/ndr/ndr_ioctl.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_ioctlDUP.c
         ${SMB_SRC_ROOT}/bin/default/source4/librpc/gen_ndr/ndr_irpc.c
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_rot.c
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_smb_acl.c
@@ -61,7 +61,7 @@ set(TARGET_SRC
         ${SMB_SRC_ROOT}/bin/default/source4/librpc/ndr-samba4.empty.c
         ${SMB_SRC_ROOT}/bin/default/source4/librpc/gen_ndr/ndr_sasl_helpers.c
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_dcerpc.c
-        ${SMB_SRC_ROOT}/librpc/ndr/ndr_dcerpc.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_dcerpcDUP.c
         )
 
 add_library(

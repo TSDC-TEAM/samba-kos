@@ -1,7 +1,7 @@
 set(TARGET_NAME ndr-samba)
 
 set(TARGET_SRC
-        ${SMB_SRC_ROOT}/librpc/ndr/ndr_schannel.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_schannelDUP.c
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_schannel.c
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_epmapper.c
         ${SMB_SRC_ROOT}/librpc/ndr/ndr_compression.c
@@ -12,7 +12,7 @@ set(TARGET_SRC
         ${SMB_SRC_ROOT}/bin/default/librpc/ndr-samba.empty.c
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_mdssvc.c
         ${SMB_SRC_ROOT}/bin/default/source3/librpc/gen_ndr/ndr_smbXsrv.c
-        ${SMB_SRC_ROOT}/librpc/ndr/ndr_drsuapi.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_drsuapiDUP.c
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_drsuapi.c
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_witness.c
         ${SMB_SRC_ROOT}/librpc/ndr/ndr_witness.c
@@ -23,12 +23,12 @@ set(TARGET_SRC
         ${SMB_SRC_ROOT}/librpc/ndr/ndr_xattr.c
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_xattr.c
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_krb5ccache.c
-        ${SMB_SRC_ROOT}/librpc/ndr/ndr_ntlmssp.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_ntlmsspDUP.c
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_ntlmssp.c
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_dnsserver.c
         ${SMB_SRC_ROOT}/librpc/ndr/ndr_dnsserver.c
         ${SMB_SRC_ROOT}/lib/compression/lzxpress.c
-        ${SMB_SRC_ROOT}/librpc/ndr/ndr_drsblobs.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_drsblobsDUP.c
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_drsblobs.c
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_auth.c
         ${SMB_SRC_ROOT}/librpc/ndr/ndr_auth.c

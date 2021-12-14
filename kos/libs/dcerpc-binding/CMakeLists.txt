@@ -6,7 +6,7 @@ set(TARGET_SRC
         ${SMB_SRC_ROOT}/librpc/rpc/dcerpc_util.c
         ${SMB_SRC_ROOT}/librpc/rpc/binding_handle.c
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_dcerpc.c
-        ${SMB_SRC_ROOT}/librpc/ndr/ndr_dcerpc.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_dcerpcDUP.c
 )
 
 add_library(

@@ -4,7 +4,7 @@ set(TARGET_SRC
         ${SMB_SRC_ROOT}/lib/tsocket/tsocket.c
         ${SMB_SRC_ROOT}/lib/tsocket/tsocket_helpers.c
         ${SMB_SRC_ROOT}/lib/tsocket/tsocket_bsd.c
-        ${SMB_SRC_ROOT}/lib/util/access.c
+        ${SMB_SRC_ROOT}/lib/util/accessDUP.c
         ${SMB_SRC_ROOT}/source4/libcli/resolve/resolve.c
         ${SMB_SRC_ROOT}/source4/lib/socket/socket_unix.c
         ${SMB_SRC_ROOT}/source4/lib/socket/socket_ip.c

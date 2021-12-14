@@ -23,7 +23,7 @@ set(TARGET_SRC
         ${SMB_SRC_ROOT}/bin/default/librpc/ndr-standard.empty.c
         ${SMB_SRC_ROOT}/librpc/ndr/ndr_spoolss_buf.c
         ${SMB_SRC_ROOT}/librpc/ndr/ndr_svcctl.c
-        ${SMB_SRC_ROOT}/librpc/ndr/ndr_netlogon.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_netlogonDUP.c
 )
 
 add_library(

@@ -272,5 +272,6 @@ set(SAMBA_THIRD_PARTY_LIBS
         popt
         ncurses
         tinfo
+        resolv
         PARENT_SCOPE
 )

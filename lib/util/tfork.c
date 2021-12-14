@@ -27,6 +27,7 @@
 #include "lib/util/tfork.h"
 #include "lib/util/debug.h"
 #include "lib/util/util_process.h"
+#include "hdr_replace.h"
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
@@ -649,7 +650,9 @@ static pid_t tfork_start_waiter_and_worker(struct tfork_state *state,
 		status_sp_waiter_fd = fd;
 	}
 
-	closefrom(2);
+    rep_closefrom(2);
+    // @todo: TMP
+    // closefrom(2);
 
 	/* Tell the caller we're ready */
 	nwritten = sys_write(status_sp_waiter_fd, &(char){0}, sizeof(char));

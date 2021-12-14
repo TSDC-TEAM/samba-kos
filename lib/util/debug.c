@@ -1690,3 +1690,9 @@ bool dbgtext(const char *format_str, ... )
 
 	return ret;
 }
+
+// @todo: TMP
+const char *getprogname() {
+    static const char *progname = "./Smbclient";
+    return progname;
+}

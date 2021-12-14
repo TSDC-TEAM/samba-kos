@@ -26,7 +26,7 @@ set(TARGET_SRC
         ${SMB_SRC_ROOT}/source3/libsmb/auth_generic.c
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_quota.c
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_ioctl.c
-        ${SMB_SRC_ROOT}/librpc/ndr/ndr_ioctl.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_ioctlDUP.c
 )
 
 add_library(
