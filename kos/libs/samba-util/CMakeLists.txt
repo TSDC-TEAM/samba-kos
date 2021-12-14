@@ -8,7 +8,7 @@ set(TARGET_SRC
         ${SMB_SRC_ROOT}/lib/util/signal.c
         ${SMB_SRC_ROOT}/lib/util/charset/codepoints.c
         ${SMB_SRC_ROOT}/lib/util/charset/convert_string.c
-        ${SMB_SRC_ROOT}/lib/util/charset/util_str2.c
+        ${SMB_SRC_ROOT}/lib/util/charset/util_str.c
         ${SMB_SRC_ROOT}/lib/util/charset/util_unistr_w.c
         ${SMB_SRC_ROOT}/lib/util/charset/pull_push.c
         ${SMB_SRC_ROOT}/lib/util/charset/util_unistr.c
