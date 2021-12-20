@@ -1,7 +1,8 @@
-set(TARGET_NAME talloc-report-printf)
+set(TARGET_NAME ndr-krb5pac)
 
 set(TARGET_SRC
-        ${SMB_SRC_ROOT}/lib/util/talloc_report_printf.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_krb5pac.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_krb5pac.c
 )
 
 add_library(
@@ -13,6 +14,8 @@ add_library(
 target_include_directories(
         ${TARGET_NAME}
         PRIVATE
+        ${SMB_SRC_ROOT}/librpc
+        ${SMB_SRC_ROOT}/bin/default/librpc
         ${SMB_SRC_ROOT}/include/public
         ${SMB_SRC_ROOT}/bin/default/include/public
         ${SMB_SRC_ROOT}/source4
@@ -29,8 +32,25 @@ target_include_directories(
         ${SMB_SRC_ROOT}/bin/default/lib/replace
         ${SMB_SRC_ROOT}/.
         ${SMB_SRC_ROOT}/bin/default/
+        ${SMB_SRC_ROOT}/lib/tevent
+        ${SMB_SRC_ROOT}/bin/default/lib/tevent
+        ${SMB_SRC_ROOT}/lib/util/charset
+        ${SMB_SRC_ROOT}/bin/default/lib/util/charset
+        ${SMB_SRC_ROOT}/lib/util/home/user/kasperskyos/samba/third_party/gpfs
+        ${SMB_SRC_ROOT}/bin/default/lib/util/home/user/kasperskyos/samba/third_party/gpfs
+        ${SMB_SRC_ROOT}/libcli/security
+        ${SMB_SRC_ROOT}/bin/default/libcli/security
+        ${SMB_SRC_ROOT}/dynconfig
+        ${SMB_SRC_ROOT}/bin/default/dynconfig
+        ${SMB_SRC_ROOT}/libcli/util
+        ${SMB_SRC_ROOT}/bin/default/libcli/util
+        ${SMB_SRC_ROOT}/lib/crypto
+        ${SMB_SRC_ROOT}/bin/default/lib/crypto
         ${SMB_SRC_ROOT}/lib/talloc
         ${SMB_SRC_ROOT}/bin/default/lib/talloc
+        ${SMB_SRC_ROOT}/libcli/nbt
+        ${SMB_SRC_ROOT}/bin/default/libcli/nbt
+        /usr/include/p11-kit-1
 )
 
 target_compile_definitions(
@@ -42,8 +62,8 @@ target_compile_definitions(
         _XOPEN_SOURCE_EXTENDED=1
         __STDC_WANT_LIB_EXT1__=1
         _REENTRANT
-        STATIC_talloc_report_printf_MODULES=NULL
-        "STATIC_talloc_report_printf_MODULES_PROTO=extern void __talloc_report_printf_dummy_module_proto(void)"
+        STATIC_ndr_krb5pac_MODULES=NULL
+        "STATIC_ndr_krb5pac_MODULES_PROTO=extern void __ndr_krb5pac_dummy_module_proto(void)"
 )
 
 target_compile_options(

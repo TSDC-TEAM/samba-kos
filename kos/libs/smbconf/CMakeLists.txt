@@ -95,50 +95,97 @@ add_library(
 target_include_directories(
         ${TARGET_NAME}
         PRIVATE
-        ${SMB_SRC_ROOT}
-        ${SMB_SRC_ROOT}/lib
-        ${SMB_SRC_ROOT}/lib/tsocket
-        ${SMB_SRC_ROOT}/lib/replace
-        ${SMB_SRC_ROOT}/lib/talloc
-        ${SMB_SRC_ROOT}/lib/tevent
-        ${SMB_SRC_ROOT}/lib/ldb-samba
-        ${SMB_SRC_ROOT}/lib/ldb/include
-        ${SMB_SRC_ROOT}/lib/tdb/include
-        ${SMB_SRC_ROOT}/include
-        ${SMB_SRC_ROOT}/include/public
         ${SMB_SRC_ROOT}/source3
-        ${SMB_SRC_ROOT}/source3/lib
+        ${SMB_SRC_ROOT}/bin/default/source3
         ${SMB_SRC_ROOT}/source3/include
-        ${SMB_SRC_ROOT}/source4
-        ${SMB_SRC_ROOT}/source4/heimdal_build
-        ${SMB_SRC_ROOT}/source4/heimdal_build/include
-        ${SMB_SRC_ROOT}/source4/heimdal/lib
-        ${SMB_SRC_ROOT}/source4/heimdal/base
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/krb5
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken
+        ${SMB_SRC_ROOT}/bin/default/source3/include
+        ${SMB_SRC_ROOT}/source3/lib
+        ${SMB_SRC_ROOT}/bin/default/source3/lib
         ${SMB_SRC_ROOT}/source4/heimdal/lib/com_err
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/asn1
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/wind
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/gssapi
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/mech
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/hcrypto
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/hcrypto/libtommath
-        ${SMB_SRC_ROOT}/source4/heimdal/include
-        ${SMB_SRC_ROOT}/third_party/gpfs
-        ${SMB_SRC_ROOT}/bin/default
-        ${SMB_SRC_ROOT}/bin/default/include
-        ${SMB_SRC_ROOT}/bin/default/lib/ldb/include
-        ${SMB_SRC_ROOT}/bin/default/librpc/
-        ${SMB_SRC_ROOT}/bin/default/source4
-        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/asn1
-        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/wind
-        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/hx509
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/com_err
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/krb5
         ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/krb5
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi
         ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/gssapi
-        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/gssapi/spnego
-        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/gssapi/krb5
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/gssapi
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/gssapi/gssapi
+        ${SMB_SRC_ROOT}/source4/heimdal_build/include
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal_build/include
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/asn1
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/asn1
+        ${SMB_SRC_ROOT}/lib/tdb/include
+        ${SMB_SRC_ROOT}/bin/default/lib/tdb/include
+        ${SMB_SRC_ROOT}/lib/tevent
+        ${SMB_SRC_ROOT}/bin/default/lib/tevent
+        ${SMB_SRC_ROOT}/lib/talloc
+        ${SMB_SRC_ROOT}/bin/default/lib/talloc
+        ${SMB_SRC_ROOT}/include/public
+        ${SMB_SRC_ROOT}/bin/default/include/public
+        ${SMB_SRC_ROOT}/source4
+        ${SMB_SRC_ROOT}/bin/default/source4
+        ${SMB_SRC_ROOT}/lib
+        ${SMB_SRC_ROOT}/bin/default/lib
+        ${SMB_SRC_ROOT}/source4/lib
+        ${SMB_SRC_ROOT}/bin/default/source4/lib
+        ${SMB_SRC_ROOT}/source4/include
+        ${SMB_SRC_ROOT}/bin/default/source4/include
+        ${SMB_SRC_ROOT}/include
+        ${SMB_SRC_ROOT}/bin/default/include
+        ${SMB_SRC_ROOT}/lib/replace
+        ${SMB_SRC_ROOT}/bin/default/lib/replace
+        ${SMB_SRC_ROOT}/.
+        ${SMB_SRC_ROOT}/bin/default/
+        ${SMB_SRC_ROOT}/librpc
+        ${SMB_SRC_ROOT}/bin/default/librpc
+        ${SMB_SRC_ROOT}/libcli/registry
+        ${SMB_SRC_ROOT}/bin/default/libcli/registry
+        ${SMB_SRC_ROOT}/source3/param
+        ${SMB_SRC_ROOT}/bin/default/source3/param
+        ${SMB_SRC_ROOT}/lib/util/home/user/kasperskyos/samba/third_party/gpfs
+        ${SMB_SRC_ROOT}/bin/default/lib/util/home/user/kasperskyos/samba/third_party/gpfs
+        ${SMB_SRC_ROOT}/lib/messaging
+        ${SMB_SRC_ROOT}/bin/default/lib/messaging
+        ${SMB_SRC_ROOT}/lib/dbwrap
+        ${SMB_SRC_ROOT}/bin/default/lib/dbwrap
+        ${SMB_SRC_ROOT}/lib/util/charset
+        ${SMB_SRC_ROOT}/bin/default/lib/util/charset
+        ${SMB_SRC_ROOT}/libcli/security
+        ${SMB_SRC_ROOT}/bin/default/libcli/security
+        ${SMB_SRC_ROOT}/lib/pthreadpool
+        ${SMB_SRC_ROOT}/bin/default/lib/pthreadpool
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/roken
+        ${SMB_SRC_ROOT}/source4/heimdal/include
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/include
+        ${SMB_SRC_ROOT}/source4/heimdal_build
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal_build
+        ${SMB_SRC_ROOT}/lib/param
+        ${SMB_SRC_ROOT}/bin/default/lib/param
+        ${SMB_SRC_ROOT}/dynconfig
+        ${SMB_SRC_ROOT}/bin/default/dynconfig
+        ${SMB_SRC_ROOT}/source4/lib/socket
+        ${SMB_SRC_ROOT}/bin/default/source4/lib/socket
+        ${SMB_SRC_ROOT}/libcli/util
+        ${SMB_SRC_ROOT}/bin/default/libcli/util
+        ${SMB_SRC_ROOT}/lib/socket
+        ${SMB_SRC_ROOT}/bin/default/lib/socket
+        ${SMB_SRC_ROOT}/lib/crypto
+        ${SMB_SRC_ROOT}/bin/default/lib/crypto
+        ${SMB_SRC_ROOT}/lib/tdb
+        ${SMB_SRC_ROOT}/bin/default/lib/tdb
+        ${SMB_SRC_ROOT}/lib/tsocket
+        ${SMB_SRC_ROOT}/bin/default/lib/tsocket
+        ${SMB_SRC_ROOT}/source4/libcli
+        ${SMB_SRC_ROOT}/bin/default/source4/libcli
+        ${SMB_SRC_ROOT}/libcli/nbt
+        ${SMB_SRC_ROOT}/bin/default/libcli/nbt
+        ${SMB_SRC_ROOT}/source4/lib/events
+        ${SMB_SRC_ROOT}/bin/default/source4/lib/events
+        ${SMB_SRC_ROOT}/lib/async_req
+        ${SMB_SRC_ROOT}/bin/default/lib/async_req
+        ${SMB_SRC_ROOT}/lib/smbconf
+        ${SMB_SRC_ROOT}/bin/default/lib/smbconf
+        /usr/include/p11-kit-1
 )
 
 target_compile_definitions(
@@ -148,9 +195,42 @@ target_compile_definitions(
         HAVE_CONFIG_H=1
         _GNU_SOURCE=1
         _XOPEN_SOURCE_EXTENDED=1
-        HAVE_CONFIG_H=1
         __STDC_WANT_LIB_EXT1__=1
         _REENTRANT
+        STATIC_SMBCONF_PARAM_MODULES=NULL
+        "STATIC_SMBCONF_PARAM_MODULES_PROTO=extern void __SMBCONF_PARAM_dummy_module_proto(void)"
+        STATIC_REG_SMBCONF_MODULES=NULL
+        "STATIC_REG_SMBCONF_MODULES_PROTO=extern void __REG_SMBCONF_dummy_module_proto(void)"
+        STATIC_NDR_MESSAGING_MODULES=NULL
+        "STATIC_NDR_MESSAGING_MODULES_PROTO=extern void __NDR_MESSAGING_dummy_module_proto(void)"
+        STATIC_LOADPARM_CTX_MODULES=NULL
+        "STATIC_LOADPARM_CTX_MODULES_PROTO=extern void __LOADPARM_CTX_dummy_module_proto(void)"
+        STATIC_PARAM_UTIL_MODULES=NULL
+        "STATIC_PARAM_UTIL_MODULES_PROTO=extern void __PARAM_UTIL_dummy_module_proto(void)"
+        STATIC_tdb_wrap3_MODULES=NULL
+        "STATIC_tdb_wrap3_MODULES_PROTO=extern void __tdb_wrap3_dummy_module_proto(void)"
+        STATIC_LIBASYNC_REQ_MODULES=NULL
+        "STATIC_LIBASYNC_REQ_MODULES_PROTO=extern void __LIBASYNC_REQ_dummy_module_proto(void)"
+        STATIC_TDB_LIB_MODULES=NULL
+        "STATIC_TDB_LIB_MODULES_PROTO=extern void __TDB_LIB_dummy_module_proto(void)"
+        STATIC_SMBREGISTRY_MODULES=NULL
+        "STATIC_SMBREGISTRY_MODULES_PROTO=extern void __SMBREGISTRY_dummy_module_proto(void)"
+        STATIC_SAMBA_VERSION_MODULES=NULL
+        "STATIC_SAMBA_VERSION_MODULES_PROTO=extern void __SAMBA_VERSION_dummy_module_proto(void)"
+        STATIC_LIBSMBCONF_MODULES=NULL
+        "STATIC_LIBSMBCONF_MODULES_PROTO=extern void __LIBSMBCONF_dummy_module_proto(void)"
+        STATIC_samba3core_MODULES=NULL
+        "STATIC_samba3core_MODULES_PROTO=extern void __samba3core_dummy_module_proto(void)"
+        STATIC_UTIL_PW_MODULES=NULL
+        "STATIC_UTIL_PW_MODULES_PROTO=extern void __UTIL_PW_dummy_module_proto(void)"
+        STATIC_NDR_SERVER_ID_MODULES=NULL
+        "STATIC_NDR_SERVER_ID_MODULES_PROTO=extern void __NDR_SERVER_ID_dummy_module_proto(void)"
+        STATIC_samba3util_MODULES=NULL
+        "STATIC_samba3util_MODULES_PROTO=extern void __samba3util_dummy_module_proto(void)"
+        STATIC_errors3_MODULES=NULL
+        "STATIC_errors3_MODULES_PROTO=extern void __errors3_dummy_module_proto(void)"
+        STATIC_smbconf_MODULES=NULL
+        "STATIC_smbconf_MODULES_PROTO=extern void __smbconf_dummy_module_proto(void)"
 )
 
 target_compile_options(

@@ -87,9 +87,30 @@ target_compile_definitions(
         HAVE_CONFIG_H=1
         _GNU_SOURCE=1
         _XOPEN_SOURCE_EXTENDED=1
-        HAVE_CONFIG_H=1
         __STDC_WANT_LIB_EXT1__=1
         _REENTRANT
+        STATIC_gensec_util_MODULES=NULL
+        "STATIC_gensec_util_MODULES_PROTO=extern void __gensec_util_dummy_module_proto(void)"
+        STATIC_NTLMSSP_COMMON_MODULES=NULL
+        "STATIC_NTLMSSP_COMMON_MODULES_PROTO=extern void __NTLMSSP_COMMON_dummy_module_proto(void)"
+        STATIC_gensec_schannel_MODULES=NULL
+        "STATIC_gensec_schannel_MODULES_PROTO=extern void __gensec_schannel_dummy_module_proto(void)"
+        STATIC_gensec_http_generic_MODULES=NULL
+        "STATIC_gensec_http_generic_MODULES_PROTO=extern void __gensec_http_generic_dummy_module_proto(void)"
+        STATIC_gensec_ncalrpc_MODULES=NULL
+        "STATIC_gensec_ncalrpc_MODULES_PROTO=extern void __gensec_ncalrpc_dummy_module_proto(void)"
+        STATIC_gensec_http_basic_MODULES=NULL
+        "STATIC_gensec_http_basic_MODULES_PROTO=extern void __gensec_http_basic_dummy_module_proto(void)"
+        STATIC_gensec_spnego_MODULES=NULL
+        "STATIC_gensec_spnego_MODULES_PROTO=extern void __gensec_spnego_dummy_module_proto(void)"
+        STATIC_gensec_MODULES=gensec_gssapi_init
+        "STATIC_gensec_MODULES_PROTO=_MODULE_PROTO(gensec_gssapi_init)_MODULE_PROTO(gensec_spnego_init)_MODULE_PROTO(gensec_schannel_init)_MODULE_PROTO(gensec_ncalrpc_as_system_init)_MODULE_PROTO(gensec_external_init)_MODULE_PROTO(gensec_ntlmssp_init)_MODULE_PROTO(gensec_http_basic_init)_MODULE_PROTO(gensec_http_generic_init)extern void __gensec_dummy_module_proto(void)"
+        STATIC_gensec_ntlmssp_MODULES=NULL
+        "STATIC_gensec_ntlmssp_MODULES_PROTO=extern void __gensec_ntlmssp_dummy_module_proto(void)"
+        STATIC_gensec_external_MODULES=NULL
+        "STATIC_gensec_external_MODULES_PROTO=extern void __gensec_external_dummy_module_proto(void)"
+        STATIC_gensec_gssapi_MODULES=NULL
+        "STATIC_gensec_gssapi_MODULES_PROTO=extern void __gensec_gssapi_dummy_module_proto(void)"
 )
 
 target_compile_options(

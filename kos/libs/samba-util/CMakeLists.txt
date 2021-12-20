@@ -1,8 +1,6 @@
 set(TARGET_NAME samba-util)
 
 set(TARGET_SRC
-        ${SMB_SRC_ROOT}/dynconfig/dynconfig.c
-        ${SMB_SRC_ROOT}/lib/crypto/md4.c
         ${SMB_SRC_ROOT}/lib/util/tiniparser.c
         ${SMB_SRC_ROOT}/lib/util/fault.c
         ${SMB_SRC_ROOT}/lib/util/signal.c
@@ -12,11 +10,13 @@ set(TARGET_SRC
         ${SMB_SRC_ROOT}/lib/util/charset/util_unistr_w.c
         ${SMB_SRC_ROOT}/lib/util/charset/pull_push.c
         ${SMB_SRC_ROOT}/lib/util/charset/util_unistr.c
+        ${SMB_SRC_ROOT}/dynconfig/dynconfig.c
         ${SMB_SRC_ROOT}/lib/util/strv.c
         ${SMB_SRC_ROOT}/lib/util/util_str_hex.c
         ${SMB_SRC_ROOT}/lib/util/charset/iconv.c
         ${SMB_SRC_ROOT}/lib/util/charset/weird.c
         ${SMB_SRC_ROOT}/lib/util/charset/charset_macosxfs.c
+        ${SMB_SRC_ROOT}/lib/crypto/md4.c
         ${SMB_SRC_ROOT}/lib/util/data_blob.c
         ${SMB_SRC_ROOT}/lib/util/util_file.c
         ${SMB_SRC_ROOT}/lib/util/sys_popen.c
@@ -71,22 +71,35 @@ add_library(
 target_include_directories(
         ${TARGET_NAME}
         PRIVATE
-        ${SMB_SRC_ROOT}
-        ${SMB_SRC_ROOT}/lib
-        ${SMB_SRC_ROOT}/lib/replace
-        ${SMB_SRC_ROOT}/lib/talloc
-        ${SMB_SRC_ROOT}/lib/tevent
-        ${SMB_SRC_ROOT}/include
         ${SMB_SRC_ROOT}/include/public
+        ${SMB_SRC_ROOT}/bin/default/include/public
         ${SMB_SRC_ROOT}/source4
+        ${SMB_SRC_ROOT}/bin/default/source4
+        ${SMB_SRC_ROOT}/lib
+        ${SMB_SRC_ROOT}/bin/default/lib
         ${SMB_SRC_ROOT}/source4/lib
+        ${SMB_SRC_ROOT}/bin/default/source4/lib
         ${SMB_SRC_ROOT}/source4/include
-        ${SMB_SRC_ROOT}/source4/heimdal_build
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken
-        ${SMB_SRC_ROOT}/source4/heimdal/include
-        ${SMB_SRC_ROOT}/third_party/gpfs
+        ${SMB_SRC_ROOT}/bin/default/source4/include
+        ${SMB_SRC_ROOT}/include
         ${SMB_SRC_ROOT}/bin/default/include
-        ${SMB_SRC_ROOT}/bin/default
+        ${SMB_SRC_ROOT}/lib/replace
+        ${SMB_SRC_ROOT}/bin/default/lib/replace
+        ${SMB_SRC_ROOT}/.
+        ${SMB_SRC_ROOT}/bin/default/
+        ${SMB_SRC_ROOT}/lib/talloc
+        ${SMB_SRC_ROOT}/bin/default/lib/talloc
+        ${SMB_SRC_ROOT}/lib/util/home/user/kasperskyos/samba/third_party/gpfs
+        ${SMB_SRC_ROOT}/bin/default/lib/util/home/user/kasperskyos/samba/third_party/gpfs
+        ${SMB_SRC_ROOT}/lib/util/charset
+        ${SMB_SRC_ROOT}/bin/default/lib/util/charset
+        ${SMB_SRC_ROOT}/dynconfig
+        ${SMB_SRC_ROOT}/bin/default/dynconfig
+        ${SMB_SRC_ROOT}/lib/crypto
+        ${SMB_SRC_ROOT}/bin/default/lib/crypto
+        ${SMB_SRC_ROOT}/lib/tevent
+        ${SMB_SRC_ROOT}/bin/default/lib/tevent
+        /usr/include/p11-kit-1
 )
 
 target_compile_definitions(
@@ -96,11 +109,16 @@ target_compile_definitions(
         HAVE_CONFIG_H=1
         _GNU_SOURCE=1
         _XOPEN_SOURCE_EXTENDED=1
-        HAVE_CONFIG_H=1
         __STDC_WANT_LIB_EXT1__=1
         _REENTRANT
-        "SBINDIR=\"/home/user/kasperskyos/samba/bin\""
+        STATIC_tiniparser_MODULES=NULL
+        "STATIC_tiniparser_MODULES_PROTO=extern void __tiniparser_dummy_module_proto(void)"
+        STATIC_smb_panic_MODULES=NULL
+        "STATIC_smb_panic_MODULES_PROTO=extern void __smb_panic_dummy_module_proto(void)"
+        STATIC_charset_MODULES=NULL
+        "STATIC_charset_MODULES_PROTO=extern void __charset_dummy_module_proto(void)"
         "BINDIR=\"/home/user/kasperskyos/samba/bin\""
+        "SBINDIR=\"/home/user/kasperskyos/samba/bin\""
         "LIBDIR=\"/usr/local/samba/lib\""
         "LIBEXECDIR=\"/home/user/kasperskyos/samba/bin\""
         "SAMBA_LIBEXECDIR=\"/home/user/kasperskyos/samba/bin\""
@@ -136,6 +154,24 @@ target_compile_definitions(
         "CONFIGFILE=\"/usr/local/samba/etc/smb.conf\""
         "LMHOSTSFILE=\"/usr/local/samba/etc/lmhosts\""
         "SMB_PASSWD_FILE=\"/usr/local/samba/private/smbpasswd\""
+        STATIC_DYNCONFIG_MODULES=NULL
+        "STATIC_DYNCONFIG_MODULES_PROTO=extern void __DYNCONFIG_dummy_module_proto(void)"
+        STATIC_strv_MODULES=NULL
+        "STATIC_strv_MODULES_PROTO=extern void __strv_dummy_module_proto(void)"
+        STATIC_util_str_hex_MODULES=NULL
+        "STATIC_util_str_hex_MODULES_PROTO=extern void __util_str_hex_dummy_module_proto(void)"
+        STATIC_ICONV_WRAPPER_MODULES=NULL
+        "STATIC_ICONV_WRAPPER_MODULES_PROTO=extern void __ICONV_WRAPPER_dummy_module_proto(void)"
+        STATIC_LIBCRYPTO_MODULES=NULL
+        "STATIC_LIBCRYPTO_MODULES_PROTO=extern void __LIBCRYPTO_dummy_module_proto(void)"
+        STATIC_samba_util_core_MODULES=NULL
+        "STATIC_samba_util_core_MODULES_PROTO=extern void __samba_util_core_dummy_module_proto(void)"
+        STATIC_smb_strtox_MODULES=NULL
+        "STATIC_smb_strtox_MODULES_PROTO=extern void __smb_strtox_dummy_module_proto(void)"
+        STATIC_tini_MODULES=NULL
+        "STATIC_tini_MODULES_PROTO=extern void __tini_dummy_module_proto(void)"
+        STATIC_samba_util_MODULES=NULL
+        "STATIC_samba_util_MODULES_PROTO=extern void __samba_util_dummy_module_proto(void)"
 )
 
 target_compile_options(

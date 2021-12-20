@@ -2,13 +2,13 @@ set(TARGET_NAME ndr-nbt)
 
 set(TARGET_SRC
         ${SMB_SRC_ROOT}/libcli/nbt/nbtname.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_nbt.c
         ${SMB_SRC_ROOT}/librpc/ndr/ndr_nbtDUP.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_dnsp.c
         ${SMB_SRC_ROOT}/librpc/ndr/ndr_dnspDUP.c
+        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_dns.c
         ${SMB_SRC_ROOT}/librpc/ndr/ndr_dnsDUP.c
         ${SMB_SRC_ROOT}/librpc/ndr/ndr_dns_utils.c
-        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_nbt.c
-        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_dnsp.c
-        ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_dns.c
 )
 
 add_library(
@@ -20,32 +20,43 @@ add_library(
 target_include_directories(
         ${TARGET_NAME}
         PRIVATE
-        ${SMB_SRC_ROOT}
-        ${SMB_SRC_ROOT}/lib
-        ${SMB_SRC_ROOT}/lib/replace
-        ${SMB_SRC_ROOT}/lib/talloc
-        ${SMB_SRC_ROOT}/lib/tevent
-        ${SMB_SRC_ROOT}/lib/tdb/include
-        ${SMB_SRC_ROOT}/include
+        ${SMB_SRC_ROOT}/libcli/nbt
+        ${SMB_SRC_ROOT}/bin/default/libcli/nbt
         ${SMB_SRC_ROOT}/include/public
+        ${SMB_SRC_ROOT}/bin/default/include/public
         ${SMB_SRC_ROOT}/source4
+        ${SMB_SRC_ROOT}/bin/default/source4
+        ${SMB_SRC_ROOT}/lib
+        ${SMB_SRC_ROOT}/bin/default/lib
         ${SMB_SRC_ROOT}/source4/lib
+        ${SMB_SRC_ROOT}/bin/default/source4/lib
         ${SMB_SRC_ROOT}/source4/include
-        ${SMB_SRC_ROOT}/source4/heimdal_build
-        ${SMB_SRC_ROOT}/source4/heimdal_build/include
-        ${SMB_SRC_ROOT}/source4/heimdal/lib
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/com_err
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/asn1
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/wind
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/hcrypto
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/hcrypto/libtommath
-        ${SMB_SRC_ROOT}/source4/heimdal/include
-        ${SMB_SRC_ROOT}/third_party/gpfs
-        ${SMB_SRC_ROOT}/bin/default
+        ${SMB_SRC_ROOT}/bin/default/source4/include
+        ${SMB_SRC_ROOT}/include
         ${SMB_SRC_ROOT}/bin/default/include
-        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/asn1
-        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/wind
+        ${SMB_SRC_ROOT}/lib/replace
+        ${SMB_SRC_ROOT}/bin/default/lib/replace
+        ${SMB_SRC_ROOT}/.
+        ${SMB_SRC_ROOT}/bin/default/
+        ${SMB_SRC_ROOT}/lib/talloc
+        ${SMB_SRC_ROOT}/bin/default/lib/talloc
+        ${SMB_SRC_ROOT}/librpc
+        ${SMB_SRC_ROOT}/bin/default/librpc
+        ${SMB_SRC_ROOT}/lib/tevent
+        ${SMB_SRC_ROOT}/bin/default/lib/tevent
+        ${SMB_SRC_ROOT}/lib/util/charset
+        ${SMB_SRC_ROOT}/bin/default/lib/util/charset
+        ${SMB_SRC_ROOT}/lib/util/home/user/kasperskyos/samba/third_party/gpfs
+        ${SMB_SRC_ROOT}/bin/default/lib/util/home/user/kasperskyos/samba/third_party/gpfs
+        ${SMB_SRC_ROOT}/libcli/security
+        ${SMB_SRC_ROOT}/bin/default/libcli/security
+        ${SMB_SRC_ROOT}/dynconfig
+        ${SMB_SRC_ROOT}/bin/default/dynconfig
+        ${SMB_SRC_ROOT}/libcli/util
+        ${SMB_SRC_ROOT}/bin/default/libcli/util
+        ${SMB_SRC_ROOT}/lib/crypto
+        ${SMB_SRC_ROOT}/bin/default/lib/crypto
+        /usr/include/p11-kit-1
 )
 
 target_compile_definitions(
@@ -55,11 +66,16 @@ target_compile_definitions(
         HAVE_CONFIG_H=1
         _GNU_SOURCE=1
         _XOPEN_SOURCE_EXTENDED=1
-        HAVE_CONFIG_H=1
         __STDC_WANT_LIB_EXT1__=1
         _REENTRANT
+        STATIC_NDR_NBT_BUF_MODULES=NULL
+        "STATIC_NDR_NBT_BUF_MODULES_PROTO=extern void __NDR_NBT_BUF_dummy_module_proto(void)"
         STATIC_ndr_nbt_MODULES=NULL
         "STATIC_ndr_nbt_MODULES_PROTO=extern void __ndr_nbt_dummy_module_proto(void)"
+        STATIC_NDR_DNSP_MODULES=NULL
+        "STATIC_NDR_DNSP_MODULES_PROTO=extern void __NDR_DNSP_dummy_module_proto(void)"
+        STATIC_NDR_DNS_MODULES=NULL
+        "STATIC_NDR_DNS_MODULES_PROTO=extern void __NDR_DNS_dummy_module_proto(void)"
 )
 
 target_compile_options(

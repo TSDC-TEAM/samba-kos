@@ -11,9 +11,8 @@ if(KOS)
     )
 else()
     set(TARGET_SRC
-            ${SMB_SRC_ROOT}/lib/replace/cwrap.c
-            ${SMB_SRC_ROOT}/lib/replace/closefrom.c
             ${SMB_SRC_ROOT}/lib/replace/replace.c
+            ${SMB_SRC_ROOT}/lib/replace/cwrap.c
     )
 endif()
 
@@ -27,14 +26,21 @@ target_include_directories(
         ${TARGET_NAME}
         PRIVATE
         ${SMB_SRC_ROOT}/lib/replace
+        ${SMB_SRC_ROOT}/bin/default/lib/replace
         ${SMB_SRC_ROOT}/include/public
+        ${SMB_SRC_ROOT}/bin/default/include/public
         ${SMB_SRC_ROOT}/source4
+        ${SMB_SRC_ROOT}/bin/default/source4
         ${SMB_SRC_ROOT}/lib
+        ${SMB_SRC_ROOT}/bin/default/lib
         ${SMB_SRC_ROOT}/source4/lib
+        ${SMB_SRC_ROOT}/bin/default/source4/lib
         ${SMB_SRC_ROOT}/source4/include
+        ${SMB_SRC_ROOT}/bin/default/source4/include
         ${SMB_SRC_ROOT}/include
         ${SMB_SRC_ROOT}/bin/default/include
-        ${SMB_SRC_ROOT}
+        ${SMB_SRC_ROOT}/.
+        ${SMB_SRC_ROOT}/bin/default/
 )
 
 if(KOS)

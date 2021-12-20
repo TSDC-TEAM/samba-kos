@@ -1,19 +1,19 @@
 set(TARGET_NAME wind)
 
 set(TARGET_SRC
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/wind/wind_err.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/wind/stringprep.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/wind/errorlist.c
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/wind/errorlist_table.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/wind/normalize.c
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/wind/normalize_table.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/wind/combining.c
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/wind/combining_table.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/wind/utf8.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/wind/bidi.c
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/wind/bidi_table.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/wind/ldap.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/wind/map.c
-        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/wind/wind_err.c
-        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/wind/errorlist_table.c
-        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/wind/normalize_table.c
-        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/wind/combining_table.c
-        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/wind/bidi_table.c
         ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/wind/map_table.c
 )
 
@@ -26,32 +26,34 @@ add_library(
 target_include_directories(
         ${TARGET_NAME}
         PRIVATE
-        ${SMB_SRC_ROOT}
-        ${SMB_SRC_ROOT}/lib
-        ${SMB_SRC_ROOT}/lib/replace
-        ${SMB_SRC_ROOT}/lib/talloc
-        ${SMB_SRC_ROOT}/lib/tevent
-        ${SMB_SRC_ROOT}/lib/tdb/include
-        ${SMB_SRC_ROOT}/include
-        ${SMB_SRC_ROOT}/include/public
-        ${SMB_SRC_ROOT}/source4
-        ${SMB_SRC_ROOT}/source4/lib
-        ${SMB_SRC_ROOT}/source4/include
         ${SMB_SRC_ROOT}/source4/heimdal_build
-        ${SMB_SRC_ROOT}/source4/heimdal_build/include
-        ${SMB_SRC_ROOT}/source4/heimdal/lib
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/com_err
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/asn1
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal_build
         ${SMB_SRC_ROOT}/source4/heimdal/lib/wind
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/hcrypto
-        ${SMB_SRC_ROOT}/source4/heimdal/lib/hcrypto/libtommath
-        ${SMB_SRC_ROOT}/source4/heimdal/include
-        ${SMB_SRC_ROOT}/third_party/gpfs
-        ${SMB_SRC_ROOT}/bin/default
-        ${SMB_SRC_ROOT}/bin/default/include
-        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/asn1
         ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/wind
+        ${SMB_SRC_ROOT}/include/public
+        ${SMB_SRC_ROOT}/bin/default/include/public
+        ${SMB_SRC_ROOT}/source4
+        ${SMB_SRC_ROOT}/bin/default/source4
+        ${SMB_SRC_ROOT}/lib
+        ${SMB_SRC_ROOT}/bin/default/lib
+        ${SMB_SRC_ROOT}/source4/lib
+        ${SMB_SRC_ROOT}/bin/default/source4/lib
+        ${SMB_SRC_ROOT}/source4/include
+        ${SMB_SRC_ROOT}/bin/default/source4/include
+        ${SMB_SRC_ROOT}/include
+        ${SMB_SRC_ROOT}/bin/default/include
+        ${SMB_SRC_ROOT}/lib/replace
+        ${SMB_SRC_ROOT}/bin/default/lib/replace
+        ${SMB_SRC_ROOT}/.
+        ${SMB_SRC_ROOT}/bin/default/
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/roken
+        ${SMB_SRC_ROOT}/source4/heimdal/include
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/include
+        ${SMB_SRC_ROOT}/source4/heimdal_build/include
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal_build/include
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/com_err
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/com_err
 )
 
 target_compile_definitions(
@@ -61,7 +63,6 @@ target_compile_definitions(
         HAVE_CONFIG_H=1
         _GNU_SOURCE=1
         _XOPEN_SOURCE_EXTENDED=1
-        HAVE_CONFIG_H=1
         __STDC_WANT_LIB_EXT1__=1
         _REENTRANT
         STATIC_wind_MODULES=NULL

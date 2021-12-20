@@ -66,9 +66,10 @@ target_compile_definitions(
         HAVE_CONFIG_H=1
         _GNU_SOURCE=1
         _XOPEN_SOURCE_EXTENDED=1
-        HAVE_CONFIG_H=1
         __STDC_WANT_LIB_EXT1__=1
         _REENTRANT
+        STATIC_krb5samba_MODULES=NULL
+        "STATIC_krb5samba_MODULES_PROTO=extern void __krb5samba_dummy_module_proto(void)"
 )
 
 target_compile_options(

@@ -1,6 +1,7 @@
 set(TARGET_NAME gssapi)
 
 set(TARGET_SRC
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/gssapi/asn1_gssapi_asn1.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/spnego/init_sec_context.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/spnego/external.c
         ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/spnego/compat.c
@@ -118,7 +119,6 @@ set(TARGET_SRC
         ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/mech/gss_pseudo_random.c
         ${SMB_SRC_ROOT}/source4/heimdal_build/gssapi-glue.c
         ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/gssapi/asn1_spnego_asn1.c
-        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/gssapi/asn1_gssapi_asn1.c
 )
 
 add_library(
@@ -176,9 +176,14 @@ target_compile_definitions(
         HAVE_CONFIG_H=1
         _GNU_SOURCE=1
         _XOPEN_SOURCE_EXTENDED=1
-        HAVE_CONFIG_H=1
         __STDC_WANT_LIB_EXT1__=1
         _REENTRANT
+        STATIC_HEIMDAL_GSSAPI_ASN1_MODULES=NULL
+        "STATIC_HEIMDAL_GSSAPI_ASN1_MODULES_PROTO=extern void __HEIMDAL_GSSAPI_ASN1_dummy_module_proto(void)"
+        STATIC_gssapi_MODULES=NULL
+        "STATIC_gssapi_MODULES_PROTO=extern void __gssapi_dummy_module_proto(void)"
+        STATIC_HEIMDAL_SPNEGO_ASN1_MODULES=NULL
+        "STATIC_HEIMDAL_SPNEGO_ASN1_MODULES_PROTO=extern void __HEIMDAL_SPNEGO_ASN1_dummy_module_proto(void)"
 )
 
 target_compile_options(
