@@ -1,0 +1,77 @@
+#ifndef __NDR_WKSSVC_SCOMPAT_H__
+#define __NDR_WKSSVC_SCOMPAT_H__
+
+struct pipes_struct;
+struct dcesrv_endpoint_server;
+struct dcesrv_call_state;
+
+const struct dcesrv_endpoint_server *wkssvc_get_ep_server(void);
+
+NTSTATUS wkssvc__op_ndr_pull(struct dcesrv_call_state *dce_call, TALLOC_CTX *mem_ctx, struct ndr_pull *pull, void **r);
+struct wkssvc_NetWkstaGetInfo;
+WERROR _wkssvc_NetWkstaGetInfo(struct pipes_struct *p, struct wkssvc_NetWkstaGetInfo *r);
+struct wkssvc_NetWkstaSetInfo;
+WERROR _wkssvc_NetWkstaSetInfo(struct pipes_struct *p, struct wkssvc_NetWkstaSetInfo *r);
+struct wkssvc_NetWkstaEnumUsers;
+WERROR _wkssvc_NetWkstaEnumUsers(struct pipes_struct *p, struct wkssvc_NetWkstaEnumUsers *r);
+struct wkssvc_NetrWkstaUserGetInfo;
+WERROR _wkssvc_NetrWkstaUserGetInfo(struct pipes_struct *p, struct wkssvc_NetrWkstaUserGetInfo *r);
+struct wkssvc_NetrWkstaUserSetInfo;
+WERROR _wkssvc_NetrWkstaUserSetInfo(struct pipes_struct *p, struct wkssvc_NetrWkstaUserSetInfo *r);
+struct wkssvc_NetWkstaTransportEnum;
+WERROR _wkssvc_NetWkstaTransportEnum(struct pipes_struct *p, struct wkssvc_NetWkstaTransportEnum *r);
+struct wkssvc_NetrWkstaTransportAdd;
+WERROR _wkssvc_NetrWkstaTransportAdd(struct pipes_struct *p, struct wkssvc_NetrWkstaTransportAdd *r);
+struct wkssvc_NetrWkstaTransportDel;
+WERROR _wkssvc_NetrWkstaTransportDel(struct pipes_struct *p, struct wkssvc_NetrWkstaTransportDel *r);
+struct wkssvc_NetrUseAdd;
+WERROR _wkssvc_NetrUseAdd(struct pipes_struct *p, struct wkssvc_NetrUseAdd *r);
+struct wkssvc_NetrUseGetInfo;
+WERROR _wkssvc_NetrUseGetInfo(struct pipes_struct *p, struct wkssvc_NetrUseGetInfo *r);
+struct wkssvc_NetrUseDel;
+WERROR _wkssvc_NetrUseDel(struct pipes_struct *p, struct wkssvc_NetrUseDel *r);
+struct wkssvc_NetrUseEnum;
+WERROR _wkssvc_NetrUseEnum(struct pipes_struct *p, struct wkssvc_NetrUseEnum *r);
+struct wkssvc_NetrMessageBufferSend;
+WERROR _wkssvc_NetrMessageBufferSend(struct pipes_struct *p, struct wkssvc_NetrMessageBufferSend *r);
+struct wkssvc_NetrWorkstationStatisticsGet;
+WERROR _wkssvc_NetrWorkstationStatisticsGet(struct pipes_struct *p, struct wkssvc_NetrWorkstationStatisticsGet *r);
+struct wkssvc_NetrLogonDomainNameAdd;
+WERROR _wkssvc_NetrLogonDomainNameAdd(struct pipes_struct *p, struct wkssvc_NetrLogonDomainNameAdd *r);
+struct wkssvc_NetrLogonDomainNameDel;
+WERROR _wkssvc_NetrLogonDomainNameDel(struct pipes_struct *p, struct wkssvc_NetrLogonDomainNameDel *r);
+struct wkssvc_NetrJoinDomain;
+WERROR _wkssvc_NetrJoinDomain(struct pipes_struct *p, struct wkssvc_NetrJoinDomain *r);
+struct wkssvc_NetrUnjoinDomain;
+WERROR _wkssvc_NetrUnjoinDomain(struct pipes_struct *p, struct wkssvc_NetrUnjoinDomain *r);
+struct wkssvc_NetrRenameMachineInDomain;
+WERROR _wkssvc_NetrRenameMachineInDomain(struct pipes_struct *p, struct wkssvc_NetrRenameMachineInDomain *r);
+struct wkssvc_NetrValidateName;
+WERROR _wkssvc_NetrValidateName(struct pipes_struct *p, struct wkssvc_NetrValidateName *r);
+struct wkssvc_NetrGetJoinInformation;
+WERROR _wkssvc_NetrGetJoinInformation(struct pipes_struct *p, struct wkssvc_NetrGetJoinInformation *r);
+struct wkssvc_NetrGetJoinableOus;
+WERROR _wkssvc_NetrGetJoinableOus(struct pipes_struct *p, struct wkssvc_NetrGetJoinableOus *r);
+struct wkssvc_NetrJoinDomain2;
+WERROR _wkssvc_NetrJoinDomain2(struct pipes_struct *p, struct wkssvc_NetrJoinDomain2 *r);
+struct wkssvc_NetrUnjoinDomain2;
+WERROR _wkssvc_NetrUnjoinDomain2(struct pipes_struct *p, struct wkssvc_NetrUnjoinDomain2 *r);
+struct wkssvc_NetrRenameMachineInDomain2;
+WERROR _wkssvc_NetrRenameMachineInDomain2(struct pipes_struct *p, struct wkssvc_NetrRenameMachineInDomain2 *r);
+struct wkssvc_NetrValidateName2;
+WERROR _wkssvc_NetrValidateName2(struct pipes_struct *p, struct wkssvc_NetrValidateName2 *r);
+struct wkssvc_NetrGetJoinableOus2;
+WERROR _wkssvc_NetrGetJoinableOus2(struct pipes_struct *p, struct wkssvc_NetrGetJoinableOus2 *r);
+struct wkssvc_NetrAddAlternateComputerName;
+WERROR _wkssvc_NetrAddAlternateComputerName(struct pipes_struct *p, struct wkssvc_NetrAddAlternateComputerName *r);
+struct wkssvc_NetrRemoveAlternateComputerName;
+WERROR _wkssvc_NetrRemoveAlternateComputerName(struct pipes_struct *p, struct wkssvc_NetrRemoveAlternateComputerName *r);
+struct wkssvc_NetrSetPrimaryComputername;
+WERROR _wkssvc_NetrSetPrimaryComputername(struct pipes_struct *p, struct wkssvc_NetrSetPrimaryComputername *r);
+struct wkssvc_NetrEnumerateComputerNames;
+WERROR _wkssvc_NetrEnumerateComputerNames(struct pipes_struct *p, struct wkssvc_NetrEnumerateComputerNames *r);
+NTSTATUS wkssvc__op_dispatch(struct dcesrv_call_state *dce_call, TALLOC_CTX *mem_ctx, void *r);
+NTSTATUS wkssvc__op_reply(struct dcesrv_call_state *dce_call, TALLOC_CTX *mem_ctx, void *r);
+NTSTATUS wkssvc__op_ndr_push(struct dcesrv_call_state *dce_call, TALLOC_CTX *mem_ctx, struct ndr_push *push, const void *r);
+NTSTATUS wkssvc__op_local(struct dcesrv_call_state *dce_call, TALLOC_CTX *mem_ctx, void *r);
+#endif /* __NDR_WKSSVC_SCOMPAT_H__ */
