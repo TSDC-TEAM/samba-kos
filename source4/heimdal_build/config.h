@@ -57,10 +57,9 @@
 #define HAVE_CLOSEFROM 1
 #endif
 
-// @todo: tmp
 /* lib/replace provides a getprogname */
 #ifndef HAVE_GETPROGNAME
-//#define HAVE_GETPROGNAME 1
+#define HAVE_GETPROGNAME 1
 #endif
 
 /* lib/replace provides a strsep */

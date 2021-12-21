@@ -650,9 +650,7 @@ static pid_t tfork_start_waiter_and_worker(struct tfork_state *state,
 		status_sp_waiter_fd = fd;
 	}
 
-    rep_closefrom(2);
-    // @todo: TMP
-    // closefrom(2);
+     closefrom(2);
 
 	/* Tell the caller we're ready */
 	nwritten = sys_write(status_sp_waiter_fd, &(char){0}, sizeof(char));

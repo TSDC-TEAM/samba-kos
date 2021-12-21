@@ -959,8 +959,6 @@ void rep_setproctitle_init(int argc, char *argv[], char *envp[]);
 int rep_memset_s(void *dest, size_t destsz, int ch, size_t count);
 #endif
 
-// @todo: tmp
-#define HAVE_GETPROGNAME 1
 #ifndef HAVE_GETPROGNAME
 #define getprogname rep_getprogname
 const char *rep_getprogname(void);
