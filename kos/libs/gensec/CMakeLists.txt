@@ -103,7 +103,7 @@ target_compile_definitions(
         "STATIC_gensec_http_basic_MODULES_PROTO=extern void __gensec_http_basic_dummy_module_proto(void)"
         STATIC_gensec_spnego_MODULES=NULL
         "STATIC_gensec_spnego_MODULES_PROTO=extern void __gensec_spnego_dummy_module_proto(void)"
-        STATIC_gensec_MODULES=gensec_gssapi_init
+        "STATIC_gensec_MODULES=gensec_gssapi_init,gensec_spnego_init,gensec_schannel_init,gensec_ncalrpc_as_system_init,gensec_external_init,gensec_ntlmssp_init,gensec_http_basic_init,gensec_http_generic_init,NULL"
         "STATIC_gensec_MODULES_PROTO=_MODULE_PROTO(gensec_gssapi_init)_MODULE_PROTO(gensec_spnego_init)_MODULE_PROTO(gensec_schannel_init)_MODULE_PROTO(gensec_ncalrpc_as_system_init)_MODULE_PROTO(gensec_external_init)_MODULE_PROTO(gensec_ntlmssp_init)_MODULE_PROTO(gensec_http_basic_init)_MODULE_PROTO(gensec_http_generic_init)extern void __gensec_dummy_module_proto(void)"
         STATIC_gensec_ntlmssp_MODULES=NULL
         "STATIC_gensec_ntlmssp_MODULES_PROTO=extern void __gensec_ntlmssp_dummy_module_proto(void)"
