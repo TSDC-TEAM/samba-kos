@@ -258,10 +258,6 @@ add_dependencies(c combined)
 
 set_target_properties(c
         PROPERTIES
-        IMPORTED_LOCATION ${C_LIB})
-
-set_target_properties(c
-        PROPERTIES
         IMPORTED_LOCATION ${C_LIB}
 )
 
@@ -272,14 +268,11 @@ set(SAMBA_EXT_MODULES
 
 set(SAMBA_THIRD_PARTY_LIBS
         pthread
-        m
         dl
         gnutls
         z
         popt
-        ncurses
-        tinfo
         resolv
-        bsd
+        bsd # @todo: not really needed
         PARENT_SCOPE
 )
