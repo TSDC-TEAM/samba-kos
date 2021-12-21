@@ -1,0 +1,73 @@
+#ifndef __NDR_EVENTLOG6_SCOMPAT_H__
+#define __NDR_EVENTLOG6_SCOMPAT_H__
+
+struct pipes_struct;
+struct dcesrv_endpoint_server;
+struct dcesrv_call_state;
+
+const struct dcesrv_endpoint_server *eventlog6_get_ep_server(void);
+
+NTSTATUS eventlog6__op_ndr_pull(struct dcesrv_call_state *dce_call, TALLOC_CTX *mem_ctx, struct ndr_pull *pull, void **r);
+struct eventlog6_EvtRpcRegisterRemoteSubscription;
+WERROR _eventlog6_EvtRpcRegisterRemoteSubscription(struct pipes_struct *p, struct eventlog6_EvtRpcRegisterRemoteSubscription *r);
+struct eventlog6_EvtRpcRemoteSubscriptionNextAsync;
+WERROR _eventlog6_EvtRpcRemoteSubscriptionNextAsync(struct pipes_struct *p, struct eventlog6_EvtRpcRemoteSubscriptionNextAsync *r);
+struct eventlog6_EvtRpcRemoteSubscriptionNext;
+WERROR _eventlog6_EvtRpcRemoteSubscriptionNext(struct pipes_struct *p, struct eventlog6_EvtRpcRemoteSubscriptionNext *r);
+struct eventlog6_EvtRpcRemoteSubscriptionWaitAsync;
+WERROR _eventlog6_EvtRpcRemoteSubscriptionWaitAsync(struct pipes_struct *p, struct eventlog6_EvtRpcRemoteSubscriptionWaitAsync *r);
+struct eventlog6_EvtRpcRegisterControllableOperation;
+WERROR _eventlog6_EvtRpcRegisterControllableOperation(struct pipes_struct *p, struct eventlog6_EvtRpcRegisterControllableOperation *r);
+struct eventlog6_EvtRpcRegisterLogQuery;
+WERROR _eventlog6_EvtRpcRegisterLogQuery(struct pipes_struct *p, struct eventlog6_EvtRpcRegisterLogQuery *r);
+struct eventlog6_EvtRpcClearLog;
+WERROR _eventlog6_EvtRpcClearLog(struct pipes_struct *p, struct eventlog6_EvtRpcClearLog *r);
+struct eventlog6_EvtRpcExportLog;
+WERROR _eventlog6_EvtRpcExportLog(struct pipes_struct *p, struct eventlog6_EvtRpcExportLog *r);
+struct eventlog6_EvtRpcLocalizeExportLog;
+WERROR _eventlog6_EvtRpcLocalizeExportLog(struct pipes_struct *p, struct eventlog6_EvtRpcLocalizeExportLog *r);
+struct eventlog6_EvtRpcMessageRender;
+WERROR _eventlog6_EvtRpcMessageRender(struct pipes_struct *p, struct eventlog6_EvtRpcMessageRender *r);
+struct eventlog6_EvtRpcMessageRenderDefault;
+WERROR _eventlog6_EvtRpcMessageRenderDefault(struct pipes_struct *p, struct eventlog6_EvtRpcMessageRenderDefault *r);
+struct eventlog6_EvtRpcQueryNext;
+WERROR _eventlog6_EvtRpcQueryNext(struct pipes_struct *p, struct eventlog6_EvtRpcQueryNext *r);
+struct eventlog6_EvtRpcQuerySeek;
+WERROR _eventlog6_EvtRpcQuerySeek(struct pipes_struct *p, struct eventlog6_EvtRpcQuerySeek *r);
+struct eventlog6_EvtRpcClose;
+WERROR _eventlog6_EvtRpcClose(struct pipes_struct *p, struct eventlog6_EvtRpcClose *r);
+struct eventlog6_EvtRpcCancel;
+WERROR _eventlog6_EvtRpcCancel(struct pipes_struct *p, struct eventlog6_EvtRpcCancel *r);
+struct eventlog6_EvtRpcAssertConfig;
+WERROR _eventlog6_EvtRpcAssertConfig(struct pipes_struct *p, struct eventlog6_EvtRpcAssertConfig *r);
+struct eventlog6_EvtRpcRetractConfig;
+WERROR _eventlog6_EvtRpcRetractConfig(struct pipes_struct *p, struct eventlog6_EvtRpcRetractConfig *r);
+struct eventlog6_EvtRpcOpenLogHandle;
+WERROR _eventlog6_EvtRpcOpenLogHandle(struct pipes_struct *p, struct eventlog6_EvtRpcOpenLogHandle *r);
+struct eventlog6_EvtRpcGetLogFileInfo;
+WERROR _eventlog6_EvtRpcGetLogFileInfo(struct pipes_struct *p, struct eventlog6_EvtRpcGetLogFileInfo *r);
+struct eventlog6_EvtRpcGetChannelList;
+WERROR _eventlog6_EvtRpcGetChannelList(struct pipes_struct *p, struct eventlog6_EvtRpcGetChannelList *r);
+struct eventlog6_EvtRpcGetChannelConfig;
+WERROR _eventlog6_EvtRpcGetChannelConfig(struct pipes_struct *p, struct eventlog6_EvtRpcGetChannelConfig *r);
+struct eventlog6_EvtRpcPutChannelConfig;
+WERROR _eventlog6_EvtRpcPutChannelConfig(struct pipes_struct *p, struct eventlog6_EvtRpcPutChannelConfig *r);
+struct eventlog6_EvtRpcGetPublisherList;
+WERROR _eventlog6_EvtRpcGetPublisherList(struct pipes_struct *p, struct eventlog6_EvtRpcGetPublisherList *r);
+struct eventlog6_EvtRpcGetPublisherListForChannel;
+WERROR _eventlog6_EvtRpcGetPublisherListForChannel(struct pipes_struct *p, struct eventlog6_EvtRpcGetPublisherListForChannel *r);
+struct eventlog6_EvtRpcGetPublisherMetadata;
+WERROR _eventlog6_EvtRpcGetPublisherMetadata(struct pipes_struct *p, struct eventlog6_EvtRpcGetPublisherMetadata *r);
+struct eventlog6_EvtRpcGetPublisherResourceMetadata;
+WERROR _eventlog6_EvtRpcGetPublisherResourceMetadata(struct pipes_struct *p, struct eventlog6_EvtRpcGetPublisherResourceMetadata *r);
+struct eventlog6_EvtRpcGetEventMetadataEnum;
+WERROR _eventlog6_EvtRpcGetEventMetadataEnum(struct pipes_struct *p, struct eventlog6_EvtRpcGetEventMetadataEnum *r);
+struct eventlog6_EvtRpcGetNextEventMetadata;
+WERROR _eventlog6_EvtRpcGetNextEventMetadata(struct pipes_struct *p, struct eventlog6_EvtRpcGetNextEventMetadata *r);
+struct eventlog6_EvtRpcGetClassicLogDisplayName;
+WERROR _eventlog6_EvtRpcGetClassicLogDisplayName(struct pipes_struct *p, struct eventlog6_EvtRpcGetClassicLogDisplayName *r);
+NTSTATUS eventlog6__op_dispatch(struct dcesrv_call_state *dce_call, TALLOC_CTX *mem_ctx, void *r);
+NTSTATUS eventlog6__op_reply(struct dcesrv_call_state *dce_call, TALLOC_CTX *mem_ctx, void *r);
+NTSTATUS eventlog6__op_ndr_push(struct dcesrv_call_state *dce_call, TALLOC_CTX *mem_ctx, struct ndr_push *push, const void *r);
+NTSTATUS eventlog6__op_local(struct dcesrv_call_state *dce_call, TALLOC_CTX *mem_ctx, void *r);
+#endif /* __NDR_EVENTLOG6_SCOMPAT_H__ */
