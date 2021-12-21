@@ -1,3 +1,4 @@
+# Autogen files
 /bin/**/*.o
 /bin/**/*.x
 /bin/**/*.hx
@@ -7,16 +8,8 @@
 /bin/**/*.d
 /bin/**/*.pc
 /bin/**/*.log
-/bin/**/*.o
-/bin/**/*.o
-/bin/**/*.o
-/bin/**/*.o
-/bin/**/*.o
-/bin/**/*.o
-/bin/**/*.o
-/bin/**/*.o
-/bin/**/*.o
 
+# Other
 /bin/c4che/sambadeps
 /bin/default/docs-xml/**
 /lib/*/bin/
