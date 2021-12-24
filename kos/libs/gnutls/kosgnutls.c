@@ -1,14 +1,5 @@
 #include "kosgnutls.h"
 
-const char *gnutls_strerror(int error)
-{
-    return "KOS: unknown error";
-}
-
-const char *gnutls_strerror_name(int error)
-{
-    return "KOS: unknown error name";
-}
 
 int gnutls_cipher_encrypt(gnutls_cipher_hd_t handle, void *ptext,
                           size_t ptext_len)

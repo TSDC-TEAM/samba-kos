@@ -2,6 +2,7 @@ set(TARGET_NAME gnutls)
 
 set(TARGET_SRC
         ${SMB_SRC_ROOT}/kos/libs/gnutls/kosgnutls.c
+        ${SMB_SRC_ROOT}/kos/libs/gnutls/kosgnutls_errors.c
 )
 
 add_library(
