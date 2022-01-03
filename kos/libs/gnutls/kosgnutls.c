@@ -36,7 +36,8 @@ void gnutls_hash_deinit(gnutls_hash_hd_t handle, void *digest)
 
 int gnutls_rnd(gnutls_rnd_level_t level, void *data, size_t len)
 {
-    return -1;
+    RAND_bytes(data, (int)len);
+    return 0;
 }
 
 int gnutls_aead_cipher_encrypt(gnutls_aead_cipher_hd_t handle,
