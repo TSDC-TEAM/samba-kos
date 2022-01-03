@@ -301,7 +301,18 @@ int gnutls_hmac_fast(gnutls_mac_algorithm_t algorithm,
                      const void *key, size_t keylen,
                      const void *ptext, size_t ptext_len, void *digest)
 {
-    return -1;
+    if (algorithm != GNUTLS_MAC_MD5) {
+        fprintf(stderr, "Unknown algo HMAC fast\n");
+        exit(1);
+    }
+
+    unsigned int resultlen = 0;
+    digest = HMAC(EVP_md5(), key, (int)keylen, ptext, ptext_len, digest, &resultlen);
+    if (!digest) {
+        return -1;
+    }
+
+    return 0;
 }
 
 inline static size_t _gnutls_mac_get_algo_len(const mac_entry_st * e)
