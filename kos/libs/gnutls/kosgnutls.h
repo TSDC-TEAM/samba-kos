@@ -5,6 +5,40 @@
 #include <stddef.h>
 #include <sys/uio.h>
 
+#include <stdio.h>
+
+static void DumpHex(const void* data, size_t size) {
+    char ascii[17];
+    size_t i, j;
+    ascii[16] = '\0';
+    for (i = 0; i < size; ++i) {
+        printf("%02X ", ((unsigned char*)data)[i]);
+        if (((unsigned char*)data)[i] >= ' ' && ((unsigned char*)data)[i] <= '~') {
+            ascii[i % 16] = ((unsigned char*)data)[i];
+        } else {
+            ascii[i % 16] = '.';
+        }
+        if ((i+1) % 8 == 0 || i+1 == size) {
+            printf(" ");
+            if ((i+1) % 16 == 0) {
+                printf("|  %s \n", ascii);
+            } else if (i+1 == size) {
+                ascii[(i+1) % 16] = '\0';
+                if ((i+1) % 16 <= 8) {
+                    printf(" ");
+                }
+                for (j = (i+1) % 16; j < 16; ++j) {
+                    printf("   ");
+                }
+                printf("|  %s \n", ascii);
+            }
+        }
+    }
+    fflush(stdout);
+}
+
+#define unlikely
+
 #define GNUTLS_E_SUCCESS 0
 #define	GNUTLS_E_UNKNOWN_COMPRESSION_ALGORITHM -3
 #define	GNUTLS_E_UNKNOWN_CIPHER_TYPE -6
@@ -254,6 +288,29 @@
 #define GNUTLS_E_APPLICATION_ERROR_MAX -65000
 #define GNUTLS_E_APPLICATION_ERROR_MIN -65500
 
+#define GNUTLS_CIPHER_FLAG_ONLY_AEAD	(1 << 0) /* When set, this cipher is only available through the new AEAD API */
+#define GNUTLS_CIPHER_FLAG_XOR_NONCE	(1 << 1) /* In this TLS AEAD cipher xor the implicit_iv with the nonce */
+#define GNUTLS_CIPHER_FLAG_NO_REKEY	    (1 << 2) /* whether this tls1.3 cipher doesn't need to rekey after 2^24 messages */
+
+#define GNUTLS_MAC_FLAG_PREIMAGE_INSECURE	1  /* if this algorithm should not be trusted for pre-image attacks */
+#define GNUTLS_MAC_FLAG_CONTINUOUS_MAC		(1 << 1) /* if this MAC should be used in a 'continuous' way in TLS */
+#define GNUTLS_MAC_FLAG_PREIMAGE_INSECURE_REVERTIBLE	(1 << 2)  /* if this algorithm should not be trusted for pre-image attacks, but can be enabled through API */
+#define GNUTLS_MAC_FLAG_ALLOW_INSECURE_REVERTIBLE	(1 << 3)  /* when checking with _gnutls_digest_is_insecure2, don't treat revertible setting as fatal */
+
+
+#define is_cipher_algo_forbidden(x) 0
+# define is_mac_algo_forbidden(x) 0
+
+void _gnutls_null_log(void *x, ...);
+
+#define _gnutls_assert_log _gnutls_null_log
+
+static int gnutls_assert_val_int(int val, const char *file, const char *func, int line)
+{
+    _gnutls_assert_log( "ASSERT: %s[%s]:%d\n", file,func,line);
+    return val;
+}
+#define gnutls_assert_val(x) gnutls_assert_val_int(x, __FILE__, __func__, __LINE__)
 
 typedef enum gnutls_cipher_algorithm {
     GNUTLS_CIPHER_UNKNOWN = 0,
@@ -293,6 +350,11 @@ typedef enum gnutls_cipher_algorithm {
     GNUTLS_CIPHER_GOST28147_TC26Z_CNT = 34,
     GNUTLS_CIPHER_CHACHA20_64 = 35,
     GNUTLS_CIPHER_CHACHA20_32 = 36,
+    GNUTLS_CIPHER_AES_128_SIV = 37,
+    GNUTLS_CIPHER_AES_256_SIV = 38,
+    GNUTLS_CIPHER_AES_192_GCM = 39,
+    GNUTLS_CIPHER_MAGMA_CTR_ACPKM = 40,
+    GNUTLS_CIPHER_KUZNYECHIK_CTR_ACPKM = 41,
 
     /* used only for PGP internals. Ignored in TLS/SSL
      */
@@ -452,6 +514,64 @@ typedef struct api_aead_cipher_hd_st {
 typedef struct api_aead_cipher_hd_st *gnutls_aead_cipher_hd_t;
 
 typedef struct iovec giovec_t;
+
+const cipher_entry_st *_gnutls_cipher_to_entry(gnutls_cipher_algorithm_t c);
+#define cipher_to_entry(x) _gnutls_cipher_to_entry(x)
+
+#define gnutls_assert() _gnutls_assert_log( "ASSERT: %s[%s]:%d\n", __FILE__,__func__,__LINE__);
+
+inline static cipher_type_t _gnutls_cipher_type(const cipher_entry_st * e)
+{
+    if (unlikely(e == NULL))
+        return CIPHER_AEAD; /* doesn't matter */
+    return e->type;
+}
+
+typedef int (*gnutls_cipher_init_func) (gnutls_cipher_algorithm_t, void **ctx, int enc);
+typedef int (*gnutls_cipher_setkey_func) (void *ctx, const void *key, size_t keysize);
+/* old style ciphers */
+typedef int (*gnutls_cipher_setiv_func) (void *ctx, const void *iv, size_t ivsize);
+typedef int (*gnutls_cipher_getiv_func) (void *ctx, void *iv, size_t ivsize);
+typedef int (*gnutls_cipher_encrypt_func) (void *ctx, const void *plain, size_t plainsize,
+                                           void *encr, size_t encrsize);
+typedef int (*gnutls_cipher_decrypt_func) (void *ctx, const void *encr, size_t encrsize,
+                                           void *plain, size_t plainsize);
+
+/* aead ciphers */
+typedef int (*gnutls_cipher_auth_func) (void *ctx, const void *data, size_t datasize);
+typedef void (*gnutls_cipher_tag_func) (void *ctx, void *tag, size_t tagsize);
+
+typedef int (*gnutls_cipher_aead_encrypt_func) (void *ctx,
+                                                const void *nonce, size_t noncesize,
+                                                const void *auth, size_t authsize,
+                                                size_t tag_size,
+                                                const void *plain, size_t plainsize,
+                                                void *encr, size_t encrsize);
+typedef int (*gnutls_cipher_aead_decrypt_func) (void *ctx,
+                                                const void *nonce, size_t noncesize,
+                                                const void *auth, size_t authsize,
+                                                size_t tag_size,
+                                                const void *encr, size_t encrsize,
+                                                void *plain, size_t plainsize);
+typedef void (*gnutls_cipher_deinit_func) (void *ctx);
+
+typedef struct {
+    gnutls_cipher_init_func init;
+    gnutls_cipher_setkey_func setkey;
+    gnutls_cipher_setiv_func setiv;
+    gnutls_cipher_getiv_func getiv;
+    gnutls_cipher_encrypt_func encrypt;
+    gnutls_cipher_decrypt_func decrypt;
+    gnutls_cipher_aead_encrypt_func aead_encrypt;
+    gnutls_cipher_aead_decrypt_func aead_decrypt;
+    gnutls_cipher_deinit_func deinit;
+    gnutls_cipher_auth_func auth;
+    gnutls_cipher_tag_func tag;
+
+    /* Not needed for registered on run-time. Only included
+     * should define it. */
+    int (*exists) (gnutls_cipher_algorithm_t);	/* true/false */
+} gnutls_crypto_cipher_st;
 
 const char *gnutls_strerror(int error);
 const char *gnutls_strerror_name(int error);

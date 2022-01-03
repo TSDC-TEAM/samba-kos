@@ -1,45 +1,6 @@
 #include "kosgnutls.h"
+#include <openssl/rand.h>
 
-
-int gnutls_cipher_encrypt(gnutls_cipher_hd_t handle, void *ptext,
-                          size_t ptext_len)
-{
-    return -1;
-}
-
-int gnutls_cipher_decrypt(gnutls_cipher_hd_t handle, void *ctext,
-                          size_t ctext_len)
-{
-    return -1;
-}
-
-unsigned gnutls_cipher_get_tag_size(gnutls_cipher_algorithm_t algorithm)
-{
-    return 0;
-}
-
-unsigned gnutls_cipher_get_iv_size(gnutls_cipher_algorithm_t algorithm)
-{
-    return 0;
-}
-
-size_t gnutls_cipher_get_key_size(gnutls_cipher_algorithm_t algorithm)
-{
-    return 0;
-
-}
-
-int gnutls_cipher_init(gnutls_cipher_hd_t * handle,
-                       gnutls_cipher_algorithm_t cipher,
-                       const gnutls_datum_t * key, const gnutls_datum_t * iv)
-{
-    return -1;
-}
-
-void gnutls_cipher_deinit(gnutls_cipher_hd_t handle)
-{
-    (void)handle;
-}
 
 int gnutls_hash(gnutls_hash_hd_t handle, const void *ptext, size_t ptext_len)
 {
@@ -69,35 +30,6 @@ int gnutls_hash_init(gnutls_hash_hd_t * dig, gnutls_digest_algorithm_t algorithm
 }
 
 void gnutls_hash_deinit(gnutls_hash_hd_t handle, void *digest)
-{
-    (void)handle;
-}
-
-int gnutls_hmac(gnutls_hmac_hd_t handle, const void *ptext, size_t ptext_len)
-{
-    return -1;
-}
-
-void gnutls_hmac_output(gnutls_hmac_hd_t handle, void *digest)
-{
-    (void)handle;
-}
-
-int gnutls_hmac_fast(gnutls_mac_algorithm_t algorithm,
-                     const void *key, size_t keylen,
-                     const void *ptext, size_t ptext_len, void *digest)
-{
-    return -1;
-}
-
-int gnutls_hmac_init(gnutls_hmac_hd_t * dig,
-                     gnutls_mac_algorithm_t algorithm,
-                     const void *key, size_t keylen)
-{
-    return -1;
-}
-
-void gnutls_hmac_deinit(gnutls_hmac_hd_t handle, void *digest)
 {
     (void)handle;
 }

@@ -437,6 +437,11 @@ static const gnutls_error_entry non_fatal_error_entries[] = {
         {NULL, NULL, 0}
 };
 
+void _gnutls_null_log(void *x, ...)
+{
+    return;
+}
+
 const char *gnutls_strerror(int error)
 {
     const char *ret = NULL;

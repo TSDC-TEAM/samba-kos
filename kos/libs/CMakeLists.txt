@@ -273,6 +273,8 @@ set(SAMBA_THIRD_PARTY_LIBS
         pthread
         dl
 #        gnutls
+        ssl
+        crypto
         z
         popt
         resolv
