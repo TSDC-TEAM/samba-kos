@@ -2,38 +2,6 @@
 #include <openssl/rand.h>
 
 
-int gnutls_hash(gnutls_hash_hd_t handle, const void *ptext, size_t ptext_len)
-{
-    return -1;
-}
-
-void gnutls_hash_output(gnutls_hash_hd_t handle, void *digest)
-{
-    (void)handle;
-}
-
-int gnutls_hash_fast(gnutls_digest_algorithm_t algorithm,
-                     const void *ptext, size_t ptext_len, void *digest)
-{
-    return -1;
-}
-
-
-unsigned gnutls_hash_get_len(gnutls_digest_algorithm_t algorithm)
-{
-    return 0;
-}
-
-int gnutls_hash_init(gnutls_hash_hd_t * dig, gnutls_digest_algorithm_t algorithm)
-{
-    return -1;
-}
-
-void gnutls_hash_deinit(gnutls_hash_hd_t handle, void *digest)
-{
-    (void)handle;
-}
-
 int gnutls_rnd(gnutls_rnd_level_t level, void *data, size_t len)
 {
     RAND_bytes(data, (int)len);

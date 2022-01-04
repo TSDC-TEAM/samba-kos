@@ -897,4 +897,6 @@ void gnutls_hmac_deinit(gnutls_hmac_hd_t handle, void *digest)
         fprintf(stderr, "HMAC Fin failed 16 != 16\n");
         exit(1);
     }
+
+    HMAC_CTX_free(ctx);
 }
