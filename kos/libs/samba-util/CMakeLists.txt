@@ -172,6 +172,7 @@ target_compile_definitions(
         "STATIC_tini_MODULES_PROTO=extern void __tini_dummy_module_proto(void)"
         STATIC_samba_util_MODULES=NULL
         "STATIC_samba_util_MODULES_PROTO=extern void __samba_util_dummy_module_proto(void)"
+        DEBUG_PASSWORD
 )
 
 target_compile_options(
