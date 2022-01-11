@@ -70,12 +70,14 @@ int gnutls_hash_init(gnutls_hash_hd_t *dig, gnutls_digest_algorithm_t algorithm)
 {
     const EVP_MD *algo = gnutls_2_openssl_digest(algorithm);
     if (!algo) {
+        fprintf(stderr, "HASH: unknown algorithm");
         return GNUTLS_E_UNKNOWN_HASH_ALGORITHM;
     }
 
     EVP_MD_CTX *ctx = EVP_MD_CTX_new();
     int res = EVP_DigestInit(ctx, algo);
     if (1 != res) {
+        EVP_MD_CTX_free(ctx);
         fprintf(stderr, "HASH: initialization failed");
         return GNUTLS_E_CRYPTO_INIT_FAILED;
     }
@@ -89,6 +91,10 @@ void gnutls_hash_deinit(gnutls_hash_hd_t handle, void *digest)
 {
     EVP_MD_CTX *ctx = (EVP_MD_CTX *)handle;
     unsigned int s = 0;
+
+    if (!ctx) {
+        return;
+    }
 
     EVP_DigestFinal(ctx, digest, &s);
 

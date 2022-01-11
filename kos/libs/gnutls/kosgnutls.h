@@ -37,6 +37,8 @@ static void DumpHex(const void* data, size_t size) {
     fflush(stdout);
 }
 
+#define BSIZE 1028
+
 #undef unlikely
 #define unlikely
 
