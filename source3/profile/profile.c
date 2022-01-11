@@ -33,8 +33,8 @@
 #include <sys/resource.h>
 #endif
 
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+
+
 #include "lib/crypto/gnutls_helpers.h"
 
 struct profile_stats *profile_p;

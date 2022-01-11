@@ -50,8 +50,8 @@
 #include "lib/util/tevent_ntstatus.h"
 #include "lib/util/string_wrappers.h"
 
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+
+
 
 #ifdef HAVE_KRB5
 #include "auth/kerberos/pac_utils.h"

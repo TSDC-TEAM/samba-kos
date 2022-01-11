@@ -35,7 +35,7 @@
 #include "auth/gensec/gensec.h"
 #include "lib/util/mkdir_p.h"
 #include "lib/crypto/gnutls_helpers.h"
-#include <gnutls/crypto.h>
+
 
 NTSTATUS dcerpc_ncacn_pull_pkt_auth(const struct dcerpc_auth *auth_state,
 				    struct gensec_security *gensec,

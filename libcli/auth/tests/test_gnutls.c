@@ -27,8 +27,8 @@
 #include "libcli/auth/libcli_auth.h"
 
 #include "lib/crypto/gnutls_helpers.h"
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+
+
 
 #if defined(HAVE_GNUTLS_AES_CFB8) && GNUTLS_VERSION_NUMBER > 0x03060a
 static void torture_gnutls_aes_128_cfb_flags(void **state,

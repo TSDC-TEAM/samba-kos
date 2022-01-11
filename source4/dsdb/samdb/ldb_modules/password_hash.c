@@ -50,7 +50,7 @@
 #include "lib/param/loadparm.h"
 
 #include "lib/crypto/gnutls_helpers.h"
-#include <gnutls/crypto.h>
+
 
 #ifdef ENABLE_GPGME
 #undef class

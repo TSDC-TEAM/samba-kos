@@ -52,8 +52,8 @@
 #include "auth/gensec/gensec.h"
 #include "lib/util/string_wrappers.h"
 
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+
+
 
 extern char *optarg;
 extern int optind;

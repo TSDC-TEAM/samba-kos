@@ -36,8 +36,8 @@
 #include "libcli/smb/smb2_signing.h"
 
 #include "lib/crypto/gnutls_helpers.h"
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+
+
 
 struct smbXcli_conn;
 struct smbXcli_req;

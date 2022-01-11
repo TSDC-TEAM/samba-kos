@@ -38,8 +38,8 @@
 
 #undef strcasecmp
 
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+
+
 
 #define SCHEMA_UNKNOWN 0
 #define SCHEMA_NAME 1

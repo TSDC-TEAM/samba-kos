@@ -24,8 +24,8 @@
 #include "libcli/raw/raw_proto.h"
 #include "../lib/crypto/crypto.h"
 
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+
+
 
 /***********************************************************
  SMB signing - Common code before we set a new signing implementation

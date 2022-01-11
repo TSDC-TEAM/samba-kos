@@ -31,8 +31,8 @@
 #include "dsdb/samdb/samdb.h"
 
 #include "lib/crypto/gnutls_helpers.h"
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+
+
 
 static WERROR drsuapi_decrypt_attribute_value(TALLOC_CTX *mem_ctx,
 					      const DATA_BLOB *gensec_skey,

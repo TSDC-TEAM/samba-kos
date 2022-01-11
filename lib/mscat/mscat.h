@@ -20,7 +20,7 @@
 
 #include <stdbool.h>
 #include <talloc.h>
-#include <gnutls/pkcs7.h>
+
 #include <libtasn1.h>
 
 enum mscat_mac_algorithm {

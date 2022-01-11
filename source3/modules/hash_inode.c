@@ -20,8 +20,8 @@
 #include "includes.h"
 #include "hash_inode.h"
 
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+
+
 #include "lib/crypto/gnutls_helpers.h"
 
 SMB_INO_T hash_inode(const SMB_STRUCT_STAT *sbuf, const char *sname)

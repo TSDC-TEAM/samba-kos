@@ -53,8 +53,8 @@
 #define TEST_MACHINENAME "samrtestmach$"
 #define TEST_DOMAINNAME "samrtestdom$"
 
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+
+
 
 enum torture_samr_choice {
 	TORTURE_SAMR_PASSWORDS,

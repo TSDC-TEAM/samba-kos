@@ -18,7 +18,7 @@
 #ifndef _MSCAT_PRIVATE_H
 #define _MSCAT_PRIVATE_H
 
-#include <gnutls/pkcs7.h>
+
 
 struct mscat_pkcs7 {
 	gnutls_pkcs7_t c;

@@ -27,8 +27,8 @@
 #include "libsmb/libsmb.h"
 
 #include "lib/crypto/gnutls_helpers.h"
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+
+
 
 #define ARG_OTHERSERVER "otherserver="
 #define ARG_OTHERUSER "otheruser="

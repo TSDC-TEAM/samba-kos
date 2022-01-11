@@ -31,8 +31,8 @@
 #include "lib/util/tevent_unix.h"
 #include "lib/util/gpfswrap.h"
 
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+
+
 #include "lib/crypto/gnutls_helpers.h"
 
 #undef DBGC_CLASS

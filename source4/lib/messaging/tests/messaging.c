@@ -29,8 +29,8 @@
 #include "system/select.h"
 #include "system/filesys.h"
 
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+
+
 
 static uint32_t msg_pong;
 

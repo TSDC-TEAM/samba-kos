@@ -33,8 +33,8 @@
 #include "system/network.h"
 #include "torture/ntp/proto.h"
 
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+
+
 
 #define TEST_MACHINE_NAME "ntpsigndtest"
 

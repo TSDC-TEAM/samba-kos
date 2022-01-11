@@ -37,10 +37,10 @@
 #include "librpc/gen_ndr/ndr_security.h"
 #include "libds/common/roles.h"
 
-#include <gnutls/gnutls.h>
-#include <gnutls/x509.h>
-#include <gnutls/crypto.h>
-#include <gnutls/abstract.h>
+
+
+
+
 
 #include "lib/crypto/gnutls_helpers.h"
 
