@@ -37,6 +37,7 @@ static void DumpHex(const void* data, size_t size) {
     fflush(stdout);
 }
 
+#undef unlikely
 #define unlikely
 
 #define GNUTLS_E_SUCCESS 0
@@ -299,7 +300,132 @@ static void DumpHex(const void* data, size_t size) {
 
 
 #define is_cipher_algo_forbidden(x) 0
-# define is_mac_algo_forbidden(x) 0
+#define is_mac_algo_forbidden(x) 0
+
+
+#define ASN1_SMALL_VALUE_SIZE 16
+#define ASN1_MAX_NAME_SIZE 64
+
+typedef struct asn1_node_st asn1_node_st;
+typedef asn1_node_st *asn1_node;
+
+struct asn1_node_st
+{
+    /* public fields: */
+    char name[ASN1_MAX_NAME_SIZE + 1];	/* Node name */
+    unsigned int name_hash;
+    unsigned int type;		/* Node type */
+    unsigned char *value;		/* Node value */
+    int value_len;
+    asn1_node down;		/* Pointer to the son node */
+    asn1_node right;		/* Pointer to the brother node */
+    asn1_node left;		/* Pointer to the next list element */
+    /* private fields: */
+    unsigned char small_value[ASN1_SMALL_VALUE_SIZE];	/* For small values */
+
+    /* values used during decoding/coding */
+    int tmp_ival;
+    unsigned start; /* the start of the DER sequence - if decoded */
+    unsigned end; /* the end of the DER sequence - if decoded */
+};
+
+typedef int (*gnutls_pin_callback_t) (void *userdata, int attempt,
+                                      const char *token_url,
+                                      const char *token_label,
+                                      unsigned int flags,
+                                      char *pin, size_t pin_max);
+
+struct pin_info_st {
+    gnutls_pin_callback_t cb;
+    void *data;
+};
+
+typedef struct {
+    unsigned char *data;
+    unsigned int size;
+} gnutls_datum_t;
+
+struct name_st {
+    unsigned int type;
+    gnutls_datum_t san;
+    gnutls_datum_t othername_oid;
+};
+
+struct gnutls_subject_alt_names_st {
+    struct name_st *names;
+    unsigned int size;
+};
+
+typedef struct gnutls_subject_alt_names_st *gnutls_subject_alt_names_t;
+
+typedef struct gnutls_x509_dn_st {
+    asn1_node asn;
+} gnutls_x509_dn_st;
+
+typedef struct gnutls_x509_crt_int {
+    asn1_node cert;
+    int use_extensions;
+    unsigned expanded; /* a certificate has been expanded */
+    unsigned modified; /* the cached values below may no longer be valid */
+    unsigned flags;
+
+    struct pin_info_st pin;
+
+    /* These two cached values allow fast calls to
+     * get_raw_*_dn(). */
+    gnutls_datum_t raw_dn;
+    gnutls_datum_t raw_issuer_dn;
+    gnutls_datum_t raw_spki;
+
+    gnutls_datum_t der;
+
+    /* this cached value allows fast access to alt names */
+    gnutls_subject_alt_names_t san;
+    gnutls_subject_alt_names_t ian;
+
+    /* backwards compatibility for gnutls_x509_crt_get_subject()
+     * and gnutls_x509_crt_get_issuer() */
+    gnutls_x509_dn_st dn;
+    gnutls_x509_dn_st idn;
+} gnutls_x509_crt_int;
+
+typedef struct gnutls_x509_crt_int *gnutls_x509_crt_t;
+
+typedef struct {
+    int hello;
+//    bigint_t params[GNUTLS_MAX_PK_PARAMS];
+//    unsigned int params_nr;	/* the number of parameters */
+//    unsigned int pkflags; /* gnutls_pk_flag_t */
+//    unsigned int qbits; /* GNUTLS_PK_DH */
+//    gnutls_ecc_curve_t curve; /* GNUTLS_PK_EC, GNUTLS_PK_ED25519, GNUTLS_PK_GOST* */
+//    gnutls_group_t dh_group; /* GNUTLS_PK_DH - used by ext/key_share */
+//    gnutls_gost_paramset_t gost_params; /* GNUTLS_PK_GOST_* */
+//    gnutls_datum_t raw_pub; /* used by x25519 */
+//    gnutls_datum_t raw_priv;
+//
+//    unsigned int seed_size;
+//    uint8_t seed[MAX_PVP_SEED_SIZE];
+//    gnutls_digest_algorithm_t palgo;
+//    /* public key information */
+//    gnutls_x509_spki_st spki;
+//
+//    gnutls_pk_algorithm_t algo;
+} gnutls_pk_params_st;
+
+typedef struct gnutls_x509_privkey_int {
+    /* the size of params depends on the public
+     * key algorithm
+     */
+    gnutls_pk_params_st params;
+
+    unsigned expanded;
+    unsigned flags;
+
+    asn1_node key;
+    struct pin_info_st pin;
+} gnutls_x509_privkey_int;
+
+typedef struct gnutls_x509_privkey_int *gnutls_x509_privkey_t;
 
 void _gnutls_null_log(void *x, ...);
 
@@ -432,15 +558,12 @@ typedef struct api_cipher_hd_st {
     cipher_hd_st ctx_dec;
 } api_cipher_hd_st;
 
-typedef struct {
-    unsigned char *data;
-    unsigned int size;
-} gnutls_datum_t;
-
 typedef struct api_cipher_hd_st *gnutls_cipher_hd_t;
 
 typedef struct hash_hd_st *gnutls_hash_hd_t;
 typedef struct hmac_hd_st *gnutls_hmac_hd_t;
+
+typedef struct gnutls_session_int *gnutls_session_t;
 
 typedef enum {
     GNUTLS_MAC_UNKNOWN = 0,

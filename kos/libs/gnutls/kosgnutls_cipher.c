@@ -27,7 +27,7 @@ int gnutls_cipher_init(gnutls_cipher_hd_t * handle,
 
     EVP_CIPHER_CTX_set_key_length(ctx, (int)key->size);
 
-    res_init = EVP_EncryptInit_ex(ctx, NULL, NULL, (const unsigned char *)key, NULL);
+    res_init = EVP_EncryptInit_ex(ctx, NULL, NULL, (const unsigned char *)key->data, NULL);
     if (!res_init) {
         fprintf(stderr, "CIPHER Init 2 failed\n");
         exit(1);

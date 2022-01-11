@@ -20,7 +20,22 @@ int gnutls_hmac(gnutls_hmac_hd_t handle, const void *ptext, size_t ptext_len)
 
 void gnutls_hmac_output(gnutls_hmac_hd_t handle, void *digest)
 {
-    (void)handle;
+    HMAC_CTX *ctx = handle;
+
+    unsigned int resultlen = 0;
+    int res_fin = HMAC_Final(ctx, digest, &resultlen);
+    if (!res_fin) {
+        fprintf(stderr, "HMAC Fin failed\n");
+        exit(1);
+    }
+
+    assert(resultlen != 0);
+
+    int res_init = HMAC_Init_ex(ctx, NULL, NULL, NULL, NULL);
+    if (!res_init) {
+        fprintf(stderr, "Reinit failed\n");
+        exit(1);
+    }
 }
 
 int gnutls_hmac_fast(gnutls_mac_algorithm_t algorithm,
@@ -46,29 +61,39 @@ int gnutls_hmac_init(gnutls_hmac_hd_t * dig,
                  gnutls_mac_algorithm_t algorithm,
                  const void *key, size_t keylen)
 {
-    if (algorithm != GNUTLS_MAC_MD5) {
-        fprintf(stderr, "Unknown HMAC algo\n");
-        exit(1);
+    HMAC_CTX *ctx = HMAC_CTX_new();
+    int res = 0;
+
+    switch (algorithm) {
+        case GNUTLS_MAC_MD5: {
+            res = HMAC_Init_ex(ctx, key, (int)keylen, EVP_md5(), NULL);
+            break;
+        }
+        case GNUTLS_MAC_SHA256: {
+            res = HMAC_Init_ex(ctx, key, (int)keylen, EVP_sha256(), NULL);
+            break;
+        }
+        default: {
+            assert(0 && "HASH unknown algo");
+        }
     }
 
-    HMAC_CTX *ctx = HMAC_CTX_new();
-    int res_init = HMAC_Init_ex(ctx, key, (int)keylen, EVP_md5(), NULL);
-    if (!res_init) {
-        fprintf(stderr, "HMAC Init failed\n");
-        exit(1);
-    }
+    assert(res == 1 && "Init failed");
 
     *dig = ctx;
 
     return 0;
-//
-//    return _gnutls_mac_init(((mac_hd_st *) * dig),
-//                            mac_to_entry(algorithm), key, keylen);
 }
 
 void gnutls_hmac_deinit(gnutls_hmac_hd_t handle, void *digest)
 {
     HMAC_CTX *ctx = (HMAC_CTX *)handle;
+
+    if (!digest) {
+        HMAC_CTX_free(ctx);
+        return;
+    }
+
     unsigned int resultlen = 0;
     int res_fin = HMAC_Final(ctx, digest, &resultlen);
     if (!res_fin) {
