@@ -1,18 +1,33 @@
 #include <malloc.h>
-#include <assert.h>
 #include <memory.h>
 #include <openssl/evp.h>
 #include <openssl/hmac.h>
 #include "kosgnutls.h"
 
 
+static const EVP_MD *gnutls_2_openssl_digest(gnutls_mac_algorithm_t algorithm)
+{
+    switch (algorithm) {
+        case GNUTLS_MAC_MD5: {
+            return EVP_md5();
+        }
+        case GNUTLS_MAC_SHA256: {
+            return EVP_sha256();
+        }
+        default: {
+            return NULL;
+        }
+    }
+}
+
 int gnutls_hmac(gnutls_hmac_hd_t handle, const void *ptext, size_t ptext_len)
 {
     HMAC_CTX *ctx = (HMAC_CTX *)handle;
+
     int res_update = HMAC_Update(ctx, ptext, ptext_len);
-    if (!res_update) {
-        fprintf(stderr, "HMAC Update failed\n");
-        exit(1);
+    if (1 != res_update) {
+        fprintf(stderr, "HMAC: update failed\n");
+        return GNUTLS_E_HASH_FAILED;
     }
 
     return 0;
@@ -20,21 +35,17 @@ int gnutls_hmac(gnutls_hmac_hd_t handle, const void *ptext, size_t ptext_len)
 
 void gnutls_hmac_output(gnutls_hmac_hd_t handle, void *digest)
 {
-    HMAC_CTX *ctx = handle;
+    HMAC_CTX *ctx = (HMAC_CTX *)handle;
 
     unsigned int resultlen = 0;
     int res_fin = HMAC_Final(ctx, digest, &resultlen);
-    if (!res_fin) {
-        fprintf(stderr, "HMAC Fin failed\n");
-        exit(1);
+    if (1 != res_fin || 0 == resultlen) {
+        fprintf(stderr, "HMAC: output failed\n");
     }
-
-    assert(resultlen != 0);
 
     int res_init = HMAC_Init_ex(ctx, NULL, NULL, NULL, NULL);
     if (!res_init) {
-        fprintf(stderr, "Reinit failed\n");
-        exit(1);
+        fprintf(stderr, "HMAC: reinitialization failed\n");
     }
 }
 
@@ -42,45 +53,42 @@ int gnutls_hmac_fast(gnutls_mac_algorithm_t algorithm,
                      const void *key, size_t keylen,
                      const void *ptext, size_t ptext_len, void *digest)
 {
-    if (algorithm != GNUTLS_MAC_MD5) {
-        fprintf(stderr, "Unknown algo HMAC fast\n");
-        exit(1);
+    const EVP_MD *algo = gnutls_2_openssl_digest(algorithm);
+    if (!algo) {
+        fprintf(stderr, "HMAC: unknown algorithm");
+        return GNUTLS_E_UNKNOWN_HASH_ALGORITHM;
     }
 
     unsigned int resultlen = 0;
-    digest = HMAC(EVP_md5(), key, (int)keylen, ptext, ptext_len, digest, &resultlen);
-    if (!digest) {
-        fprintf(stderr, "HMAC fast failed\n");
-        exit(1);
+    digest = HMAC(algo, key, (int)keylen, ptext, ptext_len, digest, &resultlen);
+    if (!digest || 0 == resultlen) {
+        fprintf(stderr, "HMAC: fast failed\n");
+        return GNUTLS_E_HASH_FAILED;
     }
 
     return 0;
 }
 
 int gnutls_hmac_init(gnutls_hmac_hd_t * dig,
-                 gnutls_mac_algorithm_t algorithm,
-                 const void *key, size_t keylen)
+                     gnutls_mac_algorithm_t algorithm,
+                     const void *key, size_t keylen)
 {
-    HMAC_CTX *ctx = HMAC_CTX_new();
-    int res = 0;
-
-    switch (algorithm) {
-        case GNUTLS_MAC_MD5: {
-            res = HMAC_Init_ex(ctx, key, (int)keylen, EVP_md5(), NULL);
-            break;
-        }
-        case GNUTLS_MAC_SHA256: {
-            res = HMAC_Init_ex(ctx, key, (int)keylen, EVP_sha256(), NULL);
-            break;
-        }
-        default: {
-            assert(0 && "HASH unknown algo");
-        }
+    const EVP_MD *algo = gnutls_2_openssl_digest(algorithm);
+    if (!algo) {
+        fprintf(stderr, "HMAC: unknown algorithm");
+        return GNUTLS_E_UNKNOWN_HASH_ALGORITHM;
     }
 
-    assert(res == 1 && "Init failed");
+    HMAC_CTX *ctx = HMAC_CTX_new();
 
-    *dig = ctx;
+    int res = HMAC_Init_ex(ctx, key, (int)keylen, algo, NULL);
+    if (1 != res) {
+        HMAC_CTX_free(ctx);
+        fprintf(stderr, "HMAC: initialization failed");
+        return GNUTLS_E_CRYPTO_INIT_FAILED;
+    }
+
+    *dig = (gnutls_hmac_hd_t)ctx;
 
     return 0;
 }
@@ -88,6 +96,9 @@ int gnutls_hmac_init(gnutls_hmac_hd_t * dig,
 void gnutls_hmac_deinit(gnutls_hmac_hd_t handle, void *digest)
 {
     HMAC_CTX *ctx = (HMAC_CTX *)handle;
+    if (!ctx) {
+        return;
+    }
 
     if (!digest) {
         HMAC_CTX_free(ctx);
@@ -96,14 +107,8 @@ void gnutls_hmac_deinit(gnutls_hmac_hd_t handle, void *digest)
 
     unsigned int resultlen = 0;
     int res_fin = HMAC_Final(ctx, digest, &resultlen);
-    if (!res_fin) {
-        fprintf(stderr, "HMAC Fin failed\n");
-        exit(1);
-    }
-
-    if (resultlen != 16) {
-        fprintf(stderr, "HMAC Fin failed 16 != 16\n");
-        exit(1);
+    if (1 != res_fin) {
+        fprintf(stderr, "HMAC: final failed");
     }
 
     HMAC_CTX_free(ctx);

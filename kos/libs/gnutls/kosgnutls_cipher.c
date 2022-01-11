@@ -5,7 +5,8 @@
 #include "kosgnutls.h"
 
 
-static const EVP_CIPHER *gnutls_2_openssl_cipher(gnutls_cipher_algorithm_t cipher) {
+static const EVP_CIPHER *gnutls_2_openssl_cipher(gnutls_cipher_algorithm_t cipher)
+{
     switch (cipher) {
         case GNUTLS_CIPHER_ARCFOUR_128: {
             return EVP_rc4();
@@ -63,9 +64,9 @@ size_t gnutls_cipher_get_key_size(gnutls_cipher_algorithm_t algorithm)
     return 0;
 }
 
-int gnutls_cipher_init(gnutls_cipher_hd_t * handle,
+int gnutls_cipher_init(gnutls_cipher_hd_t *handle,
                        gnutls_cipher_algorithm_t cipher,
-                       const gnutls_datum_t * key, const gnutls_datum_t * iv)
+                       const gnutls_datum_t *key, const gnutls_datum_t *iv)
 {
     const EVP_CIPHER *cphr = gnutls_2_openssl_cipher(cipher);
     if (!cphr) {

@@ -4,7 +4,8 @@
 #include <openssl/sha.h>
 
 
-static const EVP_MD *gnutls_2_openssl_digest(gnutls_digest_algorithm_t algorithm) {
+static const EVP_MD *gnutls_2_openssl_digest(gnutls_digest_algorithm_t algorithm)
+{
     switch (algorithm) {
         case GNUTLS_DIG_MD5: {
             return EVP_md5();
@@ -75,6 +76,7 @@ int gnutls_hash_init(gnutls_hash_hd_t *dig, gnutls_digest_algorithm_t algorithm)
     }
 
     EVP_MD_CTX *ctx = EVP_MD_CTX_new();
+
     int res = EVP_DigestInit(ctx, algo);
     if (1 != res) {
         EVP_MD_CTX_free(ctx);
@@ -90,13 +92,21 @@ int gnutls_hash_init(gnutls_hash_hd_t *dig, gnutls_digest_algorithm_t algorithm)
 void gnutls_hash_deinit(gnutls_hash_hd_t handle, void *digest)
 {
     EVP_MD_CTX *ctx = (EVP_MD_CTX *)handle;
-    unsigned int s = 0;
 
     if (!ctx) {
         return;
     }
 
-    EVP_DigestFinal(ctx, digest, &s);
+    if (!digest) {
+        EVP_MD_CTX_free(ctx);
+        return;
+    }
+
+    unsigned int s = 0;
+    int res_fin = EVP_DigestFinal(ctx, digest, &s);
+    if (1 != res_fin) {
+        fprintf(stderr, "HASH: final failed");
+    }
 
     EVP_MD_CTX_free(ctx);
 }
