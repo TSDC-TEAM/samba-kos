@@ -84,6 +84,7 @@ add_subdirectory(gnutls)
 
 add_subdirectory(smbd-base)
 add_subdirectory(xattr-tdb)
+add_subdirectory(printing-migrate)
 
 set(C_LIB ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/libcombi.a)
 
