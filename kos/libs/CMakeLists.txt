@@ -83,6 +83,7 @@ add_subdirectory(ndr-krb5pac)
 add_subdirectory(gnutls)
 
 add_subdirectory(smbd-base)
+add_subdirectory(xattr-tdb)
 
 set(C_LIB ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/libcombi.a)
 
