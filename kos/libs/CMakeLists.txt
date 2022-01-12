@@ -82,6 +82,8 @@ add_subdirectory(msrpc3)
 add_subdirectory(ndr-krb5pac)
 add_subdirectory(gnutls)
 
+add_subdirectory(smbd-base)
+
 set(C_LIB ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/libcombi.a)
 
 add_custom_target(combined
