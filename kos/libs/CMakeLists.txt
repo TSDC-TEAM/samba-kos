@@ -90,6 +90,7 @@ add_subdirectory(netapi)
 add_subdirectory(dcerpc-server-core)
 add_subdirectory(cli-spoolss)
 add_subdirectory(auth)
+add_subdirectory(MESSAGING)
 
 set(C_LIB ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/libcombi.a)
 
