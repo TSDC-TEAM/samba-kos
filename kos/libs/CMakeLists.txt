@@ -98,6 +98,7 @@ add_subdirectory(libcli-lsa3)
 add_subdirectory(trusts-util)
 add_subdirectory(http)
 add_subdirectory(smbclient-raw)
+add_subdirectory(dcerpc-pkt-auth)
 
 set(C_LIB ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/libcombi.a)
 
