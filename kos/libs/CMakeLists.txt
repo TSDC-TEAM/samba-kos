@@ -92,6 +92,7 @@ add_subdirectory(cli-spoolss)
 add_subdirectory(auth)
 add_subdirectory(MESSAGING)
 add_subdirectory(net-keytab)
+add_subdirectory(ads)
 
 set(C_LIB ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/libcombi.a)
 
