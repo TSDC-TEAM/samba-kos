@@ -94,6 +94,7 @@ add_subdirectory(MESSAGING)
 add_subdirectory(net-keytab)
 add_subdirectory(ads)
 add_subdirectory(dcerpc)
+add_subdirectory(libcli-lsa3)
 
 set(C_LIB ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/libcombi.a)
 
