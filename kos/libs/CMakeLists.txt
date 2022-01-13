@@ -87,6 +87,7 @@ add_subdirectory(xattr-tdb)
 add_subdirectory(printing-migrate)
 add_subdirectory(npa-tstream)
 add_subdirectory(netapi)
+add_subdirectory(dcerpc-server-core)
 
 set(C_LIB ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/libcombi.a)
 
