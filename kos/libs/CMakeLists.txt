@@ -100,6 +100,7 @@ add_subdirectory(http)
 add_subdirectory(smbclient-raw)
 add_subdirectory(dcerpc-pkt-auth)
 add_subdirectory(libcli-netlogon3)
+add_subdirectory(samba-passdb)
 
 set(C_LIB ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/libcombi.a)
 
