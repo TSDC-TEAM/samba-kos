@@ -333,6 +333,7 @@ set(SAMBA_THIRD_PARTY_LIBS
 #        gnutls
         ssl
         crypto
+        crypt # @todo: figure out
         z
         popt
         resolv

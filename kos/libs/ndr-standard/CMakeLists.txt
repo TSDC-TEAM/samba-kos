@@ -20,7 +20,7 @@ set(TARGET_SRC
         ${SMB_SRC_ROOT}/librpc/ndr/ndr_spoolss_buf.c
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_srvsvc.c
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_svcctl.c
-        ${SMB_SRC_ROOT}/librpc/ndr/ndr_svcctl.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_svcctlDUP.c
         ${SMB_SRC_ROOT}/bin/default/librpc/ndr-standard.empty.c
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_file_id.c
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_lsa.c
