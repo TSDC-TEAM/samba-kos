@@ -248,3 +248,10 @@ target_compile_definitions(
         STATIC_EPMD_MODULES=NULL
         "STATIC_EPMD_MODULES_PROTO=extern void __EPMD_dummy_module_proto(void)"
 )
+
+add_dependencies(${TARGET_NAME} shareconfig)
+
+add_custom_target(shareconfig
+        COMMAND ${SMB_SRC_ROOT}/kos_create_share_and_conf.py -f ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/test
+        WORKING_DIRECTORY ${SMB_SRC_ROOT}
+)
