@@ -68,7 +68,7 @@ target_compile_definitions(
         HAVE_CONFIG_H=1
         _GNU_SOURCE=1
         _XOPEN_SOURCE_EXTENDED=1
-        "LDB_MODULESDIR=\"/home/user/kasperskyos/samba/bin/modules/ldb\""
+        "LDB_MODULESDIR=\"${SMB_SRC_ROOT}/samba/bin/modules/ldb\""
         __STDC_WANT_LIB_EXT1__=1
         _REENTRANT
         STATIC_LIBLDB_MAIN_MODULES=NULL

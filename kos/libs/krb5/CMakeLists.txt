@@ -173,10 +173,10 @@ target_compile_definitions(
         _REENTRANT
         STATIC_krb5_MODULES=NULL
         "STATIC_krb5_MODULES_PROTO=extern void __krb5_dummy_module_proto(void)"
-        "BINDIR=\"/home/user/kasperskyos/samba/bin\""
-        "SBINDIR=\"/home/user/kasperskyos/samba/bin\""
-        "LIBDIR=\"/usr/local/samba/lib\""
-        "LIBEXECDIR=\"/home/user/kasperskyos/samba/bin\""
+        "BINDIR=\"${SMB_SRC_ROOT}/bin\""
+        "SBINDIR=\"${SMB_SRC_ROOT}/bin\""
+        "LIBDIR=\"${SMB_SRC_ROOT}/lib\""
+        "LIBEXECDIR=\"${SMB_SRC_ROOT}/bin\""
         STATIC_HEIMDAL_CONFIG_MODULES=NULL
         "STATIC_HEIMDAL_CONFIG_MODULES_PROTO=extern void __HEIMDAL_CONFIG_dummy_module_proto(void)"
 )
