@@ -63,8 +63,6 @@ target_include_directories(
         ${SMB_SRC_ROOT}/bin/default/librpc
         ${SMB_SRC_ROOT}/lib/util/charset
         ${SMB_SRC_ROOT}/bin/default/lib/util/charset
-        ${SMB_SRC_ROOT}/lib/util/home/user/kasperskyos/samba/third_party/gpfs
-        ${SMB_SRC_ROOT}/bin/default/lib/util/home/user/kasperskyos/samba/third_party/gpfs
         ${SMB_SRC_ROOT}/libcli/security
         ${SMB_SRC_ROOT}/bin/default/libcli/security
         ${SMB_SRC_ROOT}/dynconfig

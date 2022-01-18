@@ -54,8 +54,6 @@ target_include_directories(
         ${SMB_SRC_ROOT}/bin/default/lib/replace
         ${SMB_SRC_ROOT}/.
         ${SMB_SRC_ROOT}/bin/default/
-        ${SMB_SRC_ROOT}/lib/util/home/user/kasperskyos/samba/third_party/gpfs
-        ${SMB_SRC_ROOT}/bin/default/lib/util/home/user/kasperskyos/samba/third_party/gpfs
         ${SMB_SRC_ROOT}/lib/util/charset
         ${SMB_SRC_ROOT}/bin/default/lib/util/charset
         ${SMB_SRC_ROOT}/dynconfig

@@ -35,8 +35,6 @@ target_include_directories(
         ${SMB_SRC_ROOT}/bin/default/lib/tevent
         ${SMB_SRC_ROOT}/lib/util/charset
         ${SMB_SRC_ROOT}/bin/default/lib/util/charset
-        ${SMB_SRC_ROOT}/lib/util/home/user/kasperskyos/samba/third_party/gpfs
-        ${SMB_SRC_ROOT}/bin/default/lib/util/home/user/kasperskyos/samba/third_party/gpfs
         ${SMB_SRC_ROOT}/dynconfig
         ${SMB_SRC_ROOT}/bin/default/dynconfig
         ${SMB_SRC_ROOT}/libcli/util
