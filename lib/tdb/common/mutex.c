@@ -828,6 +828,9 @@ static void tdb_robust_mutex_wait_for_child(pid_t *child_pid)
 
 _PUBLIC_ bool tdb_runtime_check_for_robust_mutexes(void)
 {
+    // KOS: @todo: TMP
+    return false;
+
 	void *ptr = NULL;
 	pthread_mutex_t *m = NULL;
 	pthread_mutexattr_t ma;
