@@ -29,7 +29,6 @@ target_include_directories(
         ${SMB_SRC_ROOT}/bin/default/lib/replace
         ${SMB_SRC_ROOT}/.
         ${SMB_SRC_ROOT}/bin/default/
-        /usr/include/p11-kit-1
 )
 
 target_compile_definitions(

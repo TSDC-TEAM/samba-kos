@@ -55,7 +55,6 @@ target_include_directories(
         ${SMB_SRC_ROOT}/bin/default/lib/socket
         ${SMB_SRC_ROOT}/lib/crypto
         ${SMB_SRC_ROOT}/bin/default/lib/crypto
-        /usr/include/p11-kit-1
         ${SMB_SRC_ROOT}/source4/libcli
         ${SMB_SRC_ROOT}/bin/default/source4/libcli
         ${SMB_SRC_ROOT}/librpc

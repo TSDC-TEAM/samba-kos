@@ -319,7 +319,6 @@ target_include_directories(
         ${SMB_SRC_ROOT}/bin/default/dynconfig
         ${SMB_SRC_ROOT}/lib/crypto
         ${SMB_SRC_ROOT}/bin/default/lib/crypto
-        /usr/include/p11-kit-1
         ${SMB_SRC_ROOT}/source3/modules
         ${SMB_SRC_ROOT}/bin/default/source3/modules
         ${SMB_SRC_ROOT}/lib/tdb

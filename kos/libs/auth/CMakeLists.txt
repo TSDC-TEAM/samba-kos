@@ -216,7 +216,6 @@ target_include_directories(
         ${SMB_SRC_ROOT}/bin/default/lib/compression
         ${SMB_SRC_ROOT}/source3/passdb
         ${SMB_SRC_ROOT}/bin/default/source3/passdb
-        /usr/include/p11-kit-1
 )
 
 target_compile_definitions(

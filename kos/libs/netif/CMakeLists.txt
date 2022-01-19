@@ -51,7 +51,6 @@ target_include_directories(
         ${SMB_SRC_ROOT}/bin/default/lib/tdb
         ${SMB_SRC_ROOT}/lib/talloc
         ${SMB_SRC_ROOT}/bin/default/lib/talloc
-        /usr/include/p11-kit-1
 )
 
 target_compile_definitions(

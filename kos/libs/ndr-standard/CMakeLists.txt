@@ -65,7 +65,6 @@ target_include_directories(
         ${SMB_SRC_ROOT}/bin/default/libcli/util
         ${SMB_SRC_ROOT}/lib/crypto
         ${SMB_SRC_ROOT}/bin/default/lib/crypto
-        /usr/include/p11-kit-1
         ${SMB_SRC_ROOT}/libcli/security
         ${SMB_SRC_ROOT}/bin/default/libcli/security
         ${SMB_SRC_ROOT}/libcli/nbt

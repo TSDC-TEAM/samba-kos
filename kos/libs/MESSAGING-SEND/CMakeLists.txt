@@ -76,7 +76,6 @@ target_include_directories(
         ${SMB_SRC_ROOT}/bin/default/source4/heimdal_build/include
         ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/asn1
         ${SMB_SRC_ROOT}/source4/heimdal/lib/asn1
-        /usr/include/p11-kit-1
 )
 
 target_compile_definitions(

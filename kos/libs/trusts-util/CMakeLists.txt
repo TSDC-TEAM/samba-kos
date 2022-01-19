@@ -195,7 +195,6 @@ target_include_directories(
         ${SMB_SRC_ROOT}/bin/default/auth/ntlmssp
         ${SMB_SRC_ROOT}/source4/lib/stream
         ${SMB_SRC_ROOT}/bin/default/source4/lib/stream
-        /usr/include/p11-kit-1
 )
 
 target_compile_definitions(
