@@ -304,10 +304,10 @@
 #define HAVE_BASENAME 1
 #define HAVE_STRLCPY 1
 #define HAVE_STRLCAT 1
-#define HAVE_BSD_STRING_H 1
-#define HAVE_LIBBSD 1
+/* #undef HAVE_BSD_STRING_H */
+/* #undef HAVE_LIBBSD */
 #define HAVE_GETPEEREID 1
-#define HAVE_BSD_UNISTD_H 1
+/* #undef HAVE_BSD_UNISTD_H */
 #define HAVE_SETPROCTITLE 1
 #define HAVE_SETPROCTITLE_INIT 1
 #define HAVE_CLOSEFROM 1
@@ -893,7 +893,7 @@
 #define static_decl_rpc extern NTSTATUS rpc_mdssvc_module_init(TALLOC_CTX *mem_ctx); 
 #define static_init_rpc(mem_ctx) { rpc_mdssvc_module_init((mem_ctx)); }
 #define HAVE_PTY_H 1
-#define HAVE_BSD_LIBUTIL_H 1
+/* #undef HAVE_BSD_LIBUTIL_H 1 */
 #define HAVE_OPENPTY 1
 #define HAVE_LIBUTIL 1
 #define HAVE_LINUX_SOCKIOS_H 1

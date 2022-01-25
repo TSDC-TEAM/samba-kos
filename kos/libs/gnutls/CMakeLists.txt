@@ -17,7 +17,6 @@ add_library(
 target_include_directories(
         ${TARGET_NAME}
         PRIVATE
-        ${SMB_SRC_ROOT}/kos/libs/gnutls/src
 )
 
 target_compile_definitions(
