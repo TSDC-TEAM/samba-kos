@@ -21,7 +21,7 @@
    License along with this library; if not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <popt.h>
+
 
 struct ldb_cmdline {
 	const char *url;

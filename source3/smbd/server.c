@@ -1538,46 +1538,14 @@ extern void build_options(bool screen);
  int main(int argc,const char *argv[])
 {
 	/* shall I run as a daemon */
-	struct samba_cmdline_daemon_cfg *cmdline_daemon_cfg = NULL;
+    struct samba_cmdline_daemon_cfg *cmdline_daemon_cfg = malloc(sizeof(struct samba_cmdline_daemon_cfg));
 	bool log_stdout = false;
 	char *ports = NULL;
 	char *profile_level = NULL;
 	int opt;
-	poptContext pc;
 	bool print_build_options = False;
 	bool serving_printers = false;
 	struct server_id main_server_id = {0};
-	struct poptOption long_options[] = {
-		POPT_AUTOHELP
-		{
-			.longName   = "build-options",
-			.shortName  = 'b',
-			.argInfo    = POPT_ARG_NONE,
-			.arg        = NULL,
-			.val        = 'b',
-			.descrip    = "Print build options" ,
-		},
-		{
-			.longName   = "port",
-			.shortName  = 'p',
-			.argInfo    = POPT_ARG_STRING,
-			.arg        = &ports,
-			.val        = 0,
-			.descrip    = "Listen on the specified ports",
-		},
-		{
-			.longName   = "profiling-level",
-			.shortName  = 'P',
-			.argInfo    = POPT_ARG_STRING,
-			.arg        = &profile_level,
-			.val        = 0,
-			.descrip    = "Set profiling level","PROFILE_LEVEL",
-		},
-		POPT_COMMON_SAMBA
-		POPT_COMMON_DAEMON
-		POPT_COMMON_VERSION
-		POPT_TABLEEND
-	};
 	struct smbd_parent_context *parent = NULL;
 	TALLOC_CTX *frame;
 	NTSTATUS status;
@@ -1626,15 +1594,6 @@ extern void build_options(bool screen);
 	set_auth_parameters(argc,argv);
 #endif
 
-	ok = samba_cmdline_init(frame,
-				SAMBA_CMDLINE_CONFIG_SERVER,
-				true /* require_smbconf */);
-	if (!ok) {
-		DBG_ERR("Failed to setup cmdline parser!\n");
-		exit(ENOMEM);
-	}
-
-	cmdline_daemon_cfg = samba_cmdline_get_daemon_cfg();
     cmdline_daemon_cfg->interactive = false;
     cmdline_daemon_cfg->daemon = true;
     cmdline_daemon_cfg->fork = false;
@@ -2185,5 +2144,6 @@ extern void build_options(bool screen);
 
 	exit_server_cleanly(NULL);
 	TALLOC_FREE(frame);
+    free(cmdline_daemon_cfg);
 	return(0);
 }

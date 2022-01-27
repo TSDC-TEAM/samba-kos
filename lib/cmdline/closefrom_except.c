@@ -15,7 +15,7 @@
 
 #include "replace.h"
 #include "closefrom_except.h"
-#include <popt.h>
+
 
 int closefrom_except(int lower, int *fds, size_t num_fds)
 {

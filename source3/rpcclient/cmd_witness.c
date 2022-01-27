@@ -21,7 +21,7 @@
 #include "includes.h"
 #include "rpcclient.h"
 #include "librpc/gen_ndr/ndr_witness_c.h"
-#include <popt.h>
+
 
 /*
  * We have to use the same connection for each subcommand

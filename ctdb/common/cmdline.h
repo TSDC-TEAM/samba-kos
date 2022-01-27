@@ -20,7 +20,7 @@
 #ifndef __CTDB_CMDLINE_H__
 #define __CTDB_CMDLINE_H__
 
-#include <popt.h>
+
 #include <talloc.h>
 
 /**

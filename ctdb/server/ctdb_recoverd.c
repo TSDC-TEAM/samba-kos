@@ -23,7 +23,7 @@
 #include "system/network.h"
 #include "system/wait.h"
 
-#include <popt.h>
+
 #include <talloc.h>
 #include <tevent.h>
 #include <tdb.h>

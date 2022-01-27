@@ -4,7 +4,6 @@ set(TARGET_NAME Smbd)
 
 set(TARGET_SRC
         ${SMB_SRC_ROOT}/source3/smbd/smbd_cleanupd.c
-        ${SMB_SRC_ROOT}/lib/cmdline/cmdline_s3.c
         ${SMB_SRC_ROOT}/source3/rpc_server/lsasd.c
         ${SMB_SRC_ROOT}/source3/rpc_server/mdssd.c
         ${SMB_SRC_ROOT}/source3/rpc_server/fssd.c

@@ -25,7 +25,7 @@
 #include "system/dir.h"
 
 #include <ctype.h>
-#include <popt.h>
+
 #include <talloc.h>
 #include <tevent.h>
 #include <tdb.h>

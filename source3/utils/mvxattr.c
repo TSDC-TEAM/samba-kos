@@ -19,7 +19,7 @@
 
 #include "includes.h"
 #include "system/filesys.h"
-#include <popt.h>
+
 #include <ftw.h>
 
 static struct rename_xattr_state {

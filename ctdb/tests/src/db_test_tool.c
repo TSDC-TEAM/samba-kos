@@ -27,7 +27,7 @@
 #include "system/time.h"
 
 #include <ctype.h>
-#include <popt.h>
+
 #include <talloc.h>
 #include <tevent.h>
 

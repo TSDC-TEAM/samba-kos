@@ -20,7 +20,7 @@
 #include "replace.h"
 
 #include <assert.h>
-#include <popt.h>
+
 #include <talloc.h>
 
 #include "lib/util/debug.h"

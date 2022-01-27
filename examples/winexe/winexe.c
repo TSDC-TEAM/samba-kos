@@ -21,7 +21,7 @@
 
 #include "includes.h"
 #include "version.h"
-#include <popt.h>
+
 #include <tevent.h>
 #include "lib/param/param.h"
 #include "auth/credentials/credentials.h"

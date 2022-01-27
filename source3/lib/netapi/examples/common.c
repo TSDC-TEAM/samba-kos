@@ -3,7 +3,7 @@
 #include <sys/types.h>
 #include <inttypes.h>
 
-#include <popt.h>
+
 #include <netapi.h>
 
 #include <sys/stat.h>
