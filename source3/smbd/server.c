@@ -1635,36 +1635,23 @@ extern void build_options(bool screen);
 	}
 
 	cmdline_daemon_cfg = samba_cmdline_get_daemon_cfg();
+    cmdline_daemon_cfg->interactive = false;
+    cmdline_daemon_cfg->daemon = true;
+    cmdline_daemon_cfg->fork = false;
+    cmdline_daemon_cfg->no_process_group = false;
 
-	pc = samba_popt_get_context(getprogname(),
-				    argc,
-				    argv,
-				    long_options,
-				    0);
-	if (pc == NULL) {
-		DBG_ERR("Failed to get popt context!\n");
-		exit(ENOMEM);
-	}
-
-	while((opt = poptGetNextOpt(pc)) != -1) {
-		switch (opt)  {
-		case 'b':
-			print_build_options = True;
-			break;
-		default:
-			d_fprintf(stderr, "\nInvalid option %s: %s\n\n",
-				  poptBadOption(pc, 0), poptStrerror(opt));
-			poptPrintUsage(pc, stderr, 0);
-			exit(1);
-		}
-	}
-	poptFreeContext(pc);
+    ok = lp_load_global("./smb.conf");
+    if (!ok) {
+        fprintf(stderr, "Can't load conf file\n");
+        exit(1);
+    }
 
 	log_stdout = (debug_get_log_type() == DEBUG_STDOUT);
 
         if (cmdline_daemon_cfg->interactive) {
 		log_stdout = True;
 	}
+    log_stdout = true;
 
 	if (print_build_options) {
 		build_options(True); /* Display output to screen as well as debug */
@@ -2067,6 +2054,12 @@ extern void build_options(bool screen);
 
 	serving_printers = (!lp__disable_spoolss() &&
 			    (rpc_spoolss_daemon() != RPC_DAEMON_DISABLED));
+     // KOS: @todo TMP
+     serving_printers = false;
+     cmdline_daemon_cfg->interactive = false;
+     cmdline_daemon_cfg->daemon = false;
+     cmdline_daemon_cfg->fork = true;
+     cmdline_daemon_cfg->no_process_group = false;
 
 	/* only start other daemons if we are running as a daemon
 	 * -- bad things will happen if smbd is launched via inetd
@@ -2114,6 +2107,7 @@ extern void build_options(bool screen);
 		}
 	}
 
+    cmdline_daemon_cfg->daemon = true;
 	if (!cmdline_daemon_cfg->daemon) {
 		int ret, sock;
 
