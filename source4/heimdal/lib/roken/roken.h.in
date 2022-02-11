@@ -226,7 +226,7 @@ struct sockaddr_dl;
 #include <arpa/nameser.h>
 #endif
 #ifdef HAVE_RESOLV_H
-#include <resolv.h>
+#include <kos/libs/resolv/kosresolv.h>
 #endif
 #ifdef HAVE_SYSLOG_H
 #include <syslog.h>

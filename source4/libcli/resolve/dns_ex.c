@@ -43,7 +43,7 @@
 #include "lib/util/sys_rw.h"
 #include "lib/util/smb_strtox.h"
 #include <arpa/nameser.h>
-#include <resolv.h>
+#include <kos/libs/resolv/kosresolv.h>
 
 struct dns_ex_state {
 	bool do_fallback;

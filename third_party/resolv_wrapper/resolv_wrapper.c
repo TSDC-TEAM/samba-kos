@@ -50,7 +50,7 @@
 #include <unistd.h>
 #include <ctype.h>
 
-#include <resolv.h>
+#include <kos/libs/resolv/kosresolv.h>
 
 #if defined(HAVE_RES_STATE_U_EXT_NSADDRS) || defined(HAVE_RES_SOCKADDR_UNION_SIN6)
 #define HAVE_RESOLV_IPV6_NSADDRS 1

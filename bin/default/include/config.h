@@ -517,7 +517,7 @@
 #define VOID_RETSIGTYPE 1
 #define HAVE_H_ERRNO 1
 #define HAVE_DECL_H_ERRNO 1
-#define HAVE_RES_NSEARCH 1
+/* #undef HAVE_RES_NSEARCH */
 /* #undef HAVE_RES_NDESTROY */
 /* #undef HAVE_DNS_SEARCH */
 #define HAVE_DN_EXPAND 1
