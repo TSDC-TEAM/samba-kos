@@ -333,7 +333,6 @@ set(SAMBA_THIRD_PARTY_LIBS
         dl
         ssl
         crypto
-        crypt # @todo: figure out
         z
         resolv
         PARENT_SCOPE

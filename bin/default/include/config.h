@@ -380,7 +380,7 @@
 #define HAVE_PTHREAD_MUTEX_CONSISTENT 1
 #define HAVE_ROBUST_MUTEXES 1
 #define HAVE___THREAD 1
-#define HAVE_CRYPT 1
+/* #undef HAVE_CRYPT */
 #define HAVE_LIBCRYPT 1
 #define HAVE_CRYPT_R 1
 #define HAVE_CRYPT_RN 1
