@@ -117,7 +117,7 @@ set(TARGET_SRC
         ${SMB_SRC_ROOT}/source3/smbd/posix_acls.c
         ${SMB_SRC_ROOT}/source3/lib/sysacls.c
         ${SMB_SRC_ROOT}/source3/smbd/process.c
-        ${SMB_SRC_ROOT}/source3/smbd/service.c
+        ${SMB_SRC_ROOT}/source3/smbd/serviceDUP.c
         ${SMB_SRC_ROOT}/source3/smbd/error.c
         ${SMB_SRC_ROOT}/source3/printing/printspoolss.c
         ${SMB_SRC_ROOT}/source3/lib/sessionid_tdb.c
@@ -169,7 +169,7 @@ set(TARGET_SRC
         ${SMB_SRC_ROOT}/source3/smbd/mangle_hash2.c
         ${SMB_SRC_ROOT}/source3/smbd/oplock.c
         ${SMB_SRC_ROOT}/source3/smbd/oplock_linux.c
-        ${SMB_SRC_ROOT}/source3/smbd/notify.c
+        ${SMB_SRC_ROOT}/source3/smbd/notifyDUP.c
         ${SMB_SRC_ROOT}/source3/smbd/notify_msg.c
         ${SMB_SRC_ROOT}/bin/default/source3/smbd/build_options.c
         ${SMB_SRC_ROOT}/source3/smbd/smb1_utils.c

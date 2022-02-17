@@ -32,7 +32,7 @@ set(TARGET_SRC
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_frstrans.c
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_fscc.c
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_ODJ.c
-        ${SMB_SRC_ROOT}/librpc/ndr/ndr_ODJ.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_ODJDUP.c
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_ioctl.c
         ${SMB_SRC_ROOT}/librpc/ndr/ndr_ioctl.c
         ${SMB_SRC_ROOT}/bin/default/source4/librpc/gen_ndr/ndr_irpc.c

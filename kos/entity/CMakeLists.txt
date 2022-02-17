@@ -1,4 +1,4 @@
-add_subdirectory(smbclient)
+#add_subdirectory(smbclient)
 add_subdirectory(smbd)
 
 if (KOS)

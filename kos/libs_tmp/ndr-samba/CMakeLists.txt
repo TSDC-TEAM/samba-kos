@@ -20,7 +20,7 @@ set(TARGET_SRC
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_fsrvp.c
         ${SMB_SRC_ROOT}/bin/default/source3/librpc/gen_ndr/ndr_open_files.c
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_unixinfo.c
-        ${SMB_SRC_ROOT}/librpc/ndr/ndr_xattr.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_xattrDUP.c
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_xattr.c
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_krb5ccache.c
         ${SMB_SRC_ROOT}/librpc/ndr/ndr_ntlmssp.c
@@ -31,9 +31,9 @@ set(TARGET_SRC
         ${SMB_SRC_ROOT}/librpc/ndr/ndr_drsblobs.c
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_drsblobs.c
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_auth.c
-        ${SMB_SRC_ROOT}/librpc/ndr/ndr_auth.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_authDUP.c
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_ntprinting.c
-        ${SMB_SRC_ROOT}/librpc/ndr/ndr_ntprinting.c
+        ${SMB_SRC_ROOT}/librpc/ndr/ndr_ntprintingDUP.c
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_mgmt.c
         ${SMB_SRC_ROOT}/bin/default/librpc/gen_ndr/ndr_dcom.c
         ${SMB_SRC_ROOT}/librpc/ndr/ndr_negoex.c
