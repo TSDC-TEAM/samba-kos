@@ -42,7 +42,9 @@
 #include "lib/addns/dns.h"
 #include "lib/util/sys_rw.h"
 #include "lib/util/smb_strtox.h"
+#ifndef __KOS__
 #include <arpa/nameser.h>
+#endif
 #include <kos/libs/resolv/kosresolv.h>
 
 struct dns_ex_state {

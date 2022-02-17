@@ -360,8 +360,12 @@ static void pthreadpool_child(void)
 
 static void pthreadpool_prep_atfork(void)
 {
+#ifdef __KOS__
+    assert(0);
+#else
 	pthread_atfork(pthreadpool_prepare, pthreadpool_parent,
 		       pthreadpool_child);
+#endif
 }
 
 static int pthreadpool_free(struct pthreadpool *pool)

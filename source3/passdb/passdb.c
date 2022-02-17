@@ -152,6 +152,9 @@ static NTSTATUS samu_set_unix_internal(struct pdb_methods *methods,
 
 	fullname = NULL;
 
+#ifdef __KOS__
+    assert(0);
+#else
 	if (count_commas(pwd->pw_gecos) == 3) {
 		/*
 		 * Heuristic: This seems to be a gecos field that has been
@@ -165,12 +168,17 @@ static NTSTATUS samu_set_unix_internal(struct pdb_methods *methods,
 			return NT_STATUS_NO_MEMORY;
 		}
 	}
+#endif
 
+#ifdef __KOS__
+    assert(0);
+#else
 	if (fullname != NULL) {
 		ok = pdb_set_fullname(user, fullname, PDB_SET);
 	} else {
 		ok = pdb_set_fullname(user, pwd->pw_gecos, PDB_SET);
 	}
+#endif
 	TALLOC_FREE(fullname);
 
 	if (!ok) {

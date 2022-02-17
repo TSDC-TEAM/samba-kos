@@ -177,6 +177,9 @@ int vfs_get_user_ntquota_list(files_struct *fsp, SMB_NTQUOTA_LIST **qt_list)
 		return (-1);
 	}
 
+#ifdef __KOS__
+    assert(0);
+#else
 	setpwent();
 	while ((usr = getpwent()) != NULL) {
 		SMB_NTQUOTA_STRUCT tmp_qt;
@@ -234,6 +237,7 @@ int vfs_get_user_ntquota_list(files_struct *fsp, SMB_NTQUOTA_LIST **qt_list)
 		
 	}
 	endpwent();
+#endif
 
 	if (*qt_list == NULL) {
 		TALLOC_FREE(mem_ctx);

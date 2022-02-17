@@ -1380,6 +1380,7 @@ static void camellia_decrypt256(const u32 *subkey, u32 *io)
  * API for compatibility
  */
 
+#ifndef __KOS__
 void Camellia_Ekeygen(const int keyBitLength,
 		      const unsigned char *rawKey,
 		      KEY_TABLE_TYPE keyTable)
@@ -1460,3 +1461,4 @@ void Camellia_DecryptBlock(const int keyBitLength,
     PUTU32(plaintext + 8, tmp[2]);
     PUTU32(plaintext + 12, tmp[3]);
 }
+#endif

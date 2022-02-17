@@ -27,6 +27,10 @@
 #include "lib/util/util.h"
 #include "lib/util/bytearray.h"
 
+#ifdef __KOS__
+#include <strict/posix/sys/time.h>
+#endif
+
 #define NDR_PULL_U16(ndr, ofs) \
 	(NDR_BE(ndr) ? PULL_BE_U16(ndr->data,ofs) : PULL_LE_U16(ndr->data,ofs))
 

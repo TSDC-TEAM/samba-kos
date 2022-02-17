@@ -21,7 +21,9 @@
 */
 
 #include "includes.h"
+#ifndef __KOS__
 #include <spawn.h>
+#endif
 #include "smbd/globals.h"
 #include "include/messages.h"
 #include "lib/util/util_process.h"
@@ -385,10 +387,14 @@ pid_t start_background_queue(struct tevent_context *ev,
 		goto nomem;
 	}
 
+#ifdef __KOS__
+    assert(0);
+#else
 	ret = posix_spawn(&pid, argv[0], NULL, NULL, argv, environ);
 	if (ret == -1) {
 		goto fail;
 	}
+#endif
 	TALLOC_FREE(argv);
 
 	close(ready_fds[1]);

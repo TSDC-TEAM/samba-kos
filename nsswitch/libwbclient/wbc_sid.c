@@ -28,6 +28,10 @@
 #include "../winbind_client.h"
 #include "lib/util/smb_strtox.h"
 
+#ifdef __KOS__
+#include <assert.h>
+#endif
+
 /* Convert a sid to a string into a buffer. Return the string
  * length. If buflen is too small, return the string length that would
  * result if it was long enough. */
@@ -1054,9 +1058,13 @@ wbcErr wbcCtxGetDisplayName(struct wbcContext *ctx,
 
 		wbcFreeMemory(name);
 
-		name = wbcStrDup(pwd->pw_gecos);
+#ifdef __KOS__
+        assert(0);
+#else
+        name = wbcStrDup(pwd->pw_gecos);
 		wbcFreeMemory(pwd);
 		BAIL_ON_PTR_ERROR(name, wbc_status);
+#endif
 	}
 
 	wbc_status = WBC_ERR_SUCCESS;

@@ -1,4 +1,3 @@
-#include <malloc.h>
 #include <memory.h>
 #include <openssl/evp.h>
 #include <openssl/hmac.h>

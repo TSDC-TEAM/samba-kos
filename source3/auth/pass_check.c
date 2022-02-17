@@ -171,12 +171,14 @@ NTSTATUS pass_check(const struct passwd *pass,
 	/* Copy into global for the convenience of looping code */
 	/* Also the place to keep the 'password' no matter what
 	   crazy struct it started in... */
+#ifndef __KOS__
 	if (set_this_crypted(pass->pw_passwd) == NULL) {
 		return NT_STATUS_NO_MEMORY;
 	}
 	if (set_this_salt(pass->pw_passwd) == NULL) {
 		return NT_STATUS_NO_MEMORY;
 	}
+#endif
 
 #ifdef HAVE_GETSPNAM
 	{

@@ -276,9 +276,13 @@ static void tfork_global_initialize(void)
 #ifdef HAVE_PTHREAD
 	int ret;
 
+#ifdef __KOS__
+    assert(0);
+#else
 	pthread_atfork(tfork_atfork_prepare,
 		       tfork_atfork_parent,
 		       tfork_atfork_child);
+#endif
 
 	ret = pthread_key_create(&tfork_global_key, tfork_global_destructor);
 	assert(ret == 0);

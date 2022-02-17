@@ -1,7 +1,9 @@
 #ifndef KOSGNUTLS_H
 #define KOSGNUTLS_H
 
+#ifndef __KOS__
 #include <bits/stdint-uintn.h>
+#endif
 #include <stddef.h>
 #include <sys/uio.h>
 #include <stdio.h>

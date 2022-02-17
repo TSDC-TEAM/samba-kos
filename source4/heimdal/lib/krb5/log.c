@@ -91,7 +91,9 @@ static struct s2i syslogvals[] = {
 #ifdef LOG_NEWS
     L(NEWS),
 #endif
+#ifndef __KOS__
     L(SYSLOG),
+#endif
     L(USER),
 #ifdef LOG_UUCP
     L(UUCP),
