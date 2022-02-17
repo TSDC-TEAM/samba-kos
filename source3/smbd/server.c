@@ -1535,6 +1535,13 @@ static NTSTATUS smbd_claim_version(struct messaging_context *msg,
 
 extern void build_options(bool screen);
 
+static void resetCfg(struct samba_cmdline_daemon_cfg *cmdline_daemon_cfg, bool interactive) {
+    cmdline_daemon_cfg->interactive = interactive ? true : false;
+    cmdline_daemon_cfg->daemon = interactive ? false : true;
+    cmdline_daemon_cfg->fork = false;
+    cmdline_daemon_cfg->no_process_group = false;
+}
+
  int main(int argc,const char *argv[])
 {
 	/* shall I run as a daemon */
@@ -1594,10 +1601,8 @@ extern void build_options(bool screen);
 	set_auth_parameters(argc,argv);
 #endif
 
-    cmdline_daemon_cfg->interactive = false;
-    cmdline_daemon_cfg->daemon = true;
-    cmdline_daemon_cfg->fork = false;
-    cmdline_daemon_cfg->no_process_group = false;
+    bool interactive = true;
+    resetCfg(cmdline_daemon_cfg, interactive);
 
     ok = lp_load_global("./smb.conf");
     if (!ok) {
@@ -2013,16 +2018,12 @@ extern void build_options(bool screen);
 
 	serving_printers = (!lp__disable_spoolss() &&
 			    (rpc_spoolss_daemon() != RPC_DAEMON_DISABLED));
-     // KOS: @todo TMP
      serving_printers = false;
-     cmdline_daemon_cfg->interactive = false;
-     cmdline_daemon_cfg->daemon = false;
-     cmdline_daemon_cfg->fork = true;
-     cmdline_daemon_cfg->no_process_group = false;
+     resetCfg(cmdline_daemon_cfg, interactive);
 
-	/* only start other daemons if we are running as a daemon
-	 * -- bad things will happen if smbd is launched via inetd
-	 *  and we fork a copy of ourselves here */
+     /* only start other daemons if we are running as a daemon
+      * -- bad things will happen if smbd is launched via inetd
+      *  and we fork a copy of ourselves here */
 	if (cmdline_daemon_cfg->daemon && !cmdline_daemon_cfg->interactive) {
 
 		if (rpc_epmapper_daemon() == RPC_DAEMON_FORK) {
