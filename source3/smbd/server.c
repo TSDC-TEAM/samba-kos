@@ -1542,8 +1542,51 @@ static void resetCfg(struct samba_cmdline_daemon_cfg *cmdline_daemon_cfg, bool i
     cmdline_daemon_cfg->no_process_group = false;
 }
 
+#ifdef __KOS__
+#include <kos_net.h>
+#endif
+
+int kos_net_init(void) {
+    fprintf(stderr, "Start setup network\n");
+
+#ifdef __KOS__
+    #ifdef __arm__
+    if (!configure_net_iface(DEFAULT_INTERFACE, DEFAULT_ADDR, DEFAULT_MASK, DEFAULT_GATEWAY, DEFAULT_MTU)) {
+        perror("Can not init network");
+        return -1;
+    }
+#else
+    if (!wait_for_network()) {
+        fprintf(stderr, "wait_for_network failed\n");
+        return -1;
+    }
+    if (mkdir("/dev", S_IRWXU | S_IRWXG | S_IRWXO) != 0) {
+        fprintf(stderr, "Failed to create \"/dev\" dir: %s\n", strerror(errno));
+        return -1;
+    }
+    // mount /dev/urandom
+    if (mount("devfs", "/dev", "devfs", 0, "") != 0) {
+        fprintf(stderr, "Failed to mount devfs /dev, devfs(error %d: \"%s\")\n", errno, strerror(errno));
+        return -1;
+    }
+#endif
+#endif
+
+    fprintf(stderr, "Setup network done\n");
+
+    return 0;
+}
+
  int main(int argc,const char *argv[])
 {
+#ifdef __KOS__
+    int init_res = kos_net_init();
+    if (-1 == init_res) {
+        fprintf(stderr, "Failed to init network\n");
+        return EXIT_FAILURE;
+    }
+#endif
+
 	/* shall I run as a daemon */
     struct samba_cmdline_daemon_cfg *cmdline_daemon_cfg = malloc(sizeof(struct samba_cmdline_daemon_cfg));
 	bool log_stdout = false;
@@ -1604,7 +1647,11 @@ static void resetCfg(struct samba_cmdline_daemon_cfg *cmdline_daemon_cfg, bool i
     bool interactive = true;
     resetCfg(cmdline_daemon_cfg, interactive);
 
+#ifdef __KOS__
+    ok = lp_load_global("/smb.conf");
+#else
     ok = lp_load_global("./smb.conf");
+#endif
     if (!ok) {
         fprintf(stderr, "Can't load conf file\n");
         exit(1);
