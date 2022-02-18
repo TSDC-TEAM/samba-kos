@@ -1648,7 +1648,8 @@ int kos_net_init(void) {
     resetCfg(cmdline_daemon_cfg, interactive);
 
 #ifdef __KOS__
-    ok = lp_load_global("/smb.conf");
+    // see also defile CONFIGFILE `kos/libs_kos/samba-util/CMakeLists.txt`
+    ok = lp_load_global("/usr/local/samba/etc/smb.conf");
 #else
     ok = lp_load_global("./smb.conf");
 #endif
@@ -2053,11 +2054,15 @@ int kos_net_init(void) {
 		return -1;
 	}
 
-	status = dcesrv_init(ev_ctx, ev_ctx, msg_ctx, dce_ctx);
+#if 1 // __KOS__
+    fprintf(stderr, "KOS: skipping dcesrv_init()");
+#else
+    status = dcesrv_init(ev_ctx, ev_ctx, msg_ctx, dce_ctx);
 	if (!NT_STATUS_IS_OK(status)) {
 		DBG_ERR("Failed to setup RPC server: %s\n", nt_errstr(status));
 		exit_daemon("Samba cannot setup ep pipe", EACCES);
 	}
+#endif
 
 	if (!cmdline_daemon_cfg->interactive) {
 		daemon_ready("smbd");

@@ -63,7 +63,7 @@ else ()
             EINIT_ENTITY einit_qemu
             CONNECTIONS_CFG "src/init.yaml"
             SECURITY_CFG "src/security.cfg"
-            QEMU_FLAGS "-nic user,hostfwd=tcp::8001-:8001 -display none"
+            QEMU_FLAGS "-nic user,hostfwd=tcp::1490-:1490 -display none"
             IMAGE_FILES ${ENTITIES} ${SDK_ENTITIES} ${IMG_CONTENT} ${DISK_IMG}
             QEMU_DEPENDENCIES ${DISK_IMG}
             )

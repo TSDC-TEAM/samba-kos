@@ -41,7 +41,9 @@ struct passwd *tcopy_passwd(TALLOC_CTX *mem_ctx,
 	len += strlen(from->pw_gecos)+1;
 #endif
 	len += strlen(from->pw_dir)+1;
+#ifndef __KOS__
 	len += strlen(from->pw_shell)+1;
+#endif
 
 	ret = talloc_pooled_object(mem_ctx, struct passwd, 5, len);
 
@@ -57,7 +59,9 @@ struct passwd *tcopy_passwd(TALLOC_CTX *mem_ctx,
     ret->pw_uid = from->pw_uid;
     ret->pw_gid = from->pw_gid;
 	ret->pw_dir = talloc_strdup(ret, from->pw_dir);
+#ifndef __KOS__
 	ret->pw_shell = talloc_strdup(ret, from->pw_shell);
+#endif
 
 	return ret;
 }

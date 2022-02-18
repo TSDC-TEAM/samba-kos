@@ -196,6 +196,10 @@ int tdb_brlock(struct tdb_context *tdb,
 		return -1;
 	}
 
+#if 1 // __KOS__
+    fprintf(stderr, "KOS: skipping %s\n", __func__);
+    return 0;
+#else
 	do {
 		ret = fcntl_lock(tdb, rw_type, offset, len,
 				 flags & TDB_LOCK_WAIT);
@@ -219,16 +223,22 @@ int tdb_brlock(struct tdb_context *tdb,
 		return -1;
 	}
 	return 0;
+#endif
 }
 
 int tdb_brunlock(struct tdb_context *tdb,
 		 int rw_type, tdb_off_t offset, size_t len)
 {
+#if 1 // __KOS__
+    fprintf(stderr, "KOS: skipping %s\n", __func__);
+    return 0;
+#else
 	int ret;
 
 	if (tdb->flags & TDB_NOLOCK) {
 		return 0;
 	}
+
 
 	do {
 		ret = fcntl_unlock(tdb, rw_type, offset, len);
@@ -239,6 +249,7 @@ int tdb_brunlock(struct tdb_context *tdb,
 			 tdb->fd, offset, rw_type, len));
 	}
 	return ret;
+#endif
 }
 
 /*

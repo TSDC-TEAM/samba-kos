@@ -17,7 +17,7 @@ set(PRODUCT_RESOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resources)
 set(PRODUCT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/entity)
 
 if (KOS)
-    add_subdirectory(libs_tmp)
+    add_subdirectory(libs_kos)
 else()
     add_subdirectory(libs)
 endif()

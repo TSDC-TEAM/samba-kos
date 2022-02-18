@@ -301,7 +301,7 @@ static void tevent_prep_atfork(void)
 	int ret;
 
 #ifdef __KOS__
-    assert(0);
+    fprintf(stderr, "KOS: skipping %s\n", __func__);
 #else
 	ret = pthread_atfork(tevent_atfork_prepare,
 			     tevent_atfork_parent,

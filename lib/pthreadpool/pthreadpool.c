@@ -361,7 +361,7 @@ static void pthreadpool_child(void)
 static void pthreadpool_prep_atfork(void)
 {
 #ifdef __KOS__
-    assert(0);
+    fprintf(stderr, "KOS: skipping %s\n", __func__);
 #else
 	pthread_atfork(pthreadpool_prepare, pthreadpool_parent,
 		       pthreadpool_child);
