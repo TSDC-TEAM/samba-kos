@@ -495,3 +495,5 @@ compile_commands.json
 /bin/default/source4/heimdal_build/compile_et
 /bin/default/source4/heimdal_build/asn1_compile
 /bin/default/source3/client/smbclient
+
+build-qemu/**
