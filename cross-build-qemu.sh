@@ -4,9 +4,11 @@ BUILD=$PWD/build-qemu
 mkdir -p $BUILD && cd $BUILD
 
 export LANG=C
-export TARGET="x86_64-pc-kos"
+export TARGET="aarch64-kos"
 export PKG_CONFIG=""
-export SDK_PREFIX="/opt/KOS-CE-SDK-RPI4-x86-64-QEMU-0.0.0.40"
+export SDK_PREFIX="/opt/KasperskyOS-Buddies-Edition-1.1.0.6"
+export INSTALL_PREFIX=$BUILD/../install
+BUILD_SIM_TARGET="y"
 export PATH="$SDK_PREFIX/toolchain/bin:$PATH"
 
 cmake -G "Unix Makefiles" \

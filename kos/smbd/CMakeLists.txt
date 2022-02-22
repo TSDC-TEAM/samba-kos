@@ -1,6 +1,6 @@
-project(smb)
-
 set(TARGET_NAME Smbd)
+
+set(TARGET_EDL samba_smbd)
 
 set(TARGET_SRC
         ${SMB_SRC_ROOT}/source3/smbd/smbd_cleanupd.c
@@ -10,12 +10,12 @@ set(TARGET_SRC
         ${SMB_SRC_ROOT}/source3/smbd/server.c
         ${SMB_SRC_ROOT}/source3/smbd/smbd_cleanupd.c
         ${SMB_SRC_ROOT}/source3/rpc_server/epmd.c
-)
+        )
 
 set(TARGET_LIBS
         ${SAMBA_EXT_MODULES}
         ${SAMBA_THIRD_PARTY_LIBS}
-)
+        )
 
 include(executable)
 
@@ -252,4 +252,4 @@ add_dependencies(${TARGET_NAME} shareconfig)
 add_custom_target(shareconfig
         COMMAND ${SMB_SRC_ROOT}/kos_create_share_and_conf.py -f ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/test
         WORKING_DIRECTORY ${SMB_SRC_ROOT}
-)
+        )

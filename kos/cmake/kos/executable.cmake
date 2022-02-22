@@ -1,31 +1,20 @@
+# Toolkit for working with NK parser.
 include (platform/nk)
 
-project_header_default("STANDARD_GNU_11:YES" "STRICT_WARNINGS:NO")
-nk_build_edl_files(${TARGET_NAME}_edl_files NK_MODULE ${PROJECT_NAME} EDL ${TARGET_NAME}.edl)
+# Setting compilation flags.
+project_header_default ("STANDARD_GNU_11:YES" "STRICT_WARNINGS:NO")
 
-set_property(SOURCE "${CMAKE_BINARY_DIR}/_headers_/${PROJECT_NAME}/${TARGET_NAME}.edl.h" PROPERTY SKIP_AUTOGEN ON)
-
-find_package(vfs REQUIRED)
+nk_build_edl_files (${TARGET_EDL}
+        NK_MODULE samba
+        EDL ${RESOURCES_PATH}/edl/${TARGET_NAME}.edl)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions")
 
-add_executable(${TARGET_NAME}
-        ${TARGET_SRC}
-        ${EDL_FILES}
-        )
+add_executable(${TARGET_NAME} ${TARGET_SRC} ${EDL_FILES})
 
-add_dependencies(${TARGET_NAME} ${TARGET_NAME}_edl_files)
+add_dependencies(${TARGET_NAME} ${TARGET_EDL})
 
-target_link_libraries(${TARGET_NAME}
-        ${vfs_CLIENT_LIB}
-        ${TARGET_LIBS}
-        )
+target_link_libraries(${TARGET_NAME} ${TARGET_LIBS} ${vfs_CLIENT_LIB})
 
-if(KOS_HW)
-    set_target_properties(${TARGET_NAME} PROPERTIES LINK_FLAGS_RELEASE -s)
-endif()
-
-add_kos_external_target(${TARGET_NAME}
-        QEMU_ENTITY ${TARGET_NAME}::entity
-        HW_ENTITY ${TARGET_NAME}::entity
-        )
+# We do not need default VFS entity here, which comes from ${vfs_CLIENT_LIB}
+set_target_properties (${TARGET_NAME} PROPERTIES ${vfs_ENTITY}_REPLACEMENT "")

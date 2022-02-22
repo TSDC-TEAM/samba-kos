@@ -1,0 +1,55 @@
+use common._
+
+/* Platform-specific EDL descriptions. */
+use EDL kl.drivers.BSP
+use EDL kl.drivers.GPIO
+
+/* Return of errors is allowed */
+error
+{
+    grant()
+}
+
+/**
+ * These instructions enables to start up and initialize entities specified in file init.yaml.in.
+ */
+execute src = Einit, dst = kl.drivers.BSP
+{
+    grant()
+}
+
+/**
+ * This code enables to send requests from BSP entity to KOS kernel
+ * and get responses.
+ */
+request src = kl.drivers.BSP, dst = kl.core.Core
+{
+    grant()
+}
+
+response src = kl.core.Core, dst = kl.drivers.BSP
+{
+    grant()
+}
+
+/**
+ * These instructions enables to start up and initialize entities specified in file init.yaml.in.
+ */
+execute src = Einit, dst = kl.drivers.GPIO
+{
+    grant()
+}
+
+/**
+ * This code enables to send requests from GPIO entity to KOS kernel
+ * and get responses.
+ */
+request src = kl.drivers.GPIO, dst = kl.core.Core
+{
+    grant()
+}
+
+response src = kl.core.Core, dst = kl.drivers.GPIO
+{
+    grant()
+}
