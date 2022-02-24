@@ -5028,6 +5028,8 @@ got_full:
 	return NT_STATUS_OK;
 }
 
+#include <tevent_internal.h>
+
 static void smbd_smb2_connection_handler(struct tevent_context *ev,
 					 struct tevent_fd *fde,
 					 uint16_t flags,
@@ -5038,9 +5040,14 @@ static void smbd_smb2_connection_handler(struct tevent_context *ev,
 		struct smbXsrv_connection);
 	NTSTATUS status;
 
+    ev->done = false;
 	status = smbd_smb2_io_handler(xconn, flags);
 	if (!NT_STATUS_IS_OK(status)) {
+        ev->done = true;
+        return;
+#if 0 // __KOS__
 		smbd_server_connection_terminate(xconn, nt_errstr(status));
 		return;
+#endif
 	}
 }

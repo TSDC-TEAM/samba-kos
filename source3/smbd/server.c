@@ -942,6 +942,33 @@ static void smbd_open_socket_close_fn(struct tevent_context *ev,
 	close(fd);
 }
 
+#include <pthread.h>
+
+struct kos_conn_data {
+    struct messaging_context *msg_ctx;
+    struct dcesrv_context *dce_ctx;
+    struct tevent_context *ev;
+    int fd;
+};
+
+void *thread_proc(void *tmp) {
+    struct kos_conn_data *data = (struct kos_conn_data *)tmp;
+
+    struct tevent_context *child_ev = NULL;
+    struct messaging_context *child_msg_ctx = NULL;
+
+    child_ev = samba_tevent_context_init(NULL);
+    tevent_re_initialise(child_ev);
+    child_msg_ctx = messaging_init(NULL, child_ev);
+    messaging_reinit(child_msg_ctx);
+
+    smbd_process(child_ev, child_msg_ctx, data->dce_ctx, data->fd, false);
+
+    // @todo: free ctx and ev
+
+    return NULL;
+}
+
 static void smbd_accept_connection(struct tevent_context *ev,
 				   struct tevent_fd *fde,
 				   uint16_t flags,
@@ -967,6 +994,19 @@ static void smbd_accept_connection(struct tevent_context *ev,
 	}
 	smb_set_close_on_exec(fd);
 
+#if 1 // __KOS__
+    struct kos_conn_data *data = (struct kos_conn_data *)malloc(sizeof(struct kos_conn_data));
+    data->fd = fd;
+    data->dce_ctx = dce_ctx;
+
+    pthread_t thread;
+    pthread_create(&thread, NULL, thread_proc, data);
+    // pthread_join(thread, NULL);
+    pthread_detach(thread);
+    // @todo: free
+    // free(data);
+    // close(fd);
+#else
 	if (s->parent->interactive) {
 		reinit_after_fork(msg_ctx, ev, true, NULL);
 		smbd_process(ev, msg_ctx, dce_ctx, fd, true);
@@ -1059,6 +1099,7 @@ static void smbd_accept_connection(struct tevent_context *ev,
 	 * (ca. 100kb).
 	 * */
 	force_check_log_size();
+#endif
 }
 
 static bool smbd_open_one_socket(struct smbd_parent_context *parent,
@@ -1644,7 +1685,7 @@ int kos_net_init(void) {
 	set_auth_parameters(argc,argv);
 #endif
 
-    bool interactive = true;
+    bool interactive = false;
     resetCfg(cmdline_daemon_cfg, interactive);
 
 #ifdef __KOS__
@@ -1971,14 +2012,22 @@ int kos_net_init(void) {
 
 	if (!smbd_notifyd_init(
 		    msg_ctx,
-		    cmdline_daemon_cfg->interactive,
+#if 0 // __KOS__
+            cmdline_daemon_cfg->interactive,
+#else
+            true,
+#endif
 		    &parent->notifyd)) {
 		exit_daemon("Samba cannot init notification", EACCES);
 	}
 
 	if (!cleanupd_init(
 		    msg_ctx,
-		    cmdline_daemon_cfg->interactive,
+#if 0 // __KOS__
+            cmdline_daemon_cfg->interactive,
+#else
+		    true,
+#endif
 		    &parent->cleanupd)) {
 		exit_daemon("Samba cannot init the cleanupd", EACCES);
 	}

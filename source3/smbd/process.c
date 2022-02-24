@@ -4251,7 +4251,8 @@ void smbd_process(struct tevent_context *ev_ctx,
 
 	TALLOC_FREE(trace_state.frame);
 
-	exit_server_cleanly(NULL);
+    // @todo: KOS: check free tasks
+	// exit_server_cleanly(NULL);
 }
 
 bool req_is_in_chain(const struct smb_request *req)
