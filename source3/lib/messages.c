@@ -491,11 +491,10 @@ static NTSTATUS messaging_init_internal(TALLOC_CTX *mem_ctx,
 		return NT_STATUS_NO_MEMORY;
 	}
 
-#if 0 // __KOS__
 	ok = directory_create_or_exist_strict(lck_path,
 					      sec_initial_uid(),
 					      0755);
-#else
+#if 1 // __KOS__
     ok = true;
 #endif
 	if (!ok) {
