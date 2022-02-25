@@ -336,7 +336,12 @@ _PUBLIC_ bool directory_create_or_exist_strict(const char *dname,
 		DEBUG(0, ("invalid permissions on directory "
 			  "'%s': has 0%o should be 0%o\n", dname,
 			  (unsigned int)(st.st_mode & 0777), (unsigned int)dir_perms));
+#if 0 // __KOS__
 		return false;
+#else
+        fprintf(stderr, "KOS: ignoring directory perms\n");
+        return true;
+#endif
 	}
 
 	return true;
