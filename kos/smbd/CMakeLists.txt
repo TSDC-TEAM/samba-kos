@@ -10,6 +10,7 @@ set(TARGET_SRC
         ${SMB_SRC_ROOT}/source3/smbd/server.c
         ${SMB_SRC_ROOT}/source3/smbd/smbd_cleanupd.c
         ${SMB_SRC_ROOT}/source3/rpc_server/epmd.c
+        ${SMB_SRC_ROOT}/source3/smbd/kos/kos_thread.c
         )
 
 set(TARGET_LIBS
