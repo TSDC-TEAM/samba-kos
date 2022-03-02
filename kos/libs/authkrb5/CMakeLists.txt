@@ -176,7 +176,7 @@ target_compile_options(
         -MMD
         -fPIC
         -fstack-protector-strong
-        -fstack-clash-protection
+        ${GCCDEFS}
         -Wno-error=discarded-qualifiers
         -Wno-error=cast-qual
         -Wno-error=missing-field-initializers

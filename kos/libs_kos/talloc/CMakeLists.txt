@@ -53,6 +53,6 @@ target_compile_options(
         -MMD
         -fPIC
         -fstack-protector-strong
-        -fstack-clash-protection
+        ${GCCDEFS}
         -fvisibility=hidden
 )
