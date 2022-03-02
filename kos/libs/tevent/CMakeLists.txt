@@ -15,7 +15,6 @@ set(TARGET_SRC
         ${SMB_SRC_ROOT}/lib/tevent/tevent_timed.c
         ${SMB_SRC_ROOT}/lib/tevent/tevent_util.c
         ${SMB_SRC_ROOT}/lib/tevent/tevent_wakeup.c
-        ${SMB_SRC_ROOT}/lib/tevent/tevent_epoll.c
 )
 
 add_library(

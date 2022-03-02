@@ -865,7 +865,7 @@
 #define HAVE_SYS_ACL_H 1
 #define HAVE_ATTR_ATTRIBUTES_H 1
 #define HAVE_SYS_DIR_H 1
-#define HAVE_SYS_EPOLL_H 1
+/* #undef HAVE_SYS_EPOLL_H 1 */
 #define HAVE_SYS_FCNTL_H 1
 #define HAVE_SYS_IOCTL_H 1
 #define HAVE_SYS_IPC_H 1
@@ -1131,7 +1131,7 @@
 #define HAVE_GETPWENT_R 1
 #define HAVE_GETPWNAM_R 1
 #define HAVE_GETPWUID_R 1
-#define HAVE_EPOLL_CREATE 1
+/* #undef HAVE_EPOLL_CREATE 1 */
 /* #undef HAVE_PORT_CREATE */
 /* #undef HAVE_GETPROGNAME */
 #define HAVE_COPY_FILE_RANGE 1
@@ -1199,7 +1199,7 @@
 #define HAVE_SETENV_DECL 1
 #define HAVE_SETRESGID_DECL 1
 #define HAVE_SETRESUID_DECL 1
-#define HAVE_EPOLL 1
+/* #undef HAVE_EPOLL 1 */
 #define HAVE_SYS_EVENTFD_H 1
 #define HAVE_EVENTFD 1
 #define HAVE_POLL_H 1
