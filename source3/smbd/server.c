@@ -1639,8 +1639,12 @@ int kos_net_init(void) {
 	/*
 	 * Do this before any other talloc operation
 	 */
+#ifndef KOS_NO_FORK
 	talloc_enable_null_tracking();
-	frame = talloc_stackframe();
+#else
+    talloc_disable_null_tracking();
+#endif
+    frame = talloc_stackframe();
 
 	smb_init_locale();
 
@@ -1687,9 +1691,11 @@ int kos_net_init(void) {
 
 	set_remote_machine_name("smbd", False);
 
+#ifndef KOS_NO_FORK
 	if (cmdline_daemon_cfg->interactive && (DEBUGLEVEL >= 9)) {
 		talloc_enable_leak_report();
 	}
+#endif
 
 	if (log_stdout && cmdline_daemon_cfg->fork) {
 		DEBUG(0,("ERROR: Can't log to stdout (-S) unless daemon is in foreground (-F) or interactive (-i)\n"));

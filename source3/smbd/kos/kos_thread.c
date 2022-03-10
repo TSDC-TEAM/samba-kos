@@ -25,16 +25,26 @@ struct kos_thread_data {
     struct kos_thread_data *next;
 };
 
+pthread_mutex_t g_mutex;
+#undef sprintf
+
 void *thread_proc(void *tmp) {
     struct kos_thread_data *data = (struct kos_thread_data *)tmp;
 
     struct tevent_context *child_ev = NULL;
     struct messaging_context *child_msg_ctx = NULL;
 
-    child_ev = samba_tevent_context_init(NULL);
-    tevent_re_initialise(child_ev);
-    child_msg_ctx = messaging_init(NULL, child_ev);
+    pthread_mutex_lock(&g_mutex);
+
+    static int i = 0;
+    char b[8] = {0};
+    sprintf(b, "%d", ++i);
+    TALLOC_CTX *ctx = talloc_named_const(NULL, 0, b);
+    child_ev = tevent_context_init(ctx);
+    child_msg_ctx = messaging_init(ctx, child_ev);
     messaging_reinit(child_msg_ctx);
+
+    pthread_mutex_unlock(&g_mutex);
 
     smbd_process(child_ev, child_msg_ctx, data->local_data->dce_ctx, data->local_data->fd, false);
 
@@ -48,6 +58,12 @@ void *thread_proc(void *tmp) {
 static struct kos_thread_data *head = NULL;
 
 int kos_run_conn(struct kos_conn_data data) {
+    static int first_run = 1;
+    if (first_run) {
+        pthread_mutex_init(&g_mutex, NULL);
+        first_run = 0;
+    }
+
     pthread_t *thread = (pthread_t *)malloc(sizeof(pthread_t));
 
     struct kos_conn_data *local_data = (struct kos_conn_data *)malloc(sizeof(struct kos_conn_data));
