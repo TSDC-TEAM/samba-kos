@@ -103,6 +103,8 @@ static int kos_set_tls(void *pkey, const void *pval, const char *location) {
     kv_push(struct kos_ts *, g_kos_ts_vec, cur);
     pthread_mutex_unlock(&g_kos_ts_vec_mutex);
 
+    // @todo: free on server_exit()
+
     return 0;
 }
 #endif
