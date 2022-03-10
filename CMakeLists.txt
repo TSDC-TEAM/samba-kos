@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 3.12)
 
 project(samba LANGUAGES C CXX)
 
-set(SANITIZE)
+set(SANITIZE 1)
 
 if(SANITIZE AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     add_compile_options("-fsanitize=address" "-fno-omit-frame-pointer")
