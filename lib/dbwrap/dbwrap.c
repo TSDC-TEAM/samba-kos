@@ -27,6 +27,7 @@
 #include "dbwrap/dbwrap_private.h"
 #include "lib/util/util_tdb.h"
 #include "lib/util/tevent_ntstatus.h"
+#include <source3/smbd/kos/kos_thread.h>
 
 /*
  * Fall back using fetch if no genuine exists operation is provided
@@ -123,11 +124,14 @@ NTSTATUS dbwrap_record_delete(struct db_record *rec)
 	return NT_STATUS_OK;
 }
 
+#ifndef KOS_NO_FORK
 const char *locked_dbs[DBWRAP_LOCK_ORDER_MAX];
+#endif
 
 static void debug_lock_order(int level)
 {
-	int i;
+#ifndef KOS_NO_FORK
+    int i;
 	DEBUG(level, ("lock order: "));
 	for (i=0; i<DBWRAP_LOCK_ORDER_MAX; i++) {
 		DEBUGADD(level,
@@ -136,6 +140,7 @@ static void debug_lock_order(int level)
 			  locked_dbs[i] ? locked_dbs[i] : "<none>"));
 	}
 	DEBUGADD(level, ("\n"));
+#endif
 }
 
 void dbwrap_lock_order_lock(const char *db_name,
@@ -154,7 +159,8 @@ void dbwrap_lock_order_lock(const char *db_name,
 		smb_panic("lock order violation");
 	}
 
-	for (idx=lock_order-1; idx<DBWRAP_LOCK_ORDER_MAX; idx++) {
+#ifndef KOS_NO_FORK
+    for (idx=lock_order-1; idx<DBWRAP_LOCK_ORDER_MAX; idx++) {
 		if (locked_dbs[idx] != NULL) {
 			DBG_ERR("Lock order violation: Trying %s at %d while "
 				"%s at %d is locked\n",
@@ -168,6 +174,7 @@ void dbwrap_lock_order_lock(const char *db_name,
 	}
 
 	locked_dbs[lock_order-1] = db_name;
+#endif
 
 	debug_lock_order(10);
 }
@@ -186,6 +193,7 @@ void dbwrap_lock_order_unlock(const char *db_name,
 		smb_panic("lock order violation");
 	}
 
+#ifndef KOS_NO_FORK
 	if (locked_dbs[lock_order-1] == NULL) {
 		DBG_ERR("db %s at order %d unlocked\n",
 			db_name,
@@ -202,6 +210,7 @@ void dbwrap_lock_order_unlock(const char *db_name,
 	}
 
 	locked_dbs[lock_order-1] = NULL;
+#endif
 }
 
 struct dbwrap_lock_order_state {

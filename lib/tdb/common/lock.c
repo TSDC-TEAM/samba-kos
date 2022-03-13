@@ -26,6 +26,7 @@
 */
 
 #include "tdb_private.h"
+#include <source3/smbd/kos/kos_thread.h>
 
 _PUBLIC_ void tdb_setalarm_sigptr(struct tdb_context *tdb, volatile sig_atomic_t *ptr)
 {
@@ -506,6 +507,9 @@ static int tdb_lock_list(struct tdb_context *tdb, int list, int ltype,
 /* lock a list in the database. list -1 is the alloc list */
 int tdb_lock(struct tdb_context *tdb, int list, int ltype)
 {
+#ifdef KOS_NO_FORK
+    return 0;
+#endif
 	int ret;
 
 	ret = tdb_lock_list(tdb, list, ltype, TDB_LOCK_WAIT);

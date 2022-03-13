@@ -21,6 +21,7 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <stdatomic.h>
 #include "includes.h"
 #include "smbd/smbd.h"
 #include "smbd/globals.h"
@@ -31,6 +32,7 @@
 #include "auth.h"
 #include "messages.h"
 #include "lib/param/loadparm.h"
+#include <source3/smbd/kos/kos_thread.h>
 
 /*
  * The persistent pcap cache is populated by the background print process. Per
@@ -137,7 +139,15 @@ bool reload_services(struct smbd_server_connection *sconn,
 		TALLOC_FREE(fname);
 	}
 
+#ifdef KOS_NO_FORK
+    static atomic_int first_run = 1;
+    if (first_run) {
+        reopen_logs();
+        first_run = 0;
+    }
+#elif
 	reopen_logs();
+#endif
 
 	if (test && !lp_file_list_changed())
 		return(True);
