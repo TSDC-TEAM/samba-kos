@@ -37,7 +37,7 @@
 
 #include "gnutls_helpers.h"
 #include "lib/util/memory.h"
-#include "kos/libs/gnutls/kosgnutls.h"
+#include "lib/gnutls/kosgnutls.h"
 
 int samba_gnutls_arcfour_confounded_md5(const DATA_BLOB *key_input1,
 					const DATA_BLOB *key_input2,

@@ -25,7 +25,7 @@ int gnutls_hash(gnutls_hash_hd_t handle, const void *ptext, size_t ptext_len)
 
     int res = EVP_DigestUpdate(ctx, ptext, ptext_len);
     if (1 != res) {
-        fprintf(stderr, "HASH: failed");
+        fprintf(stderr, "HASH: failed\n");
         return GNUTLS_E_HASH_FAILED;
     }
 
@@ -40,7 +40,7 @@ void gnutls_hash_output(gnutls_hash_hd_t handle, void *digest)
     unsigned int s = 0;
     int res = EVP_DigestFinal_ex(ctx, digest, &s);
     if (1 != res) {
-        fprintf(stderr, "HASH: output failed");
+        fprintf(stderr, "HASH: output failed\n");
     }
 
     EVP_DigestInit(ctx, algo);
@@ -49,7 +49,7 @@ void gnutls_hash_output(gnutls_hash_hd_t handle, void *digest)
 int gnutls_hash_fast(gnutls_digest_algorithm_t algorithm,
                      const void *ptext, size_t ptext_len, void *digest)
 {
-    fprintf(stderr, "HASH: function not implemented");
+    fprintf(stderr, "%s: function not implemented\n", __func__);
     return GNUTLS_E_HASH_FAILED;
 }
 
@@ -62,7 +62,7 @@ unsigned gnutls_hash_get_len(gnutls_digest_algorithm_t algorithm)
         case GNUTLS_DIG_SHA256:
             return SHA256_DIGEST_LENGTH;
         default:
-            fprintf(stderr, "HASH: unknown algo len request");
+            fprintf(stderr, "HASH: unknown algo len request\n");
             return GNUTLS_E_UNKNOWN_HASH_ALGORITHM;
     }
 }
@@ -71,7 +71,7 @@ int gnutls_hash_init(gnutls_hash_hd_t *dig, gnutls_digest_algorithm_t algorithm)
 {
     const EVP_MD *algo = gnutls_2_openssl_digest(algorithm);
     if (!algo) {
-        fprintf(stderr, "HASH: unknown algorithm");
+        fprintf(stderr, "HASH: unknown algorithm\n");
         return GNUTLS_E_UNKNOWN_HASH_ALGORITHM;
     }
 
@@ -80,7 +80,7 @@ int gnutls_hash_init(gnutls_hash_hd_t *dig, gnutls_digest_algorithm_t algorithm)
     int res = EVP_DigestInit(ctx, algo);
     if (1 != res) {
         EVP_MD_CTX_free(ctx);
-        fprintf(stderr, "HASH: initialization failed");
+        fprintf(stderr, "HASH: initialization failed\n");
         return GNUTLS_E_CRYPTO_INIT_FAILED;
     }
 
@@ -105,7 +105,7 @@ void gnutls_hash_deinit(gnutls_hash_hd_t handle, void *digest)
     unsigned int s = 0;
     int res_fin = EVP_DigestFinal(ctx, digest, &s);
     if (1 != res_fin) {
-        fprintf(stderr, "HASH: final failed");
+        fprintf(stderr, "HASH: final failed\n");
     }
 
     EVP_MD_CTX_free(ctx);

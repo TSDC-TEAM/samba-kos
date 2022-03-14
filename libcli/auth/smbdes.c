@@ -22,7 +22,7 @@
 
 #include "includes.h"
 #include "libcli/auth/libcli_auth.h"
-#include "kos/libs/gnutls/kosgnutls.h"
+#include "lib/gnutls/kosgnutls.h"
 
 
 static void str_to_key(const uint8_t *str,uint8_t *key)

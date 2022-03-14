@@ -54,7 +54,7 @@ int gnutls_hmac_fast(gnutls_mac_algorithm_t algorithm,
 {
     const EVP_MD *algo = gnutls_2_openssl_digest(algorithm);
     if (!algo) {
-        fprintf(stderr, "HMAC: unknown algorithm");
+        fprintf(stderr, "HMAC: unknown algorithm\n");
         return GNUTLS_E_UNKNOWN_HASH_ALGORITHM;
     }
 
@@ -74,7 +74,7 @@ int gnutls_hmac_init(gnutls_hmac_hd_t * dig,
 {
     const EVP_MD *algo = gnutls_2_openssl_digest(algorithm);
     if (!algo) {
-        fprintf(stderr, "HMAC: unknown algorithm");
+        fprintf(stderr, "HMAC: unknown algorithm\n");
         return GNUTLS_E_UNKNOWN_HASH_ALGORITHM;
     }
 
@@ -83,7 +83,7 @@ int gnutls_hmac_init(gnutls_hmac_hd_t * dig,
     int res = HMAC_Init_ex(ctx, key, (int)keylen, algo, NULL);
     if (1 != res) {
         HMAC_CTX_free(ctx);
-        fprintf(stderr, "HMAC: initialization failed");
+        fprintf(stderr, "HMAC: initialization failed\n");
         return GNUTLS_E_CRYPTO_INIT_FAILED;
     }
 
@@ -107,7 +107,7 @@ void gnutls_hmac_deinit(gnutls_hmac_hd_t handle, void *digest)
     unsigned int resultlen = 0;
     int res_fin = HMAC_Final(ctx, digest, &resultlen);
     if (1 != res_fin) {
-        fprintf(stderr, "HMAC: final failed");
+        fprintf(stderr, "HMAC: final failed\n");
     }
 
     HMAC_CTX_free(ctx);

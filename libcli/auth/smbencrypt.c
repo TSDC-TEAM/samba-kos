@@ -29,7 +29,7 @@
 #include "../librpc/gen_ndr/ndr_ntlmssp.h"
 
 #include "lib/crypto/gnutls_helpers.h"
-#include "kos/libs/gnutls/kosgnutls.h"
+#include "lib/gnutls/kosgnutls.h"
 
 
 int SMBencrypt_hash(const uint8_t lm_hash[16], const uint8_t *c8, uint8_t p24[24])

@@ -18,7 +18,7 @@
  *  along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "kos/libs/gnutls/kosgnutls.h"
+#include "lib/gnutls/kosgnutls.h"
 
 /* For structures internal to the NTLMSSP implementation that should not be exposed */
 

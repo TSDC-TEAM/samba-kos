@@ -41,25 +41,25 @@ int gnutls_cipher_encrypt(gnutls_cipher_hd_t handle, void *ptext, size_t ptext_l
 
 int gnutls_cipher_decrypt(gnutls_cipher_hd_t handle, void *ctext, size_t ctext_len)
 {
-    fprintf(stderr, "CIPHER: function not implemented");
+    fprintf(stderr, "%s: function not implemented\n", __func__);
     return GNUTLS_E_DECRYPTION_FAILED;
 }
 
 unsigned gnutls_cipher_get_tag_size(gnutls_cipher_algorithm_t algorithm)
 {
-    fprintf(stderr, "CIPHER: function not implemented");
+    fprintf(stderr, "%s: function not implemented\n", __func__);
     return 0;
 }
 
 unsigned gnutls_cipher_get_iv_size(gnutls_cipher_algorithm_t algorithm)
 {
-    fprintf(stderr, "CIPHER: function not implemented");
+    fprintf(stderr, "%s: function not implemented\n", __func__);
     return 0;
 }
 
 size_t gnutls_cipher_get_key_size(gnutls_cipher_algorithm_t algorithm)
 {
-    fprintf(stderr, "CIPHER: function not implemented");
+    fprintf(stderr, "%s: function not implemented\n", __func__);
     return 0;
 }
 
@@ -69,7 +69,7 @@ int gnutls_cipher_init(gnutls_cipher_hd_t *handle,
 {
     const EVP_CIPHER *cphr = gnutls_2_openssl_cipher(cipher);
     if (!cphr) {
-        fprintf(stderr, "CIPHER: unknown algorithm");
+        fprintf(stderr, "CIPHER: unknown algorithm\n");
         return GNUTLS_E_UNKNOWN_CIPHER_TYPE;
     }
 

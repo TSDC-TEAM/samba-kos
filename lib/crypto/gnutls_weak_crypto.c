@@ -17,7 +17,7 @@
 
 #include "includes.h"
 #include "lib/crypto/gnutls_helpers.h"
-#include "kos/libs/gnutls/kosgnutls.h"
+#include "lib/gnutls/kosgnutls.h"
 
 
 bool samba_gnutls_weak_crypto_allowed(void)

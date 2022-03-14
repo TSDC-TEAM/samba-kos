@@ -26,7 +26,7 @@
 //#include "../lib/tsocket/tsocket_internal.h"
 //#include "../lib/util/util_net.h"
 //#include "lib/tls/tls.h"
-//#include "kos/libs/gnutls/kosgnutls.h"
+//#include "lib/gnutls/kosgnutls.h"
 //
 //
 //#define DH_BITS 2048

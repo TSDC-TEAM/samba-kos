@@ -21,7 +21,7 @@
 
 #include "includes.h"
 #include "libcli/auth/libcli_auth.h"
-#include "kos/libs/gnutls/kosgnutls.h"
+#include "lib/gnutls/kosgnutls.h"
 
 /*
   encrypt or decrypt a blob of data using the user session key

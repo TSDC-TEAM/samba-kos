@@ -24,7 +24,7 @@
 #include "smb_signing.h"
 
 #include "lib/crypto/gnutls_helpers.h"
-#include "kos/libs/gnutls/kosgnutls.h"
+#include "lib/gnutls/kosgnutls.h"
 
 
 /* Used by the SMB signing functions. */

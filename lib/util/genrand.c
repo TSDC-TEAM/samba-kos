@@ -21,7 +21,7 @@
 
 #include "replace.h"
 #include "lib/util/genrand.h"
-#include "kos/libs/gnutls/kosgnutls.h"
+#include "lib/gnutls/kosgnutls.h"
 
 
 

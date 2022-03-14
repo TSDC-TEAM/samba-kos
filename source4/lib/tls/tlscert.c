@@ -21,7 +21,7 @@
 
 #include "includes.h"
 #include "lib/tls/tls.h"
-#include "kos/libs/gnutls/kosgnutls.h"
+#include "lib/gnutls/kosgnutls.h"
 
 
 #define ORGANISATION_NAME "Samba Administration"

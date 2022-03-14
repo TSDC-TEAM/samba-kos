@@ -30,7 +30,7 @@
 #include "../libcli/smb/smbXcli_base.h"
 #include "cli_smb2_fnum.h"
 #include "lib/util/string_wrappers.h"
-#include "kos/libs/gnutls/kosgnutls.h"
+#include "lib/gnutls/kosgnutls.h"
 
 
 #define PIPE_LANMAN   "\\PIPE\\LANMAN"

@@ -17,7 +17,7 @@
 
 #include "includes.h"
 #include "gnutls_helpers.h"
-#include "kos/libs/gnutls/kosgnutls.h"
+#include "lib/gnutls/kosgnutls.h"
 
 
 NTSTATUS _gnutls_error_to_ntstatus(int gnutls_rc,

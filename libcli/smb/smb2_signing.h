@@ -21,7 +21,7 @@
 #ifndef _LIBCLI_SMB_SMB2_SIGNING_H_
 #define _LIBCLI_SMB_SMB2_SIGNING_H_
 
-#include "kos/libs/gnutls/kosgnutls.h"
+#include "lib/gnutls/kosgnutls.h"
 
 
 struct iovec;
