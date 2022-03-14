@@ -56,8 +56,13 @@ unsigned gnutls_cipher_get_tag_size(gnutls_cipher_algorithm_t algorithm)
 
 unsigned gnutls_cipher_get_iv_size(gnutls_cipher_algorithm_t algorithm)
 {
-    fprintf(stderr, "%s: function not implemented\n", __func__);
-    return 0;
+    const EVP_CIPHER *c = gnutls_2_openssl_cipher(algorithm);
+    if (NULL == c) {
+        fprintf(stderr, "CIPHER: unknown algorithm\n");
+        return 0;
+    }
+
+    return EVP_CIPHER_iv_length(c);
 }
 
 size_t gnutls_cipher_get_key_size(gnutls_cipher_algorithm_t algorithm)
