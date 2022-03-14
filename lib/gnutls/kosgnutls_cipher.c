@@ -1,6 +1,7 @@
 #include <memory.h>
 #include <openssl/crypto.h>
 #include <openssl/evp.h>
+#include <assert.h>
 #include "kosgnutls.h"
 
 
@@ -50,7 +51,18 @@ int gnutls_cipher_decrypt(gnutls_cipher_hd_t handle, void *ctext, size_t ctext_l
 
 unsigned gnutls_cipher_get_tag_size(gnutls_cipher_algorithm_t algorithm)
 {
-    fprintf(stderr, "%s: function not implemented\n", __func__);
+    switch (algorithm) {
+        case GNUTLS_CIPHER_ARCFOUR_128: {
+            return 0;
+        }
+        case GNUTLS_CIPHER_AES_128_GCM: {
+            return EVP_GCM_TLS_TAG_LEN;
+        }
+    }
+
+    fprintf(stderr, "CIPHER: unknown algorithm\n");
+    assert(0);
+
     return 0;
 }
 
