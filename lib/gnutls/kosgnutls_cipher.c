@@ -10,6 +10,9 @@ static const EVP_CIPHER *gnutls_2_openssl_cipher(gnutls_cipher_algorithm_t ciphe
         case GNUTLS_CIPHER_ARCFOUR_128: {
             return EVP_rc4();
         }
+        case GNUTLS_CIPHER_AES_128_GCM: {
+            return EVP_aes_128_gcm();
+        }
         default: {
             return NULL;
         }
@@ -59,8 +62,13 @@ unsigned gnutls_cipher_get_iv_size(gnutls_cipher_algorithm_t algorithm)
 
 size_t gnutls_cipher_get_key_size(gnutls_cipher_algorithm_t algorithm)
 {
-    fprintf(stderr, "%s: function not implemented\n", __func__);
-    return 0;
+    const EVP_CIPHER *c = gnutls_2_openssl_cipher(algorithm);
+    if (NULL == c) {
+        fprintf(stderr, "CIPHER: unknown algorithm\n");
+        return 0;
+    }
+
+    return EVP_CIPHER_key_length(c);
 }
 
 int gnutls_cipher_init(gnutls_cipher_hd_t *handle,
