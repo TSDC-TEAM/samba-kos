@@ -24,6 +24,7 @@
 
 #include "includes.h"
 #include "smbd_shim.h"
+#include <source3/smbd/kos/kos_thread.h>
 
 static struct smbd_shim shim;
 
@@ -93,14 +94,20 @@ void contend_level2_oplocks_end(files_struct *fsp,
 
 void become_root(void)
 {
+#ifdef KOS_NO_FORK
+    return;
+#endif
 	if (shim.become_root) {
 		shim.become_root();
 	}
-        return;
+    return;
 }
 
 void unbecome_root(void)
 {
+#ifdef KOS_NO_FORK
+    return;
+#endif
 	if (shim.unbecome_root) {
 		shim.unbecome_root();
 	}
