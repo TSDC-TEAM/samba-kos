@@ -198,7 +198,7 @@ int tdb_brlock(struct tdb_context *tdb,
 	}
 
 #if 1 // __KOS__
-    fprintf(stderr, "KOS: skipping %s\n", __func__);
+    // fprintf(stderr, "KOS: skipping %s\n", __func__);
     return 0;
 #else
 	do {
@@ -231,7 +231,7 @@ int tdb_brunlock(struct tdb_context *tdb,
 		 int rw_type, tdb_off_t offset, size_t len)
 {
 #if 1 // __KOS__
-    fprintf(stderr, "KOS: skipping %s\n", __func__);
+    // fprintf(stderr, "KOS: skipping %s\n", __func__);
     return 0;
 #else
 	int ret;
