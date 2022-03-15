@@ -6,6 +6,7 @@ set(TARGET_SRC
         ${SMB_SRC_ROOT}/lib/gnutls/kosgnutls_cipher.c
         ${SMB_SRC_ROOT}/lib/gnutls/kosgnutls_hmac.c
         ${SMB_SRC_ROOT}/lib/gnutls/kosgnutls_hash.c
+        ${SMB_SRC_ROOT}/lib/gnutls/kosgnutls_aead_cipher.c
 )
 
 add_library(
