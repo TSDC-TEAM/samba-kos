@@ -11,6 +11,5 @@ int gnutls_rnd(gnutls_rnd_level_t level, void *data, size_t len)
 
 int gnutls_global_init(void)
 {
-    fprintf(stderr, "%s: function not implemented\n", __func__);
-    return -1;
+    return 0;
 }

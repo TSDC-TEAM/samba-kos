@@ -765,6 +765,8 @@
 #define HAVE_LIBCRYPTO 1
 #define HAVE_DES_PCBC_ENCRYPT 1
 #define WITH_SPOTLIGHT 1
+#define HAVE_GNUTLS_AEAD_CIPHER_ENCRYPTV2 1
+#define ALLOW_GNUTLS_AEAD_CIPHER_ENCRYPTV2_AES_GCM 1
 /* #undef HAVE_NSCD_FLUSH_CACHE */
 #define STRING_STATIC_MODULES "vfs_default vfs_not_implemented auth_builtin auth_sam auth_winbind rpc_mdssvc_module pdb_smbpasswd pdb_tdbsam auth_unix nss_info_template idmap_tdb idmap_passdb idmap_nss vfs_recycle vfs_audit vfs_extd_audit vfs_full_audit vfs_fake_perms vfs_default_quota vfs_readonly vfs_cap vfs_expand_msdfs vfs_shadow_copy vfs_shadow_copy2 vfs_readahead vfs_xattr_tdb vfs_streams_xattr vfs_streams_depot vfs_acl_xattr vfs_acl_tdb vfs_preopen vfs_catia vfs_media_harmony vfs_unityed_media vfs_fruit vfs_shell_snap vfs_commit vfs_worm vfs_crossrename vfs_linux_xfs_sgid vfs_time_audit vfs_offline vfs_virusfilter vfs_widelinks idmap_tdb2 idmap_script vfs_syncops vfs_dirsort vfs_aio_fork vfs_aio_pthread"
 #define STRING_SHARED_MODULES "idmap_autorid idmap_rid idmap_hash"
