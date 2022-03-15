@@ -61,6 +61,8 @@ unsigned gnutls_hash_get_len(gnutls_digest_algorithm_t algorithm)
             return MD5_DIGEST_LENGTH;
         case GNUTLS_DIG_SHA256:
             return SHA256_DIGEST_LENGTH;
+        case GNUTLS_MAC_AES_CMAC_128:
+            return 16;
         default:
             fprintf(stderr, "HASH: unknown algo len request\n");
             return GNUTLS_E_UNKNOWN_HASH_ALGORITHM;
