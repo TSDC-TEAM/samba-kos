@@ -5,6 +5,7 @@
 #include "kosgnutls.h"
 #include "kosgnutls_private.h"
 
+
 int gnutls_cipher_encrypt(gnutls_cipher_hd_t handle, void *ptext, size_t ptext_len)
 {
     EVP_CIPHER_CTX *ctx = (EVP_CIPHER_CTX *)handle;
@@ -86,7 +87,7 @@ int gnutls_cipher_init(gnutls_cipher_hd_t *handle,
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
     EVP_CIPHER_CTX_init(ctx);
 
-    int res_init = EVP_EncryptInit_ex(ctx, EVP_rc4(), NULL, NULL, NULL);
+    int res_init = EVP_EncryptInit_ex(ctx, cphr, NULL, NULL, NULL);
     if (!res_init) {
         fprintf(stderr, "CIPHER: initialization failed\n");
         EVP_CIPHER_CTX_free(ctx);
