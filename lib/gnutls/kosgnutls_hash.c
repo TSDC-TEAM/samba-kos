@@ -2,6 +2,7 @@
 #include <openssl/evp.h>
 #include <openssl/md5.h>
 #include <openssl/sha.h>
+#include <openssl/aes.h>
 
 
 static const EVP_MD *gnutls_2_openssl_digest(gnutls_digest_algorithm_t algorithm)
@@ -62,7 +63,7 @@ unsigned gnutls_hash_get_len(gnutls_digest_algorithm_t algorithm)
         case GNUTLS_DIG_SHA256:
             return SHA256_DIGEST_LENGTH;
         case GNUTLS_MAC_AES_CMAC_128:
-            return 16;
+            return AES_BLOCK_SIZE;
         default:
             fprintf(stderr, "HASH: unknown algo len request\n");
             return GNUTLS_E_UNKNOWN_HASH_ALGORITHM;

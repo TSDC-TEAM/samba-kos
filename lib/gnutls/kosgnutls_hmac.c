@@ -31,12 +31,16 @@ static const EVP_CIPHER *gnutls_2_openssl_cmac(gnutls_mac_algorithm_t algorithm)
     }
 }
 
+static int is_HMAC(HMAC_CTX *ctx) {
+    const EVP_MD *check = HMAC_CTX_get_md(ctx);
+    return check == EVP_md5() || check == EVP_sha256();
+}
+
 int gnutls_hmac(gnutls_hmac_hd_t handle, const void *ptext, size_t ptext_len)
 {
     HMAC_CTX *ctx = (HMAC_CTX *)handle;
 
-    const EVP_MD *check = HMAC_CTX_get_md(ctx);
-    if (check == EVP_md5() || check == EVP_sha256()) {
+    if (is_HMAC(ctx)) {
         int res_update = HMAC_Update(ctx, ptext, ptext_len);
         if (1 != res_update) {
             fprintf(stderr, "HMAC: update failed\n");
@@ -58,10 +62,9 @@ int gnutls_hmac(gnutls_hmac_hd_t handle, const void *ptext, size_t ptext_len)
 void gnutls_hmac_output(gnutls_hmac_hd_t handle, void *digest)
 {
     HMAC_CTX *ctx = (HMAC_CTX *)handle;
+    unsigned int resultlen = 0;
 
-    const EVP_MD *check = HMAC_CTX_get_md(ctx);
-    if (check == EVP_md5() || check == EVP_sha256()) {
-        unsigned int resultlen = 0;
+    if (is_HMAC(ctx)) {
         int res_fin = HMAC_Final(ctx, digest, &resultlen);
         if (1 != res_fin || 0 == resultlen) {
             fprintf(stderr, "HMAC: output failed\n");
@@ -72,7 +75,6 @@ void gnutls_hmac_output(gnutls_hmac_hd_t handle, void *digest)
             fprintf(stderr, "HMAC: reinitialization failed\n");
         }
     } else {
-        unsigned int resultlen = 0;
         int res_fin = CMAC_Final(ctx, digest, &resultlen);
         if (1 != res_fin || 0 == resultlen) {
             fprintf(stderr, "CMAC: output failed\n");
@@ -123,6 +125,7 @@ int gnutls_hmac_init(gnutls_hmac_hd_t * dig,
             fprintf(stderr, "CMAC: initialization failed\n");
             return GNUTLS_E_CRYPTO_INIT_FAILED;
         }
+
         *dig = (gnutls_hmac_hd_t)ctx;
         return 0;
     }
@@ -149,15 +152,29 @@ void gnutls_hmac_deinit(gnutls_hmac_hd_t handle, void *digest)
     }
 
     if (!digest) {
-        HMAC_CTX_free(ctx);
+        if (is_HMAC(ctx)) {
+            HMAC_CTX_free(ctx);
+        } else {
+            CMAC_CTX_free(ctx);
+        }
         return;
     }
 
     unsigned int resultlen = 0;
-    int res_fin = HMAC_Final(ctx, digest, &resultlen);
-    if (1 != res_fin) {
-        fprintf(stderr, "HMAC: final failed\n");
-    }
 
-    HMAC_CTX_free(ctx);
+    if (is_HMAC(ctx)) {
+        int res_fin = HMAC_Final(ctx, digest, &resultlen);
+        if (1 != res_fin) {
+            fprintf(stderr, "HMAC: final failed\n");
+        }
+
+        HMAC_CTX_free(ctx);
+    } else {
+        int res_fin = CMAC_Final(ctx, digest, &resultlen);
+        if (1 != res_fin) {
+            fprintf(stderr, "CMAC: final failed\n");
+        }
+
+        CMAC_CTX_free(ctx);
+    }
 }
