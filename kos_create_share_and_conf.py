@@ -39,13 +39,14 @@ def main(argv):
         confText += "smb ports = 1490\n"
         confText += "log level = 10\n"
         confText += "lock directory = ./\n"
+        confText += "restrict anonymous = 2\n"
         confText += "\n"
         confText += "[test]\n"
         confText += "path=" + folderName + "\n"
         confText += "public = yes\n"
         confText += "browseable = yes\n"
         confText += "writable = yes\n"
-        confText += "guest ok = yes\n"
+        confText += "guest ok = no\n"
         confText += "read only = no\n"
         conf.write(confText)
         conf.close
