@@ -48,6 +48,8 @@
 #include <sys/prctl.h>
 #endif
 
+#include <source3/smbd/kos/kos_thread.h>
+
 /* Max allowable allococation - 256mb - 0x10000000 */
 #define MAX_ALLOC_SIZE (1024*1024*256)
 
@@ -1086,7 +1088,11 @@ void set_remote_arch(enum remote_arch_types type)
 
 enum remote_arch_types get_remote_arch(void)
 {
+#ifdef KOS_NO_FORK
+    return RA_UNKNOWN;
+#else
 	return ra_type;
+#endif
 }
 
 #define RA_CACHE_TTL 7*24*3600

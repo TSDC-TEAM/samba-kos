@@ -39,6 +39,7 @@
 #include "lib/util/tevent_ntstatus.h"
 #include "lib/util/iov_buf.h"
 #include "lib/global_contexts.h"
+#include <source3/smbd/kos/kos_thread.h>
 
 struct smbXsrv_client_table {
 	struct {
@@ -191,6 +192,17 @@ static void smbXsrv_client_global_verify_record(struct db_record *db_rec,
 					TALLOC_CTX *mem_ctx,
 					struct smbXsrv_client_global0 **_g)
 {
+#ifdef KOS_NO_FORK
+    *is_free = true;
+
+    if (was_free) {
+        *was_free = true;
+    }
+
+    if (_g) {
+        *_g = NULL;
+    }
+#else
 	TDB_DATA key;
 	TDB_DATA val;
 	DATA_BLOB blob;
@@ -271,6 +283,7 @@ static void smbXsrv_client_global_verify_record(struct db_record *db_rec,
 		*_g = talloc_move(mem_ctx, &global);
 	}
 	TALLOC_FREE(frame);
+#endif
 }
 
 static NTSTATUS smb2srv_client_connection_pass(struct smbd_smb2_request *smb2req,

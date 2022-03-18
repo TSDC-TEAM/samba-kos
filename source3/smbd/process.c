@@ -46,6 +46,7 @@
 #include "libcli/smb/smbXcli_base.h"
 #include "lib/util/time_basic.h"
 #include "smb1_utils.h"
+#include <source3/smbd/kos/kos_thread.h>
 
 /* Internal message queue for deferred opens. */
 struct pending_message_list {
@@ -4012,10 +4013,12 @@ void smbd_process(struct tevent_context *ev_ctx,
 		exit_server_cleanly("talloc_zero(struct smbXsrv_client).\n");
 	}
 
+#ifndef KOS_NO_FORK
 	/*
 	 * TODO: remove this...:-)
 	 */
 	global_smbXsrv_client = client;
+#endif
 
 	sconn = talloc_zero(client, struct smbd_server_connection);
 	if (sconn == NULL) {
