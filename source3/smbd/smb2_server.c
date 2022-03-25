@@ -4858,6 +4858,7 @@ again:
 #if 0 // __KOS__
 	ret = recvmsg(xconn->transport.sock, &msg, 0);
 #else
+    errno = 0;
     ret = read(xconn->transport.sock, state->vector.iov_base, state->vector.iov_len);
 #endif
 	if (ret == 0) {
