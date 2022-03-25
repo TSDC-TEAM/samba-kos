@@ -4855,7 +4855,11 @@ again:
 		.msg_iovlen = 1,
 	};
 
+#if 0 // __KOS__
 	ret = recvmsg(xconn->transport.sock, &msg, 0);
+#else
+    ret = read(xconn->transport.sock, state->vector.iov_base, state->vector.iov_len);
+#endif
 	if (ret == 0) {
 		/* propagate end of file */
 		status = NT_STATUS_END_OF_FILE;
