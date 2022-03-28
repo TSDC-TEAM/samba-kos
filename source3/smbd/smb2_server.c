@@ -4731,21 +4731,27 @@ static NTSTATUS smbd_smb2_flush_send_queue(struct smbXsrv_connection *xconn)
 			.msg_iovlen = e->count,
 		};
 
-#if 1 // __KOS__
-		ret = sendmsg(xconn->transport.sock, &msg, 0);
+#if 0 // __KOS__
+        ret = sendmsg(xconn->transport.sock, &msg, 0);
 		if (ret == 0) {
 			/* propagate end of file */
 			return NT_STATUS_INTERNAL_ERROR;
 		}
 #else
         ret = 0;
-        errno = 0;
         for (int i = 0; i < msg.msg_iovlen; ++i) {
             if (msg.msg_iov[i].iov_len == 0) {
                 continue;
             }
+            errno = 0;
             int res_write = write(xconn->transport.sock, msg.msg_iov[i].iov_base, msg.msg_iov[i].iov_len);
             if (0 > res_write) {
+                if (errno == EAGAIN) {
+                    fprintf(stderr, "KOS: retrying: %s, i = %d\n", strerror(errno), i);
+                    i -= 1;
+                    usleep(100);
+                    continue;
+                }
                 fprintf(stderr, "KOS: error while sending, errno: %d\n", errno);
                 break;
             }
