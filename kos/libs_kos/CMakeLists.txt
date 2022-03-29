@@ -103,13 +103,27 @@ add_subdirectory(samba-passdb)
 add_subdirectory(bsd)
 add_subdirectory(gnutls)
 
+if (NOT KOS)
+    add_subdirectory(resolv)
+endif()
+
 set(C_LIB ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/libcombi.a)
+
+set(DEF_DEPENDS replace talloc time-basic socket-blocking iov-buf samba-debug tevent genrand sys-rw util-setid roken samba-util samba-errors com-err ndr asn1 tdb samba-security hcrypto wind ndr-nbt heimbase hx509 tevent-util util-tdb tdb-wrap server-role ndr-standard krb5 asn1util samba-hostconfig dbwrap gssapi msghdr interfaces events ndr-samba ldb krb5samba messages-dgm server-id-db messages-util cluster samba-sockets MESSAGING-SEND cli-ldap-common cliauth flag-mapping common-auth samdb-common ldbsamba authkrb5 samba-credentials winbind-client wbclient samdb samba-modules samba3-util clidns gensec talloc-report-printf util-reg samba-cluster-support smbd-shim CHARSET3 netif cli-nbt addns smbconf cli-ldap cli-cldap smb-transport secrets3 cli-smb-common dcerpc-binding gse dcerpc-samba libsmb ndr-samba4 msrpc3 ndr-krb5pac gnutls smbd-base xattr-tdb printing-migrate npa-tstream netapi dcerpc-server-core cli-spoolss auth MESSAGING net-keytab ads dcerpc libcli-lsa3 trusts-util http smbclient-raw dcerpc-pkt-auth libcli-netlogon3 samba-passdb bsd)
+
+if (NOT KOS)
+    list(APPEND DEF_DEPENDS resolv)
+endif()
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    set(CMAKE_AR ar)
+endif()
 
 add_custom_target(combined
         COMMAND rm -f ${C_LIB}
         COMMAND ${CMAKE_AR} crsT ${C_LIB} *.a
         WORKING_DIRECTORY ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
-        DEPENDS replace talloc time-basic socket-blocking iov-buf samba-debug tevent genrand sys-rw util-setid roken samba-util samba-errors com-err ndr asn1 tdb samba-security hcrypto wind ndr-nbt heimbase hx509 tevent-util util-tdb tdb-wrap server-role ndr-standard krb5 asn1util samba-hostconfig dbwrap gssapi msghdr interfaces events ndr-samba ldb krb5samba messages-dgm server-id-db messages-util cluster samba-sockets MESSAGING-SEND cli-ldap-common cliauth flag-mapping common-auth samdb-common ldbsamba authkrb5 samba-credentials winbind-client wbclient samdb samba-modules samba3-util clidns gensec talloc-report-printf util-reg samba-cluster-support smbd-shim CHARSET3 netif cli-nbt addns smbconf cli-ldap cli-cldap smb-transport secrets3 cli-smb-common dcerpc-binding gse dcerpc-samba libsmb ndr-samba4 msrpc3 ndr-krb5pac gnutls smbd-base xattr-tdb printing-migrate npa-tstream netapi dcerpc-server-core cli-spoolss auth MESSAGING net-keytab ads dcerpc libcli-lsa3 trusts-util http smbclient-raw dcerpc-pkt-auth libcli-netlogon3 samba-passdb bsd
+        DEPENDS ${DEF_DEPENDS}
         )
 
 add_library(c STATIC IMPORTED GLOBAL)
@@ -125,13 +139,13 @@ set(SAMBA_EXT_MODULES
         PARENT_SCOPE
         )
 
+set(DEF_LIBS pthread ssl crypto z)
+
+if (NOT KOS)
+    list(APPEND DEF_LIBS "dl")
+endif()
+
 set(SAMBA_THIRD_PARTY_LIBS
-        pthread
-        #        dl
-        ssl
-        crypto
-        #        crypt # @todo: figure out
-        z
-        #        resolv
+        ${DEF_LIBS}
         PARENT_SCOPE
         )

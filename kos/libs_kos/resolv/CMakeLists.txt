@@ -1,7 +1,7 @@
 set(TARGET_NAME resolv)
 
 set(TARGET_SRC
-        ${SMB_SRC_ROOT}/kos/libs/resolv/kosresolv.c
+        ${SMB_SRC_ROOT}/kos/libs_kos/resolv/kosresolv.c
 )
 
 add_library(

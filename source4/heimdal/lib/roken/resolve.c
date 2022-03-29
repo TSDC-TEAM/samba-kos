@@ -39,7 +39,7 @@
 #include <arpa/nameser.h>
 #endif
 #ifdef HAVE_RESOLV_H
-#include <kos/libs/resolv/kosresolv.h>
+#include <kos/libs_kos/resolv/kosresolv.h>
 #endif
 #ifdef HAVE_DNS_H
 #include <dns.h>

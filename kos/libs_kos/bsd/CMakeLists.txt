@@ -1,7 +1,7 @@
 set(TARGET_NAME bsd)
 
 set(TARGET_SRC
-        ${SMB_SRC_ROOT}/kos/libs/bsd/kosbsd.c
+        ${SMB_SRC_ROOT}/kos/libs_kos/bsd/kosbsd.c
 )
 
 add_library(

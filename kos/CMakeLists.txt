@@ -52,11 +52,7 @@ if (KOS)
     include_directories(${CMAKE_CURRENT_BINARY_DIR})
 endif ()
 
-if (KOS)
-    add_subdirectory(libs_kos)
-else ()
-    add_subdirectory(libs)
-endif ()
+add_subdirectory(libs_kos)
 add_subdirectory(smbd)
 
 if (KOS)
