@@ -1560,14 +1560,8 @@ int kos_net_init(void) {
     fprintf(stderr, "Start setup network\n");
 
 #ifdef __KOS__
-    #ifdef __arm__
     if (!configure_net_iface(DEFAULT_INTERFACE, DEFAULT_ADDR, DEFAULT_MASK, DEFAULT_GATEWAY, DEFAULT_MTU)) {
         perror("Can not init network");
-        return -1;
-    }
-#else
-    if (!wait_for_network()) {
-        fprintf(stderr, "wait_for_network failed\n");
         return -1;
     }
     if (mkdir("/dev", S_IRWXU | S_IRWXG | S_IRWXO) != 0) {
@@ -1579,7 +1573,6 @@ int kos_net_init(void) {
         fprintf(stderr, "Failed to mount devfs /dev, devfs(error %d: \"%s\")\n", errno, strerror(errno));
         return -1;
     }
-#endif
 #endif
 
     fprintf(stderr, "Setup network done\n");
