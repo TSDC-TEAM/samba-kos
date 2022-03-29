@@ -92,8 +92,6 @@ target_include_directories(
         ${SMB_SRC_ROOT}/bin/default/
         ${SMB_SRC_ROOT}/lib/talloc
         ${SMB_SRC_ROOT}/bin/default/lib/talloc
-        ${SMB_SRC_ROOT}/lib/util/home/user/samba-of-pred-kos-2/third_party/gpfs
-        ${SMB_SRC_ROOT}/bin/default/lib/util/home/user/samba-of-pred-kos-2/third_party/gpfs
         ${SMB_SRC_ROOT}/lib/util/charset
         ${SMB_SRC_ROOT}/bin/default/lib/util/charset
         ${SMB_SRC_ROOT}/dynconfig
@@ -124,25 +122,25 @@ if (KOS)
             "STATIC_charset_MODULES_PROTO=extern void __charset_dummy_module_proto(void)"
             STATIC_LIBCRYPTO_AES_CMAC_MODULES=NULL
             "STATIC_LIBCRYPTO_AES_CMAC_MODULES_PROTO=extern void __LIBCRYPTO_AES_CMAC_dummy_module_proto(void)"
-            BINDIR="/home/user/samba-of-pred-kos-2/bin"
-            SBINDIR="/home/user/samba-of-pred-kos-2/bin"
+            BINDIR="/bin"
+            SBINDIR="/bin"
             LIBDIR="/usr/local/samba/lib"
-            LIBEXECDIR="/home/user/samba-of-pred-kos-2/bin"
-            SAMBA_LIBEXECDIR="/home/user/samba-of-pred-kos-2/bin"
+            LIBEXECDIR="/bin"
+            SAMBA_LIBEXECDIR="/bin"
             DATADIR="/usr/local/samba/share"
             SAMBA_DATADIR="/usr/local/samba/share/samba"
             LOCALEDIR="/usr/local/samba/share/locale"
-            PYTHONDIR="/home/user/samba-of-pred-kos-2/bin/python"
-            PYTHONARCHDIR="/home/user/samba-of-pred-kos-2/bin/python"
+            PYTHONDIR="/bin/python"
+            PYTHONARCHDIR="/bin/python"
             PERL_LIB_INSTALL_DIR="/usr/local/samba/share/perl5"
             PERL_ARCH_INSTALL_DIR="/usr/local/samba/lib/perl5"
             INCLUDEDIR="/usr/local/samba/include"
-            SCRIPTSBINDIR="/home/user/samba-of-pred-kos-2/source4/scripting/bin"
-            SETUPDIR="/home/user/samba-of-pred-kos-2/source4/setup"
+            SCRIPTSBINDIR="/source4/scripting/bin"
+            SETUPDIR="/source4/setup"
             PKGCONFIGDIR="/usr/local/samba/lib/pkgconfig"
-            CODEPAGEDIR="/home/user/samba-of-pred-kos-2/codepages"
+            CODEPAGEDIR="/codepages"
             PRIVATELIBDIR="/usr/local/samba/lib/private"
-            MODULESDIR="/home/user/samba-of-pred-kos-2/bin/modules"
+            MODULESDIR="/bin/modules"
             PAMMODULESDIR="/usr/local/samba/lib/security"
             CONFIGDIR="/usr/local/samba/etc"
             PRIVATE_DIR="/usr/local/samba/private"

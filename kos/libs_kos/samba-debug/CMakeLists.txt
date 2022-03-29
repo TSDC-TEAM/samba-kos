@@ -35,8 +35,6 @@ target_include_directories(
         ${SMB_SRC_ROOT}/bin/default/
         ${SMB_SRC_ROOT}/lib/talloc
         ${SMB_SRC_ROOT}/bin/default/lib/talloc
-        ${SMB_SRC_ROOT}/lib/util/home/user/samba-of-pred-kos-2/third_party/gpfs
-        ${SMB_SRC_ROOT}/bin/default/lib/util/home/user/samba-of-pred-kos-2/third_party/gpfs
 )
 
 target_compile_definitions(

@@ -143,8 +143,6 @@ target_include_directories(
         ${SMB_SRC_ROOT}/bin/default/libcli/registry
         ${SMB_SRC_ROOT}/source3/param
         ${SMB_SRC_ROOT}/bin/default/source3/param
-        ${SMB_SRC_ROOT}/lib/util/home/user/samba-of-pred-kos-2/third_party/gpfs
-        ${SMB_SRC_ROOT}/bin/default/lib/util/home/user/samba-of-pred-kos-2/third_party/gpfs
         ${SMB_SRC_ROOT}/lib/messaging
         ${SMB_SRC_ROOT}/bin/default/lib/messaging
         ${SMB_SRC_ROOT}/lib/dbwrap

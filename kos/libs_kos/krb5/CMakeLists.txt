@@ -174,10 +174,10 @@ target_compile_definitions(
         _POSIX_PTHREAD_SEMANTICS
         STATIC_krb5_MODULES=NULL
         "STATIC_krb5_MODULES_PROTO=extern void __krb5_dummy_module_proto(void)"
-        BINDIR="/home/user/samba-of-pred-kos-2/bin"
-        SBINDIR="/home/user/samba-of-pred-kos-2/bin"
+        BINDIR="/bin"
+        SBINDIR="/bin"
         LIBDIR="/usr/local/samba/lib"
-        LIBEXECDIR="/home/user/samba-of-pred-kos-2/bin"
+        LIBEXECDIR="/bin"
         STATIC_HEIMDAL_CONFIG_MODULES=NULL
         "STATIC_HEIMDAL_CONFIG_MODULES_PROTO=extern void __HEIMDAL_CONFIG_dummy_module_proto(void)"
 )

@@ -69,8 +69,6 @@ target_include_directories(
         ${SMB_SRC_ROOT}/bin/default/source4/heimdal_build
         ${SMB_SRC_ROOT}/librpc
         ${SMB_SRC_ROOT}/bin/default/librpc
-        ${SMB_SRC_ROOT}/lib/util/home/user/samba/third_party/gpfs
-        ${SMB_SRC_ROOT}/bin/default/lib/util/home/user/samba/third_party/gpfs
         ${SMB_SRC_ROOT}/source3/modules
         ${SMB_SRC_ROOT}/bin/default/source3/modules
         ${SMB_SRC_ROOT}/dynconfig
@@ -149,8 +147,6 @@ target_include_directories(
         ${SMB_SRC_ROOT}/bin/default/libcli/named_pipe_auth
         ${SMB_SRC_ROOT}/libcli/cldap
         ${SMB_SRC_ROOT}/bin/default/libcli/cldap
-        ${SMB_SRC_ROOT}/source3/modules/home/user/samba/third_party/gpfs
-        ${SMB_SRC_ROOT}/bin/default/source3/modules/home/user/samba/third_party/gpfs
         ${SMB_SRC_ROOT}/lib/tdb
         ${SMB_SRC_ROOT}/bin/default/lib/tdb
         ${SMB_SRC_ROOT}/lib/socket

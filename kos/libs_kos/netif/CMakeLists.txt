@@ -35,8 +35,6 @@ target_include_directories(
         ${SMB_SRC_ROOT}/bin/default/lib/tevent
         ${SMB_SRC_ROOT}/lib/util/charset
         ${SMB_SRC_ROOT}/bin/default/lib/util/charset
-        ${SMB_SRC_ROOT}/lib/util/home/user/samba-of-pred-kos-2/third_party/gpfs
-        ${SMB_SRC_ROOT}/bin/default/lib/util/home/user/samba-of-pred-kos-2/third_party/gpfs
         ${SMB_SRC_ROOT}/lib/param
         ${SMB_SRC_ROOT}/bin/default/lib/param
         ${SMB_SRC_ROOT}/lib/crypto

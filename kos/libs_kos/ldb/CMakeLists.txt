@@ -67,7 +67,7 @@ target_compile_definitions(
         HAVE_CONFIG_H=1
         _GNU_SOURCE=1
         _XOPEN_SOURCE_EXTENDED=1
-        LDB_MODULESDIR="/home/user/samba-of-pred-kos-2/bin/modules/ldb"
+        LDB_MODULESDIR="/"
         __STDC_WANT_LIB_EXT1__=1
         _REENTRANT
         _POSIX_PTHREAD_SEMANTICS
