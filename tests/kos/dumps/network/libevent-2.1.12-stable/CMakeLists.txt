@@ -994,23 +994,23 @@ endif()
 #
 # Samples.
 #
-macro(add_sample_prog ssl name)
-    add_executable(${name} ${ARGN})
-
-    target_link_libraries(${name}
-                          event_extra
-                          event_core
-                          ${LIB_APPS}
-                          ${LIB_PLATFORM})
-
-    if (${ssl})
-        target_link_libraries(${name} event_openssl)
-        if(WIN32)
-            target_link_libraries(${name} crypt32)
-        endif()
-    endif()
-endmacro()
-if (NOT EVENT__DISABLE_SAMPLES)
+#macro(add_sample_prog ssl name)
+#    add_executable(${name} ${ARGN})
+#
+#    target_link_libraries(${name}
+#                          event_extra
+#                          event_core
+#                          ${LIB_APPS}
+#                          ${LIB_PLATFORM})
+#
+#    if (${ssl})
+#        target_link_libraries(${name} event_openssl)
+#        if(WIN32)
+#            target_link_libraries(${name} crypt32)
+#        endif()
+#    endif()
+#endmacro()
+if (EVENT__DISABLE_SAMPLES)
     set(SAMPLES
         event-read-fifo
         hello-world
@@ -1051,7 +1051,7 @@ macro(add_bench_prog prog)
                           ${LIB_APPS}
                           ${LIB_PLATFORM})
 endmacro()
-if (NOT EVENT__DISABLE_BENCHMARK)
+if (EVENT__DISABLE_BENCHMARK)
     foreach (BENCHMARK bench_http bench_httpclient)
         add_bench_prog(${BENCHMARK} test/${BENCHMARK}.c)
     endforeach()
@@ -1072,7 +1072,7 @@ macro(add_test_prog prog)
                           event_extra
                           ${ARGN})
 endmacro()
-if (NOT EVENT__DISABLE_TESTS)
+if (EVENT__DISABLE_TESTS)
     #
     # Generate Regress tests.
     #

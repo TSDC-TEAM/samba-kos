@@ -16,4 +16,7 @@ set(CMAKE_C_STANDARD 11)
 set(SMB_SRC_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_subdirectory(kos)
-add_subdirectory(tests/kos/dumps)
+
+if (NOT KOS)
+    add_subdirectory(tests/kos/dumps)
+endif()
