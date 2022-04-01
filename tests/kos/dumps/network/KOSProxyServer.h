@@ -2,6 +2,7 @@
 #define SAMBA_KOSPROXYSERVER_H
 
 #include "event2/event_struct.h"
+#include "file/KOSDumpWriter.h"
 
 
 class KOSProxyServer{
@@ -31,6 +32,8 @@ private:
     struct bufferevent *bevEndpoint;
 
     int portEndpoint;
+    KOSDumpWriter writer;
+
 };
 
 #endif //SAMBA_KOSPROXYSERVER_H

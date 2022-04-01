@@ -1,12 +1,14 @@
 #include <cstring>
 #include <cstdlib>
 #include <cassert>
+#include <ostream>
+#include <fstream>
 #include "KOSProxyServer.h"
 #include "event2/event.h"
 #include "event2/listener.h"
 #include "event2/bufferevent.h"
 #include "event2/buffer.h"
-#include "utils/hex.h"
+#include "../utils/hex.h"
 
 
 KOSProxyServer::KOSProxyServer() {
@@ -36,7 +38,7 @@ void KOSProxyServer::inwokeReadCb(struct bufferevent *bev, void *user_data) {
 
 void KOSProxyServer::connEventCb(struct bufferevent *bev, short events) {
     if (events & BEV_EVENT_EOF) {
-        printf("Connection closed.\n");
+        printf("connection closed.\n");
         goto stop;
     } else if (events & BEV_EVENT_ERROR) {
         printf("got an error on the connection: %s\n", strerror(errno));
@@ -65,12 +67,9 @@ void KOSProxyServer::readCb(struct bufferevent *bev) {
     data = static_cast<char *>(malloc(len));
     evbuffer_remove(input, data, len);
 
-    printf("---\n");
-    dumpHex(data, len);
-    printf("---\n");
-
     if (bev == bevClient) {
         bufferevent_write(bevEndpoint, data, len);
+        writer.dump(data, len);
     } else if (bev == bevEndpoint) {
         bufferevent_write(bevClient, data, len);
     } else {
@@ -116,6 +115,11 @@ void KOSProxyServer::listenerCb(evutil_socket_t fd, struct sockaddr *sa, int soc
 }
 
 bool KOSProxyServer::run(int portListen, int portRedirect) {
+    KOSDumpWriter::Params p{.sepFiles = false, .dirName = "./"};
+    if (!writer.init(p)) {
+        return false;
+    }
+
     base = event_base_new();
     if (!base) {
         return false;
