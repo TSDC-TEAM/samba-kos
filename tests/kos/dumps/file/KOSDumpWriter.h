@@ -18,6 +18,7 @@ public:
     ~KOSDumpWriter();
 
     bool init(Params &p);
+    bool isActive();
     int dump(void *data, int datalen);
 
 private:

@@ -3,15 +3,23 @@
 
 #include "event2/event_struct.h"
 #include "file/KOSDumpWriter.h"
+#include <memory>
 
 
 class KOSProxyServer{
 
 public:
-    KOSProxyServer();
+
+    struct Params {
+        int portEndpoint;
+        int portClient;
+        KOSDumpWriter &writer;
+    };
+
+    KOSProxyServer(Params &params);
     ~KOSProxyServer();
 
-    bool run(int portListen, int portRedirect);
+    bool run();
 
 private:
 
@@ -30,9 +38,7 @@ private:
     struct evconnlistener *listener;
     struct bufferevent *bevClient;
     struct bufferevent *bevEndpoint;
-
-    int portEndpoint;
-    KOSDumpWriter writer;
+    Params p;
 
 };
 

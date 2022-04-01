@@ -25,6 +25,10 @@ bool KOSDumpWriter::init(KOSDumpWriter::Params &p) {
     return true;
 }
 
+bool KOSDumpWriter::isActive() {
+    return params.sepFiles ? true : !file.bad();
+}
+
 int KOSDumpWriter::dump(void *data, int datalen) {
     static int i = 0;
 

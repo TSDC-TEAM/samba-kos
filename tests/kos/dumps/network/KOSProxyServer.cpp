@@ -11,7 +11,7 @@
 #include "../utils/hex.h"
 
 
-KOSProxyServer::KOSProxyServer() {
+KOSProxyServer::KOSProxyServer(Params &params) : p(params) {
 
 }
 
@@ -69,7 +69,7 @@ void KOSProxyServer::readCb(struct bufferevent *bev) {
 
     if (bev == bevClient) {
         bufferevent_write(bevEndpoint, data, len);
-        writer.dump(data, len);
+        p.writer.dump(data, len);
     } else if (bev == bevEndpoint) {
         bufferevent_write(bevClient, data, len);
     } else {
@@ -95,7 +95,7 @@ void KOSProxyServer::listenerCb(evutil_socket_t fd, struct sockaddr *sa, int soc
     struct sockaddr_in sin = {0};
     sin.sin_addr.s_addr = INADDR_ANY;
     sin.sin_family = AF_INET;
-    sin.sin_port = htons(portEndpoint);
+    sin.sin_port = htons(p.portEndpoint);
 
     bevEndpoint = bufferevent_socket_new(base, -1, BEV_OPT_CLOSE_ON_FREE);
     if (!bevEndpoint) {
@@ -114,22 +114,15 @@ void KOSProxyServer::listenerCb(evutil_socket_t fd, struct sockaddr *sa, int soc
     }
 }
 
-bool KOSProxyServer::run(int portListen, int portRedirect) {
-    KOSDumpWriter::Params p{.sepFiles = false, .dirName = "./"};
-    if (!writer.init(p)) {
-        return false;
-    }
-
+bool KOSProxyServer::run() {
     base = event_base_new();
     if (!base) {
         return false;
     }
 
-    portEndpoint = portRedirect;
-
     struct sockaddr_in sin = {0};
     sin.sin_family = AF_INET;
-    sin.sin_port = htons(portListen);
+    sin.sin_port = htons(p.portClient);
 
     listener = evconnlistener_new_bind(base, KOSProxyServer::invokeListenerCb, (void *)this,
                                        LEV_OPT_REUSEABLE|LEV_OPT_CLOSE_ON_FREE, -1,
