@@ -16,7 +16,7 @@ public:
         KOSDumpWriter &writer;
     };
 
-    KOSProxyServer(Params &params);
+    explicit KOSProxyServer(Params &params);
     ~KOSProxyServer();
 
     bool run();

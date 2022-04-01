@@ -1,14 +1,11 @@
 #include <cstring>
 #include <cstdlib>
 #include <cassert>
-#include <ostream>
-#include <fstream>
 #include "KOSProxyServer.h"
 #include "event2/event.h"
 #include "event2/listener.h"
 #include "event2/bufferevent.h"
 #include "event2/buffer.h"
-#include "../utils/hex.h"
 
 
 KOSProxyServer::KOSProxyServer(Params &params) : p(params) {
