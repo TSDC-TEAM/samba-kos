@@ -86,6 +86,18 @@ void KOSClient::writeCb(struct bufferevent *bev) {
 }
 
 void KOSClient::readCb(struct bufferevent *bev) {
+    struct evbuffer *input = bufferevent_get_input(bev);
+
+    size_t len = evbuffer_get_length(input);
+    char *data;
+    data = static_cast<char *>(malloc(len));
+    evbuffer_remove(input, data, len);
+
+    if (len > 64 + 4) {
+        dumpHex(data + 4 + 16 + 16 + 8, 8);
+        memcpy(sessionID, data + 4 + 16 + 16 + 8, 8);
+    }
+
     writeNext();
 }
 
@@ -93,9 +105,11 @@ void KOSClient::writeNext() {
     std::vector<uint8_t> v;
     p.reader.readNext(v);
     if (!v.empty()) {
-        dumpHex(v.data(), v.size());
+        printf("Ok, my ses:\n");
+        memcpy(v.data() + 4 + 16 + 16 + 8, sessionID, 8);
+        dumpHex(v.data() + 4 + 16 + 16 + 8, 8);
         bufferevent_write(bevServer, v.data(), v.size());
-        printf("write %zu bytes", v.size());
+        printf("write %zu bytes\n", v.size());
     } else {
         printf("Ok\n");
     }

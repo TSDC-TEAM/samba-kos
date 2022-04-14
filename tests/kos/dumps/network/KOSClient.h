@@ -35,6 +35,7 @@ private:
     Params p;
     struct event_base *base;
     struct bufferevent *bevServer;
+    char sessionID[8];
 
 };
 

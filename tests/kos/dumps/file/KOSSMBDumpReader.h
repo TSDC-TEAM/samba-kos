@@ -23,7 +23,8 @@ public:
 private:
 
     Params p;
-    std::fstream f;
+//    std::fstream f;
+    int fd;
 
 };
 
