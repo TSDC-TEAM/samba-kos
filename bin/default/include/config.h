@@ -797,6 +797,8 @@
 
 #endif /* W_DEFAULT_INCLUDE_CONFIG_H_WAF */
 
+#define USE_TDB_MUTEX_LOCKING 1
+
 #else
 
 /* WARNING! All changes made to this file will be lost! */

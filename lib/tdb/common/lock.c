@@ -197,10 +197,6 @@ int tdb_brlock(struct tdb_context *tdb,
 		return -1;
 	}
 
-#if 1 // __KOS__
-    // fprintf(stderr, "KOS: skipping %s\n", __func__);
-    return 0;
-#else
 	do {
 		ret = fcntl_lock(tdb, rw_type, offset, len,
 				 flags & TDB_LOCK_WAIT);
@@ -224,22 +220,16 @@ int tdb_brlock(struct tdb_context *tdb,
 		return -1;
 	}
 	return 0;
-#endif
 }
 
 int tdb_brunlock(struct tdb_context *tdb,
 		 int rw_type, tdb_off_t offset, size_t len)
 {
-#if 1 // __KOS__
-    // fprintf(stderr, "KOS: skipping %s\n", __func__);
-    return 0;
-#else
 	int ret;
 
 	if (tdb->flags & TDB_NOLOCK) {
 		return 0;
 	}
-
 
 	do {
 		ret = fcntl_unlock(tdb, rw_type, offset, len);
@@ -250,7 +240,6 @@ int tdb_brunlock(struct tdb_context *tdb,
 			 tdb->fd, offset, rw_type, len));
 	}
 	return ret;
-#endif
 }
 
 /*
@@ -388,12 +377,12 @@ int tdb_nest_lock(struct tdb_context *tdb, uint32_t offset, int ltype,
 	if (tdb->num_lockrecs == tdb->lockrecs_array_length) {
 		new_lck = (struct tdb_lock_type *)realloc(
 			tdb->lockrecs,
-			sizeof(*tdb->lockrecs) * (tdb->num_lockrecs+1));
+			sizeof(*tdb->lockrecs) * (tdb->num_lockrecs+256));
 		if (new_lck == NULL) {
 			errno = ENOMEM;
 			return -1;
 		}
-		tdb->lockrecs_array_length = tdb->num_lockrecs+1;
+		tdb->lockrecs_array_length = tdb->num_lockrecs+256;
 		tdb->lockrecs = new_lck;
 	}
 
@@ -507,9 +496,6 @@ static int tdb_lock_list(struct tdb_context *tdb, int list, int ltype,
 /* lock a list in the database. list -1 is the alloc list */
 int tdb_lock(struct tdb_context *tdb, int list, int ltype)
 {
-#ifdef KOS_NO_FORK
-    return 0;
-#endif
 	int ret;
 
 	ret = tdb_lock_list(tdb, list, ltype, TDB_LOCK_WAIT);
