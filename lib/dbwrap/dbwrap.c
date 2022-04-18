@@ -29,6 +29,8 @@
 #include "lib/util/tevent_ntstatus.h"
 #include <source3/smbd/kos/kos_thread.h>
 
+#define STRANGE_BIG_VALUE 1024*1024*8
+
 /*
  * Fall back using fetch if no genuine exists operation is provided
  */
@@ -315,6 +317,9 @@ NTSTATUS dbwrap_fetch(struct db_context *db, TALLOC_CTX *mem_ctx,
 	if ((state.data.dsize != 0) && (state.data.dptr == NULL)) {
 		return NT_STATUS_NO_MEMORY;
 	}
+    if (state.data.dsize > STRANGE_BIG_VALUE) {
+        return NT_STATUS_NO_MEMORY;
+    }
 	*value = state.data;
 	return NT_STATUS_OK;
 }
