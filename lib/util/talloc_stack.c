@@ -38,7 +38,7 @@
  */
 
 #include "includes.h"
-#include <lib/kvec/kvec.h>
+#include <lib/klib//kvec.h>
 #include <source3/smbd/kos/kos_thread.h>
 #include <pthread.h>
 

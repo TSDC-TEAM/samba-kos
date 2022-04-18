@@ -5071,10 +5071,9 @@ static void smbd_smb2_connection_handler(struct tevent_context *ev,
 	status = smbd_smb2_io_handler(xconn, flags);
 	if (!NT_STATUS_IS_OK(status)) {
         ev->done = true;
-        return;
 #if 0 // __KOS__
 		smbd_server_connection_terminate(xconn, nt_errstr(status));
-		return;
 #endif
-	}
+        return;
+    }
 }
