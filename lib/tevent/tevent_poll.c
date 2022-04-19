@@ -31,8 +31,7 @@
 #include <source3/smbd/kos/kos_thread.h>
 
 #ifdef KOS_NO_FORK
-#include <pthread.h>
-pthread_mutex_t g_poll_mutex;
+#include <source3/smbd/kos/kos_thread.h>
 #endif
 
 struct poll_event_context {
@@ -72,17 +71,6 @@ struct poll_event_context {
 static int poll_event_context_init(struct tevent_context *ev)
 {
 	struct poll_event_context *poll_ev;
-
-#ifdef KOS_NO_FORK
-    static int first_run = 1;
-    if (first_run) {
-        pthread_mutexattr_t attr;
-        pthread_mutexattr_init(&attr);
-        pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
-        pthread_mutex_init(&g_poll_mutex, NULL);
-        first_run = 0;
-    }
-#endif
 
 	/*
 	 * we might be called during tevent_re_initialise()
@@ -584,9 +572,9 @@ static int poll_event_loop_poll(struct tevent_context *ev,
 		if (flags != 0) {
 			DLIST_DEMOTE(ev->fd_events, fde);
 #ifdef KOS_NO_FORK
-            pthread_mutex_lock(&g_poll_mutex);
+            kos_lock_poll_mtx();
             int ret = tevent_common_invoke_fd_handler(fde, flags, NULL);
-            pthread_mutex_unlock(&g_poll_mutex);
+            kos_unlock_poll_mtx();
             return ret;
 #else
             return tevent_common_invoke_fd_handler(fde, flags, NULL);

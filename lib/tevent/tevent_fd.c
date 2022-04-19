@@ -153,8 +153,6 @@ int tevent_common_invoke_fd_handler(struct tevent_fd *fde, uint16_t flags,
 	}
 	fde->busy = false;
 
-    int ret = handler_ev ? handler_ev->done : 0;
-
 	if (fde->destroyed) {
 		talloc_set_destructor(fde, NULL);
 		TALLOC_FREE(fde);
@@ -163,7 +161,7 @@ int tevent_common_invoke_fd_handler(struct tevent_fd *fde, uint16_t flags,
 		}
 	}
 
-	return ret;
+	return 0;
 }
 
 void tevent_fd_set_tag(struct tevent_fd *fde, uint64_t tag)

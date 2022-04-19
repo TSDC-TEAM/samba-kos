@@ -46,7 +46,8 @@
 #endif
 
 #include "lib/crypto/gnutls_helpers.h"
-
+#include <source3/smbd/kos/kos_thread.h>
+#include <pthread.h>
 
 
 #undef DBGC_CLASS
@@ -1655,6 +1656,8 @@ void smbd_server_connection_terminate_ex(struct smbXsrv_connection *xconn,
 					 const char *reason,
 					 const char *location)
 {
+    pthread_exit(NULL);
+
 	struct smbXsrv_client *client = xconn->client;
 	size_t num_ok = 0;
 
@@ -5067,11 +5070,10 @@ static void smbd_smb2_connection_handler(struct tevent_context *ev,
 		struct smbXsrv_connection);
 	NTSTATUS status;
 
-    ev->done = false;
 	status = smbd_smb2_io_handler(xconn, flags);
 	if (!NT_STATUS_IS_OK(status)) {
-        ev->done = true;
-#if 0 // __KOS__
+        kos_unreg_thread();
+#if 1 // __KOS__
 		smbd_server_connection_terminate(xconn, nt_errstr(status));
 #endif
         return;

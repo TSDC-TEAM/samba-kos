@@ -11,6 +11,9 @@ struct kos_conn_data {
 };
 
 int kos_run_conn(struct kos_conn_data data);
+void kos_unreg_thread();
+void kos_lock_poll_mtx();
+void kos_unlock_poll_mtx();
 
 #endif
 

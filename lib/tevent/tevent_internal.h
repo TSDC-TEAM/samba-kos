@@ -294,9 +294,6 @@ struct tevent_context {
 	/* the specific events implementation */
 	const struct tevent_ops *ops;
 
-    /* KOS specific flag for a thread end */
-    bool done;
-
 	/*
 	 * The following three pointers are queried on every loop_once
 	 * in the order in which they appear here. Not measured, but
