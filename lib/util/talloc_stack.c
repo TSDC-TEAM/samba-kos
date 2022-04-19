@@ -295,8 +295,10 @@ TALLOC_CTX *_talloc_tos(const char *location)
 	if (ts == NULL || ts->talloc_stacksize == 0) {
 		_talloc_stackframe(location);
 		ts = (struct talloc_stackframe *)SMB_THREAD_GET_TLS(global_ts);
-		DEBUG(0, ("no talloc stackframe at %s, leaking memory\n",
-			  location));
+        // KOS: actually for each thread we create a new TS
+        // so here isn't the leaking memory
+		// DEBUG(0, ("no talloc stackframe at %s, leaking memory\n",
+		//	  location));
 #ifdef DEVELOPER
 		smb_panic("No talloc stackframe");
 #endif
