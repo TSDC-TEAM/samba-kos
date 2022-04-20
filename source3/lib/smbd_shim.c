@@ -43,6 +43,10 @@ void send_stat_cache_delete_message(struct messaging_context *msg_ctx,
 
 bool change_to_root_user(void)
 {
+#if 1 // __KOS__
+    return false;
+#endif
+
 	if (shim.change_to_root_user) {
 		return shim.change_to_root_user();
 	}

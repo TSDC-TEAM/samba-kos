@@ -78,6 +78,7 @@ void kos_unreg_thread() {
 
     pthread_mutex_unlock(&g_hash_kos_thread_mutex);
 
+    kos_unreg_ts();
     kos_unlock_poll_mtx();
 }
 

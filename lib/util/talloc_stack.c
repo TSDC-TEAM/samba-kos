@@ -73,7 +73,7 @@ typedef kvec_t(struct kos_ts *) kos_ts_vec_t;
 kos_ts_vec_t g_kos_ts_vec;
 pthread_mutex_t g_kos_ts_vec_mutex;
 
-void *kos_get_tls(void *pkey, const char *location) {
+static void *kos_get_tls(void *pkey, const char *location) {
     pid_t tid = gettid();
     void *ret = NULL;
 
@@ -106,6 +106,28 @@ static int kos_set_tls(void *pkey, const void *pval, const char *location) {
     // @todo: free on server_exit()
 
     return 0;
+}
+
+void kos_unreg_ts() {
+    pid_t tid = gettid();
+    kos_ts_vec_t kos_ts_vec;
+    kv_init(kos_ts_vec);
+
+    pthread_mutex_lock(&g_kos_ts_vec_mutex);
+
+    for (size_t i = 0; i < kv_size(g_kos_ts_vec); ++i) {
+        struct kos_ts *rule = (struct kos_ts *)kv_A(g_kos_ts_vec, i);
+        if (rule->tid == tid) {
+            free(rule);
+            continue;
+        }
+        kv_push(struct kos_ts *, kos_ts_vec, rule);
+    }
+
+    kv_destroy(g_kos_ts_vec);
+    g_kos_ts_vec = kos_ts_vec;
+
+    pthread_mutex_unlock(&g_kos_ts_vec_mutex);
 }
 #endif
 
