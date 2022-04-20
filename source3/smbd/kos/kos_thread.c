@@ -21,6 +21,8 @@
 struct kos_thread_data {
     pthread_t *thread;
     struct kos_conn_data *local_data;
+    struct tevent_context *child_ev;
+    struct messaging_context *child_msg_ctx;
     atomic_int done;
     pid_t thread_id;
 };
@@ -84,26 +86,20 @@ static void *thread_proc(void *tmp) {
 
     reg_thread(data);
 
-    struct tevent_context *child_ev = NULL;
-    struct messaging_context *child_msg_ctx = NULL;
-
     pthread_mutex_lock(&g_init_mutex);
 
     static int i = 0;
     char b[8] = {0};
     sprintf(b, "%d", ++i);
-    TALLOC_CTX *ctx = talloc_named_const(NULL, 0, b);
-    child_ev = tevent_context_init(ctx);
-    child_msg_ctx = messaging_init(ctx, child_ev);
-    messaging_reinit(child_msg_ctx);
+    data->child_ev = tevent_context_init(NULL);
+    data->child_msg_ctx = messaging_init(NULL, data->child_ev);
+    messaging_reinit(data->child_msg_ctx);
 
     pthread_mutex_unlock(&g_init_mutex);
 
-    smbd_process(child_ev, child_msg_ctx, data->local_data->dce_ctx, data->local_data->fd, false);
+    smbd_process(data->child_ev, data->child_msg_ctx, data->local_data->dce_ctx, data->local_data->fd, false);
 
-    data->done = 1;
-
-    // @todo: free ctx and ev
+    data->done = true;
 
     return NULL;
 }
@@ -130,7 +126,7 @@ int kos_run_conn(struct kos_conn_data data) {
     struct kos_thread_data *new_one = (struct kos_thread_data *)malloc(sizeof(struct kos_thread_data));
     new_one->local_data = local_data;
     new_one->thread = thread;
-    new_one->done = 0;
+    new_one->done = false;
 
     pthread_create(thread, NULL, thread_proc, new_one);
 
@@ -143,6 +139,7 @@ int kos_run_conn(struct kos_conn_data data) {
                 pthread_join(*t->thread, NULL);
                 free(t->thread);
                 free(t->local_data);
+                messaging_cleanup(t->child_msg_ctx, 0);
                 free(t);
                 kh_del_m32(g_hash_kos_thread_map, k);
                 k = kh_begin(g_hash_kos_thread_map);
