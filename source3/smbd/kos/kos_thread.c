@@ -129,8 +129,6 @@ int kos_run_conn(struct kos_conn_data data) {
     new_one->thread = thread;
     new_one->done = false;
 
-    pthread_create(thread, NULL, thread_proc, new_one);
-
     pthread_mutex_lock(&g_hash_kos_thread_mutex);
     for (khint_t k = kh_begin(g_hash_kos_thread_map); k != kh_end(g_hash_kos_thread_map); ++k) {
         if (kh_exist(g_hash_kos_thread_map, k)) {
@@ -148,6 +146,8 @@ int kos_run_conn(struct kos_conn_data data) {
         }
     }
     pthread_mutex_unlock(&g_hash_kos_thread_mutex);
+
+    pthread_create(thread, NULL, thread_proc, new_one);
 
     return 0;
 }
