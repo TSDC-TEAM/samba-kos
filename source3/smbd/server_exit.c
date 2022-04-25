@@ -199,11 +199,13 @@ static void exit_server_common(enum server_exit_reason how,
 	}
 #endif
 
-//	if (am_parent && sconn != NULL) {
-//		dcesrv_shutdown_registered_ep_servers(sconn->dce_ctx);
-//
-//		global_dcesrv_context_free();
-//	}
+#ifndef KOS_NO_FORK
+	if (am_parent && sconn != NULL) {
+		dcesrv_shutdown_registered_ep_servers(sconn->dce_ctx);
+
+		global_dcesrv_context_free();
+	}
+#endif
 
 	/*
 	 * we need to force the order of freeing the following,
