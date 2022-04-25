@@ -28,6 +28,10 @@
 #include "lib/util/util_tdb.h"
 #include "lib/util/tevent_ntstatus.h"
 #include <source3/smbd/kos/kos_thread.h>
+#ifdef KOS_NO_FORK
+#include <stdatomic.h>
+#include <pthread.h>
+#endif
 
 #define STRANGE_BIG_VALUE 1024*1024*8
 
@@ -552,6 +556,10 @@ NTSTATUS dbwrap_parse_record_recv(struct tevent_req *req)
 	return tevent_req_simple_recv_ntstatus(req);
 }
 
+#ifdef KOS_NO_FORK
+pthread_mutex_t g_db_mutex;
+#endif
+
 NTSTATUS dbwrap_do_locked(struct db_context *db, TDB_DATA key,
 			  void (*fn)(struct db_record *rec,
 				     TDB_DATA value,
@@ -559,6 +567,16 @@ NTSTATUS dbwrap_do_locked(struct db_context *db, TDB_DATA key,
 			  void *private_data)
 {
 	struct db_record *rec;
+#ifdef KOS_NO_FORK
+    static atomic_int first_run = 1;
+    if (first_run) {
+        pthread_mutexattr_t attr;
+        pthread_mutexattr_init(&attr);
+        pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+        pthread_mutex_init(&g_db_mutex, &attr);
+        first_run = 0;
+    }
+#endif
 
 	if (db->do_locked != NULL) {
 		NTSTATUS status;
@@ -567,7 +585,13 @@ NTSTATUS dbwrap_do_locked(struct db_context *db, TDB_DATA key,
 			dbwrap_lock_order_lock(db->name, db->lock_order);
 		}
 
+#ifdef KOS_NO_FORK
+        pthread_mutex_lock(&g_db_mutex);
 		status = db->do_locked(db, key, fn, private_data);
+        pthread_mutex_unlock(&g_db_mutex);
+#else
+        status = db->do_locked(db, key, fn, private_data);
+#endif
 
 		if (db->lock_order != DBWRAP_LOCK_ORDER_NONE) {
 			dbwrap_lock_order_unlock(db->name, db->lock_order);

@@ -22,6 +22,7 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <pthread.h>
 #include "includes.h"
 #include "locking/share_mode_lock.h"
 #include "smbd/smbd.h"
@@ -79,16 +80,11 @@ static void exit_server_common(enum server_exit_reason how,
 static void exit_server_common(enum server_exit_reason how,
 	const char *reason)
 {
-	struct smbXsrv_client *client = global_smbXsrv_client;
+	struct smbXsrv_client *client = kos_get_global_smbXsrv_client();
 	struct smbXsrv_connection *xconn = NULL;
 	struct smbd_server_connection *sconn = NULL;
 	struct messaging_context *msg_ctx = global_messaging_context();
 	NTSTATUS disconnect_status;
-
-	if (!exit_firsttime) {
-		exit(0);
-	}
-	exit_firsttime = false;
 
 	switch (how) {
 	case SERVER_EXIT_NORMAL:
@@ -203,25 +199,27 @@ static void exit_server_common(enum server_exit_reason how,
 	}
 #endif
 
-	if (am_parent && sconn != NULL) {
-		dcesrv_shutdown_registered_ep_servers(sconn->dce_ctx);
-
-		global_dcesrv_context_free();
-	}
+//	if (am_parent && sconn != NULL) {
+//		dcesrv_shutdown_registered_ep_servers(sconn->dce_ctx);
+//
+//		global_dcesrv_context_free();
+//	}
 
 	/*
 	 * we need to force the order of freeing the following,
 	 * because smbd_msg_ctx is not a talloc child of smbd_server_conn.
 	 */
 	if (client != NULL) {
-		TALLOC_FREE(client->sconn);
+		// TALLOC_FREE(client->sconn);
 	}
 	sconn = NULL;
 	xconn = NULL;
-	client = NULL;
-	netlogon_creds_cli_close_global_db();
-	TALLOC_FREE(global_smbXsrv_client);
-	smbprofile_dump();
+	// client = NULL;
+    TALLOC_FREE(client);
+    kos_unreg_thread();
+    pthread_exit(NULL);
+    netlogon_creds_cli_close_global_db();
+    smbprofile_dump();
 	global_messaging_context_free();
 	global_event_context_free();
 	TALLOC_FREE(smbd_memcache_ctx);

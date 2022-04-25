@@ -4013,12 +4013,7 @@ void smbd_process(struct tevent_context *ev_ctx,
 		exit_server_cleanly("talloc_zero(struct smbXsrv_client).\n");
 	}
 
-#ifndef KOS_NO_FORK
-	/*
-	 * TODO: remove this...:-)
-	 */
-	global_smbXsrv_client = client;
-#endif
+    kos_reg_global_smbXsrv_client(client);
 
 	sconn = talloc_zero(client, struct smbd_server_connection);
 	if (sconn == NULL) {

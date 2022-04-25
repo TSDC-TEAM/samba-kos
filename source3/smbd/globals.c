@@ -80,8 +80,6 @@ struct smbd_parent_context *am_parent = NULL;
 struct memcache *smbd_memcache_ctx = NULL;
 bool exit_firsttime = true;
 
-struct smbXsrv_client *global_smbXsrv_client = NULL;
-
 struct memcache *smbd_memcache(void)
 {
 	if (!smbd_memcache_ctx) {

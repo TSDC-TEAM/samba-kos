@@ -1481,7 +1481,9 @@ void smbXsrv_connection_disconnect_transport(struct smbXsrv_connection *xconn,
 	}
 
 	xconn->transport.status = status;
+#if 0 // __KOS__
 	TALLOC_FREE(xconn->transport.fde);
+#endif
 	if (xconn->transport.sock != -1) {
 		xconn->transport.sock = -1;
 	}
@@ -1656,8 +1658,6 @@ void smbd_server_connection_terminate_ex(struct smbXsrv_connection *xconn,
 					 const char *reason,
 					 const char *location)
 {
-    pthread_exit(NULL);
-
 	struct smbXsrv_client *client = xconn->client;
 	size_t num_ok = 0;
 
@@ -5072,7 +5072,6 @@ static void smbd_smb2_connection_handler(struct tevent_context *ev,
 
 	status = smbd_smb2_io_handler(xconn, flags);
 	if (!NT_STATUS_IS_OK(status)) {
-        kos_unreg_thread();
 #if 1 // __KOS__
 		smbd_server_connection_terminate(xconn, nt_errstr(status));
 #endif

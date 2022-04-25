@@ -10,10 +10,14 @@ struct kos_conn_data {
     int fd;
 };
 
+struct smbXsrv_client;
+
 int kos_run_conn(struct kos_conn_data data);
 void kos_unreg_thread();
 void kos_lock_poll_mtx();
 void kos_unlock_poll_mtx();
+void kos_reg_global_smbXsrv_client(struct smbXsrv_client *global_smbXsrv_client);
+struct smbXsrv_client *kos_get_global_smbXsrv_client();
 
 #endif
 

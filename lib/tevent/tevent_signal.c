@@ -185,6 +185,10 @@ static int tevent_common_signal_list_destructor(struct tevent_common_signal_list
 */
 static int tevent_signal_destructor(struct tevent_signal *se)
 {
+#if 1 // __KOS__
+    return 0;
+#endif
+
 	if (se->destroyed) {
 		tevent_common_check_double_free(se, "tevent_signal double free");
 		goto done;

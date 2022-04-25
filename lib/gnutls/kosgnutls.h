@@ -42,7 +42,7 @@ static void DumpHex(const void* data, size_t size) {
 #define BSIZE 1028
 
 #undef unlikely
-#define unlikely
+#define unlikely(x) (x)
 
 #define GNUTLS_E_SUCCESS 0
 #define	GNUTLS_E_UNKNOWN_COMPRESSION_ALGORITHM -3

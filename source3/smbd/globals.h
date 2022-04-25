@@ -103,7 +103,6 @@ extern char *LastDir;
 struct smbd_parent_context;
 extern struct smbd_parent_context *am_parent;
 extern struct memcache *smbd_memcache_ctx;
-extern bool exit_firsttime;
 
 struct tstream_context;
 struct smbd_smb2_request;
@@ -941,8 +940,6 @@ struct smbd_server_connection {
 
 	struct smbXsrv_client *client;
 };
-
-extern struct smbXsrv_client *global_smbXsrv_client;
 
 void smbd_init_globals(void);
 

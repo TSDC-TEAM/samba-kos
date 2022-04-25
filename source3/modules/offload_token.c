@@ -39,7 +39,11 @@ NTSTATUS vfs_offload_token_ctx_init(TALLOC_CTX *mem_ctx,
 {
 	struct vfs_offload_ctx *ctx = *_ctx;
 
-	if (ctx != NULL) {
+#if 1 // __KOS__
+	if (0 && ctx != NULL) {
+#else
+    if (ctx != NULL) {
+#endif
 		if (!ctx->initialized) {
 			return NT_STATUS_INTERNAL_ERROR;
 		}

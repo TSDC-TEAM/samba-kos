@@ -646,7 +646,7 @@ static NTSTATUS ntstatus_keeperror(NTSTATUS s1, NTSTATUS s2)
 static void assert_no_pending_aio(struct files_struct *fsp,
 				  enum file_close_type close_type)
 {
-	struct smbXsrv_client *client = global_smbXsrv_client;
+	struct smbXsrv_client *client = kos_get_global_smbXsrv_client();
 	size_t num_connections_alive;
 	unsigned num_requests = fsp->num_aio_requests;
 
