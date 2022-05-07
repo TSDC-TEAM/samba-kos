@@ -497,3 +497,5 @@ compile_commands.json
 /bin/default/source3/client/smbclient
 
 build-qemu/**
+kos/resources/ramfs/srv/share/**
+kos/resources/ramfs/usr/share

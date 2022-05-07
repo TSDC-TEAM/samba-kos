@@ -19,4 +19,5 @@ add_subdirectory(kos)
 
 if (NOT KOS)
     add_subdirectory(tests/kos/dumps)
+    add_subdirectory(tests/kos/env)
 endif()

@@ -1,10 +1,12 @@
 #include <cstdio>
 #include <cstdlib>
-#include <memory>
+#include <iostream>
 #include "network/KOSProxyServer.h"
 
 
 int main() {
+    std::clog << "Dumper is starting\n";
+
     KOSDumpWriter::Params wp{
         .sepFiles = false,
         .dirName = "./"

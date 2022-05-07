@@ -77,6 +77,10 @@ void KOSProxyServer::readCb(struct bufferevent *bev) {
     free(data);
 }
 
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
 void KOSProxyServer::listenerCb(evutil_socket_t fd, struct sockaddr *sa, int socklen) {
     bevClient = bufferevent_socket_new(base, fd, BEV_OPT_CLOSE_ON_FREE);
     if (!bevClient) {
@@ -90,6 +94,7 @@ void KOSProxyServer::listenerCb(evutil_socket_t fd, struct sockaddr *sa, int soc
     bufferevent_enable(bevClient, EV_WRITE | EV_READ);
 
     struct sockaddr_in sin = {0};
+    // sin.sin_addr.s_addr = inet_addr("127.0.0.1");
     sin.sin_addr.s_addr = INADDR_ANY;
     sin.sin_family = AF_INET;
     sin.sin_port = htons(p.portEndpoint);
@@ -107,6 +112,7 @@ void KOSProxyServer::listenerCb(evutil_socket_t fd, struct sockaddr *sa, int soc
     int conRet = bufferevent_socket_connect(bevEndpoint, (struct sockaddr*)&sin, sizeof(sin));
     if (0 > conRet) {
         fprintf(stderr, "connect failed\n");
+        perror("OMG");
         assert(0);
     }
 }
@@ -118,6 +124,7 @@ bool KOSProxyServer::run() {
     }
 
     struct sockaddr_in sin = {0};
+    sin.sin_addr.s_addr = inet_addr("10.53.57.3");
     sin.sin_family = AF_INET;
     sin.sin_port = htons(p.portClient);
 
