@@ -409,7 +409,7 @@ next:
 		exit_server_cleanly(r);
 		return;
 	}
-	tevent_req_set_callback(subreq, smbXsrv_session_close_loop, client);
+    tevent_req_set_callback(subreq, smbXsrv_session_close_loop, client);
 }
 
 static void smbXsrv_session_close_shutdown_done(struct tevent_req *subreq)

@@ -193,6 +193,8 @@ _PUBLIC_ void smb_panic(const char *why)
 {
 	smb_panic_log(why);
 
+    smbd_exit_server_cleanly("Ok");
+
 	if (fault_state.panic_handler) {
 		fault_state.panic_handler(why);
 		_exit(1);

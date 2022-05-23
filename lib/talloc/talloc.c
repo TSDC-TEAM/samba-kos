@@ -502,6 +502,8 @@ static void talloc_abort(const char *reason)
 {
 	talloc_log("%s\n", reason);
 
+    return;
+
 	if (!talloc_abort_fn) {
 		TALLOC_ABORT(reason);
 	}
@@ -1768,6 +1770,10 @@ _PUBLIC_ int _talloc_free(void *ptr, const char *location)
 	}
 
 	tc = talloc_chunk_from_ptr(ptr);
+
+    if (tc == NULL) {
+        return 0;
+    }
 
 	if (unlikely(tc->refs != NULL)) {
 		struct talloc_reference_handle *h;

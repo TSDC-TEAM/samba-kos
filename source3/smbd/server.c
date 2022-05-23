@@ -2072,7 +2072,7 @@ int kos_net_init(void) {
 	}
 
 #if 0 // __KOS__
-    fprintf(stderr, "KOS: skipping dcesrv_init()");
+    fprintf(stderr, "KOS: skipping dcesrv_init()\n");
 #else
     status = dcesrv_init(ev_ctx, ev_ctx, msg_ctx, dce_ctx);
 	if (!NT_STATUS_IS_OK(status)) {

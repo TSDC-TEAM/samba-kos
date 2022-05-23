@@ -397,7 +397,10 @@ bool smbd_vfs_init(connection_struct *conn)
 	for (j=i-1; j >= 0; j--) {
 		if (!vfs_init_custom(conn, vfs_objects[j])) {
 			DEBUG(0, ("smbd_vfs_init: vfs_init_custom failed for %s\n", vfs_objects[j]));
-			return False;
+#if 1 // __KOS__
+            continue;
+#endif
+            return False;
 		}
 	}
 	return True;

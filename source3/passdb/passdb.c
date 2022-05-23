@@ -153,7 +153,7 @@ static NTSTATUS samu_set_unix_internal(struct pdb_methods *methods,
 	fullname = NULL;
 
 #ifdef __KOS__
-   fprintf(stderr, "KOS: skipping count_commas(pwd->pw_gecos)");
+   fprintf(stderr, "KOS: skipping count_commas(pwd->pw_gecos)\n");
 #else
 	if (count_commas(pwd->pw_gecos) == 3) {
 		/*
@@ -171,7 +171,7 @@ static NTSTATUS samu_set_unix_internal(struct pdb_methods *methods,
 #endif
 
 #ifdef __KOS__
-    fprintf(stderr, "KOS: skipping pdb_set_fullname()");
+    fprintf(stderr, "KOS: skipping pdb_set_fullname()\n");
 #else
 	if (fullname != NULL) {
 		ok = pdb_set_fullname(user, fullname, PDB_SET);

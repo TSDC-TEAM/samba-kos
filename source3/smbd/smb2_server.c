@@ -4734,7 +4734,7 @@ static NTSTATUS smbd_smb2_flush_send_queue(struct smbXsrv_connection *xconn)
 			.msg_iovlen = e->count,
 		};
 
-#if 0 // __KOS__
+#if 1 // __KOS__
         ret = sendmsg(xconn->transport.sock, &msg, 0);
 		if (ret == 0) {
 			/* propagate end of file */

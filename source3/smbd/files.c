@@ -764,7 +764,7 @@ void file_close_conn(connection_struct *conn)
 		if (fsp->conn != conn) {
 			continue;
 		}
-		if (fsp->op != NULL && fsp->op->global->durable) {
+		if (fsp->op != NULL && fsp->op->global != NULL && fsp->op->global->durable) {
 			/*
 			 * A tree disconnect closes a durable handle
 			 */
