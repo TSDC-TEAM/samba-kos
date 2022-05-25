@@ -26,6 +26,7 @@ struct kos_thread_data {
     atomic_int done;
     pid_t thread_id;
     struct smbXsrv_client *global_smbXsrv_client;
+    struct smbXsrv_session *session;
 };
 
 KHASH_MAP_INIT_INT(m32, struct kos_thread_data *)
@@ -62,12 +63,30 @@ void kos_reg_global_smbXsrv_client(struct smbXsrv_client *global_smbXsrv_client)
     pthread_mutex_unlock(&g_hash_kos_thread_mutex);
 }
 
+void kos_reg_smbXsrv_session(struct smbXsrv_session *session) {
+    pid_t my_id = gettid();
+
+    pthread_mutex_lock(&g_hash_kos_thread_mutex);
+
+    fprintf(stderr, "Reg smbXsrv_session: thread: %d\n", my_id);
+
+    khint_t k = kh_get(m32, g_hash_kos_thread_map, my_id);
+    int miss = (kh_end(g_hash_kos_thread_map) == k);
+    if (miss) {
+        assert(0);
+    }
+    struct kos_thread_data *p = kh_val(g_hash_kos_thread_map, k);
+    p->session = session;
+
+    pthread_mutex_unlock(&g_hash_kos_thread_mutex);
+}
+
 struct smbXsrv_client *kos_get_global_smbXsrv_client() {
     pid_t my_id = gettid();
 
     pthread_mutex_lock(&g_hash_kos_thread_mutex);
 
-    fprintf(stderr, "Get kos_get_global_smbXsrv_client: thread: %d\n", my_id);
+//    fprintf(stderr, "Get kos_get_global_smbXsrv_client: thread: %d\n", my_id);
 
     khint_t k = kh_get(m32, g_hash_kos_thread_map, my_id);
     int miss = (kh_end(g_hash_kos_thread_map) == k);
@@ -80,6 +99,29 @@ struct smbXsrv_client *kos_get_global_smbXsrv_client() {
     pthread_mutex_unlock(&g_hash_kos_thread_mutex);
 
     return ret;
+}
+
+struct smbXsrv_session *kos_get_smbXsrv_session(unsigned long long old_session_wire_id) {
+    pid_t my_id = gettid();
+
+    pthread_mutex_lock(&g_hash_kos_thread_mutex);
+
+//    fprintf(stderr, "Get smbXsrv_session: thread: %d\n", my_id);
+
+    for (khint_t k = kh_begin(g_hash_kos_thread_map); k != kh_end(g_hash_kos_thread_map); ++k) {
+        if (kh_exist(g_hash_kos_thread_map, k)) {
+            struct kos_thread_data *t = kh_value(g_hash_kos_thread_map, k);
+            if (t->session->local_id == old_session_wire_id) {
+                struct smbXsrv_session *ret = t->session;
+                pthread_mutex_unlock(&g_hash_kos_thread_mutex);
+                return ret;
+            }
+        }
+    }
+
+    pthread_mutex_unlock(&g_hash_kos_thread_mutex);
+
+    return NULL;
 }
 
 static void reg_thread(struct kos_thread_data *data) {

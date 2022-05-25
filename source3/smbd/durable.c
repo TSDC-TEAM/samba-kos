@@ -307,6 +307,11 @@ static bool vfs_default_durable_reconnect_check_stat(
 				SMB_STRUCT_STAT *fsp_st,
 				const char *name)
 {
+#ifdef KOS_NO_FORK
+    // @todo: QEMU can't pass this checks
+    return true;
+#endif
+
 	int ret;
 
 	if (cookie_st->st_ex_mode != fsp_st->st_ex_mode) {

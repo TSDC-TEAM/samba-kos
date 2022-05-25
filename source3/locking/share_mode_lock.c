@@ -635,6 +635,13 @@ fail:
 static NTSTATUS share_mode_data_store(
 	struct share_mode_data *d, bool *have_share_entries)
 {
+#ifdef KOS_NO_FORK
+    if (!d) {
+        DBG_DEBUG("not modified\n");
+        return NT_STATUS_OK;
+    }
+#endif
+
 	TDB_DATA key = locking_key(&d->id);
 	struct locking_tdb_data *ltdb = NULL;
 	DATA_BLOB blob = { 0 };

@@ -331,6 +331,12 @@ static void smbXsrv_session_close_loop(struct tevent_req *subreq)
 					       close_info0->old_session_wire_id,
 					       now, &session);
 	if (NT_STATUS_EQUAL(status, NT_STATUS_USER_SESSION_DELETED)) {
+#ifdef KOS_NO_FORK
+        session = kos_get_smbXsrv_session(close_info0->old_session_wire_id);
+        if (session) {
+            status.v = 0;
+        }
+#else
 		DEBUG(4,("smbXsrv_session_close_loop: "
 			 "old_session_wire_id %llu not found\n",
 			 (unsigned long long)close_info0->old_session_wire_id));
@@ -338,6 +344,7 @@ static void smbXsrv_session_close_loop(struct tevent_req *subreq)
 			NDR_PRINT_DEBUG(smbXsrv_session_closeB, &close_blob);
 		}
 		goto next;
+#endif
 	}
 	if (!NT_STATUS_IS_OK(status) &&
 	    !NT_STATUS_EQUAL(status, NT_STATUS_MORE_PROCESSING_REQUIRED) &&
@@ -914,6 +921,7 @@ static void smbXsrv_session_global_verify_record(struct db_record *db_rec,
 
 static NTSTATUS smbXsrv_session_global_store(struct smbXsrv_session_global0 *global)
 {
+    fprintf(stderr, "=== Store: %d %lu\n", global->session_global_id, global->session_wire_id);
 	struct smbXsrv_session_globalB global_blob;
 	DATA_BLOB blob = data_blob_null;
 	TDB_DATA key;
@@ -1358,6 +1366,8 @@ NTSTATUS smbXsrv_session_create(struct smbXsrv_connection *conn,
 	}
 
 	*_session = session;
+
+    kos_reg_smbXsrv_session(session);
 	return NT_STATUS_OK;
 }
 

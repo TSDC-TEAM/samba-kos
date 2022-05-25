@@ -145,7 +145,7 @@ bool reload_services(struct smbd_server_connection *sconn,
         reopen_logs();
         first_run = 0;
     }
-#elif
+#else
 	reopen_logs();
 #endif
 
