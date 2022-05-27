@@ -921,7 +921,6 @@ static void smbXsrv_session_global_verify_record(struct db_record *db_rec,
 
 static NTSTATUS smbXsrv_session_global_store(struct smbXsrv_session_global0 *global)
 {
-    fprintf(stderr, "=== Store: %d %lu\n", global->session_global_id, global->session_wire_id);
 	struct smbXsrv_session_globalB global_blob;
 	DATA_BLOB blob = data_blob_null;
 	TDB_DATA key;

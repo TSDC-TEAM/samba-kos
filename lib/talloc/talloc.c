@@ -762,6 +762,9 @@ static inline void *__talloc_with_prefix(const void *context,
 
 	if (likely(context != NULL)) {
 		parent = talloc_chunk_from_ptr(context);
+        if (parent == NULL) {
+            return NULL;
+        }
 
 		if (parent->limit != NULL) {
 			limit = parent->limit;
@@ -805,7 +808,11 @@ static inline void *__talloc_with_prefix(const void *context,
 		if (parent->child) {
 			parent->child->parent = NULL;
 			tc->next = parent->child;
-			tc->next->prev = tc;
+            if (tc->next == NULL) {
+                tc->next = NULL;
+            } else {
+                tc->next->prev = tc;
+            }
 		} else {
 			tc->next = NULL;
 		}
