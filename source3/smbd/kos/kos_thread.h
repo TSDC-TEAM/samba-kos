@@ -14,6 +14,8 @@ struct smbXsrv_client;
 struct smbXsrv_session;
 struct smbd_server_connection;
 struct file_id;
+struct smbXsrv_connection;
+struct smbXsrv_channel_global0;
 
 int kos_run_conn(struct kos_conn_data data);
 void kos_unreg_thread();
@@ -26,6 +28,9 @@ struct smbXsrv_session *kos_get_smbXsrv_session(unsigned long long old_session_w
 void kos_reg_smbd_server_connection(struct smbd_server_connection *sconn);
 struct files_struct *kos_get_files_struct(struct smbd_server_connection *sconn, struct file_id id,
                                           unsigned long file_id);
+int kos_smbXsrv_session_find_channel(const struct smbXsrv_session *session,
+                                     const struct smbXsrv_connection *conn,
+                                     struct smbXsrv_channel_global0 **_c);
 
 #endif
 

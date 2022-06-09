@@ -51,8 +51,6 @@ void kos_reg_global_smbXsrv_client(struct smbXsrv_client *global_smbXsrv_client)
 
     pthread_mutex_lock(&g_hash_kos_thread_mutex);
 
-//    fprintf(stderr, "Reg kos_get_global_smbXsrv_client: thread: %d\n", my_id);
-
     khint_t k = kh_get(m32, g_hash_kos_thread_map, my_id);
     int miss = (kh_end(g_hash_kos_thread_map) == k);
     if (miss) {
@@ -64,30 +62,10 @@ void kos_reg_global_smbXsrv_client(struct smbXsrv_client *global_smbXsrv_client)
     pthread_mutex_unlock(&g_hash_kos_thread_mutex);
 }
 
-void kos_reg_smbXsrv_session(struct smbXsrv_session *session) {
-    pid_t my_id = gettid();
-
-    pthread_mutex_lock(&g_hash_kos_thread_mutex);
-
-//    fprintf(stderr, "Reg smbXsrv_session: thread: %d\n", my_id);
-
-    khint_t k = kh_get(m32, g_hash_kos_thread_map, my_id);
-    int miss = (kh_end(g_hash_kos_thread_map) == k);
-    if (miss) {
-        assert(0);
-    }
-    struct kos_thread_data *p = kh_val(g_hash_kos_thread_map, k);
-    p->session = session;
-
-    pthread_mutex_unlock(&g_hash_kos_thread_mutex);
-}
-
 struct smbXsrv_client *kos_get_global_smbXsrv_client() {
     pid_t my_id = gettid();
 
     pthread_mutex_lock(&g_hash_kos_thread_mutex);
-
-//    fprintf(stderr, "Get kos_get_global_smbXsrv_client: thread: %d\n", my_id);
 
     khint_t k = kh_get(m32, g_hash_kos_thread_map, my_id);
     int miss = (kh_end(g_hash_kos_thread_map) == k);
@@ -102,10 +80,24 @@ struct smbXsrv_client *kos_get_global_smbXsrv_client() {
     return ret;
 }
 
-struct smbXsrv_session *kos_get_smbXsrv_session(unsigned long long old_session_wire_id) {
+void kos_reg_smbXsrv_session(struct smbXsrv_session *session) {
+    pid_t my_id = gettid();
+
     pthread_mutex_lock(&g_hash_kos_thread_mutex);
 
-//    fprintf(stderr, "Get smbXsrv_session: thread: %d\n", my_id);
+    khint_t k = kh_get(m32, g_hash_kos_thread_map, my_id);
+    int miss = (kh_end(g_hash_kos_thread_map) == k);
+    if (miss) {
+        assert(0);
+    }
+    struct kos_thread_data *p = kh_val(g_hash_kos_thread_map, k);
+    p->session = session;
+
+    pthread_mutex_unlock(&g_hash_kos_thread_mutex);
+}
+
+struct smbXsrv_session *kos_get_smbXsrv_session(unsigned long long old_session_wire_id) {
+    pthread_mutex_lock(&g_hash_kos_thread_mutex);
 
     for (khint_t k = kh_begin(g_hash_kos_thread_map); k != kh_end(g_hash_kos_thread_map); ++k) {
         if (kh_exist(g_hash_kos_thread_map, k)) {
@@ -128,8 +120,6 @@ void kos_reg_smbd_server_connection(struct smbd_server_connection *sconn) {
 
     pthread_mutex_lock(&g_hash_kos_thread_mutex);
 
-//    fprintf(stderr, "Reg smbXsrv_session: thread: %d\n", my_id);
-
     khint_t k = kh_get(m32, g_hash_kos_thread_map, my_id);
     int miss = (kh_end(g_hash_kos_thread_map) == k);
     if (miss) {
@@ -146,8 +136,6 @@ struct files_struct *kos_get_files_struct(struct smbd_server_connection *sconn, 
     int count=0;
     files_struct *fsp;
     pthread_mutex_lock(&g_hash_kos_thread_mutex);
-
-//    fprintf(stderr, "Get smbXsrv_session: thread: %d\n", my_id);
 
     for (khint_t k = kh_begin(g_hash_kos_thread_map); k != kh_end(g_hash_kos_thread_map); ++k) {
         if (kh_exist(g_hash_kos_thread_map, k)) {
@@ -198,6 +186,43 @@ struct files_struct *kos_get_files_struct(struct smbd_server_connection *sconn, 
     return NULL;
 }
 
+int kos_smbXsrv_session_find_channel(const struct smbXsrv_session *session,
+                                     const struct smbXsrv_connection *conn,
+                                     struct smbXsrv_channel_global0 **_c)
+{
+    uint32_t i;
+
+    pthread_mutex_lock(&g_hash_kos_thread_mutex);
+
+    for (khint_t k = kh_begin(g_hash_kos_thread_map); k != kh_end(g_hash_kos_thread_map); ++k) {
+        if (kh_exist(g_hash_kos_thread_map, k)) {
+            struct kos_thread_data *t = kh_value(g_hash_kos_thread_map, k);
+            session = t->session;
+            if (session == NULL ||  session->global == NULL) {
+                continue;
+            }
+            for (i=0; i < session->global->num_channels; i++) {
+                struct smbXsrv_channel_global0 *c = &session->global->channels[i];
+
+                if (c->channel_id != conn->channel_id) {
+                    continue;
+                }
+
+                if (c->connection != conn) {
+                    continue;
+                }
+
+                *_c = c;
+                pthread_mutex_unlock(&g_hash_kos_thread_mutex);
+                return 0;
+            }
+        }
+    }
+
+    pthread_mutex_unlock(&g_hash_kos_thread_mutex);
+
+    return 1;
+}
 
 static void reg_thread(struct kos_thread_data *data) {
     int ret;
@@ -208,7 +233,6 @@ static void reg_thread(struct kos_thread_data *data) {
 
     khint_t k = kh_put(m32, g_hash_kos_thread_map, my_id, &ret);
     if (ret > 0) {
-//        fprintf(stderr, "Reg data: thread: %d\n", my_id);
         kh_value(g_hash_kos_thread_map, k) = data;
     } else {
         assert(0);
@@ -222,8 +246,6 @@ void kos_unreg_thread() {
 
     pthread_mutex_lock(&g_hash_kos_thread_mutex);
 
-//    fprintf(stderr, "Unreg data: thread: %d\n", my_id);
-
     khint_t k = kh_get(m32, g_hash_kos_thread_map, my_id);
     int miss = (kh_end(g_hash_kos_thread_map) == k);
     if (miss) {
@@ -231,9 +253,6 @@ void kos_unreg_thread() {
     }
     struct kos_thread_data *p = kh_val(g_hash_kos_thread_map, k);
     p->done = true;
-    if (p->sconn != NULL) {
-        p->sconn->files = NULL;
-    }
     p->sconn = NULL;
 
     pthread_mutex_unlock(&g_hash_kos_thread_mutex);
@@ -294,7 +313,6 @@ int kos_run_conn(struct kos_conn_data data) {
         if (kh_exist(g_hash_kos_thread_map, k)) {
             struct kos_thread_data *t = kh_value(g_hash_kos_thread_map, k);
             if (t->done) {
-//                fprintf(stderr, "Trying to kill thread %d\n", t->thread_id);
                 pthread_join(*t->thread, NULL);
                 free(t->thread);
                 free(t->local_data);

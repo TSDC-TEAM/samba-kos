@@ -1494,6 +1494,10 @@ NTSTATUS smbXsrv_session_find_channel(const struct smbXsrv_session *session,
 		return NT_STATUS_OK;
 	}
 
+    if (0 == kos_smbXsrv_session_find_channel(session, conn, _c)) {
+        return NT_STATUS_OK;
+    }
+
 	return NT_STATUS_USER_SESSION_DELETED;
 }
 

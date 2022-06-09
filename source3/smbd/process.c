@@ -2002,7 +2002,7 @@ static void process_smb(struct smbXsrv_connection *xconn,
 			uint8_t exitcode = CVAL(inbuf, 8);
 			DBG_WARNING("SUICIDE: Exiting immediately with code %d\n",
 				    (int)exitcode);
-			exit(exitcode);
+            exit_server_cleanly("Non-SMB packet");
 		}
 
 		exit_server_cleanly("Non-SMB packet");
@@ -4250,7 +4250,7 @@ void smbd_process(struct tevent_context *ev_ctx,
 	TALLOC_FREE(trace_state.frame);
 
     // @todo: KOS: check free tasks
-	// exit_server_cleanly(NULL);
+	exit_server_cleanly(NULL);
 }
 
 bool req_is_in_chain(const struct smb_request *req)

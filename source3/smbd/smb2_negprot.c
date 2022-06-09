@@ -632,7 +632,9 @@ NTSTATUS smbd_smb2_request_process_negprot(struct smbd_smb2_request *req)
 	    xconn->client->server_multi_channel_enabled)
 	{
 		if (in_capabilities & SMB2_CAP_MULTI_CHANNEL) {
+#if 0 // __KOS__
 			capabilities |= SMB2_CAP_MULTI_CHANNEL;
+#endif
 		}
 	}
 

@@ -1244,6 +1244,11 @@ static NTSTATUS smbXsrv_connection_get_acked_bytes(struct smbXsrv_connection *xc
 		ret = ioctl(xconn->transport.sock,
 			    __IOCTL_SEND_QUEUE_SIZE_OPCODE,
 			    &value);
+#ifdef __KOS__
+        ret = 0;
+        value = 0;
+        usleep(100);
+#endif
 		if (ret != 0) {
 			int saved_errno = errno;
 			NTSTATUS status = map_nt_error_from_unix(saved_errno);

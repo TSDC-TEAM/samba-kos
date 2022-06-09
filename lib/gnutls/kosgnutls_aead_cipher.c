@@ -180,7 +180,7 @@ void gnutls_aead_cipher_deinit(gnutls_aead_cipher_hd_t handle)
     // @todo: temporary checking, remove after debug
     int res_fin = EVP_EncryptFinal_ex(ctx, out, &outl);
     if (1 != res_fin) {
-        fprintf(stderr, "AEAD: final failed\n");
+//        fprintf(stderr, "AEAD: final failed\n");
     } else {
         if (0 != outl) {
             fprintf(stderr, "AEAD: some data remains\n");

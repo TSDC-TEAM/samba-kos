@@ -88,6 +88,10 @@ struct idle_event *event_add_idle(struct tevent_context *event_ctx,
 		return NULL;
 	}
 
+#if 1 // __KOS__
+    interval.tv_sec = 10;
+#endif
+
 	result->te = tevent_add_timer(event_ctx, result,
 				      timeval_sum(&now, &interval),
 				      smbd_idle_event_handler, result);

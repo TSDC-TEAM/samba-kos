@@ -47,7 +47,7 @@ unsigned gnutls_cipher_get_tag_size(gnutls_cipher_algorithm_t algorithm)
     }
 
     fprintf(stderr, "CIPHER: unknown algorithm\n");
-    assert(0);
+    return GNUTLS_E_ENCRYPTION_FAILED;
 
     return 0;
 }
