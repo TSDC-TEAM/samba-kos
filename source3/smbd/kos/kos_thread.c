@@ -28,6 +28,10 @@ struct kos_thread_data {
     struct smbXsrv_client *global_smbXsrv_client;
     struct smbXsrv_session *session;
     struct smbd_server_connection *sconn;
+    struct share_mode_data *mode_data;
+    int share_mode_data_refcount;
+    uint8_t share_mode_lock_key_data[sizeof(struct file_id)];
+    TDB_DATA share_mode_lock_key;
 };
 
 KHASH_MAP_INIT_INT(m32, struct kos_thread_data *)
@@ -74,6 +78,74 @@ struct smbXsrv_client *kos_get_global_smbXsrv_client() {
     }
     struct kos_thread_data *p = kh_val(g_hash_kos_thread_map, k);
     struct smbXsrv_client *ret = p->global_smbXsrv_client;
+
+    pthread_mutex_unlock(&g_hash_kos_thread_mutex);
+
+    return ret;
+}
+
+void kos_reg_share_mode_data(struct share_mode_data *p_in) {
+    pid_t my_id = gettid();
+
+    pthread_mutex_lock(&g_hash_kos_thread_mutex);
+
+    khint_t k = kh_get(m32, g_hash_kos_thread_map, my_id);
+    int miss = (kh_end(g_hash_kos_thread_map) == k);
+    if (miss) {
+        assert(0);
+    }
+    struct kos_thread_data *p = kh_val(g_hash_kos_thread_map, k);
+    p->mode_data = p_in;
+
+    pthread_mutex_unlock(&g_hash_kos_thread_mutex);
+}
+
+struct share_mode_data *kos_get_share_mode_data() {
+    pid_t my_id = gettid();
+
+    pthread_mutex_lock(&g_hash_kos_thread_mutex);
+
+    khint_t k = kh_get(m32, g_hash_kos_thread_map, my_id);
+    int miss = (kh_end(g_hash_kos_thread_map) == k);
+    if (miss) {
+        assert(0);
+    }
+    struct kos_thread_data *p = kh_val(g_hash_kos_thread_map, k);
+    struct share_mode_data *ret = p->mode_data;
+
+    pthread_mutex_unlock(&g_hash_kos_thread_mutex);
+
+    return ret;
+}
+
+void kos_set_share_mode_data_refcount(int mode_data_refcount) {
+    pid_t my_id = gettid();
+
+    pthread_mutex_lock(&g_hash_kos_thread_mutex);
+
+    khint_t k = kh_get(m32, g_hash_kos_thread_map, my_id);
+    int miss = (kh_end(g_hash_kos_thread_map) == k);
+    if (miss) {
+        assert(0);
+    }
+    struct kos_thread_data *p = kh_val(g_hash_kos_thread_map, k);
+    p->share_mode_data_refcount = mode_data_refcount;
+
+    pthread_mutex_unlock(&g_hash_kos_thread_mutex);
+}
+
+int kos_get_share_mode_data_refcount() {
+    pid_t my_id = gettid();
+
+    pthread_mutex_lock(&g_hash_kos_thread_mutex);
+
+    khint_t k = kh_get(m32, g_hash_kos_thread_map, my_id);
+    int miss = (kh_end(g_hash_kos_thread_map) == k);
+    if (miss) {
+        assert(0);
+    }
+    struct kos_thread_data *p = kh_val(g_hash_kos_thread_map, k);
+    int ret = p->share_mode_data_refcount;
 
     pthread_mutex_unlock(&g_hash_kos_thread_mutex);
 
@@ -254,6 +326,7 @@ void kos_unreg_thread() {
     struct kos_thread_data *p = kh_val(g_hash_kos_thread_map, k);
     p->done = true;
     p->sconn = NULL;
+    p->mode_data = NULL;
 
     pthread_mutex_unlock(&g_hash_kos_thread_mutex);
 
@@ -274,6 +347,10 @@ static void *thread_proc(void *tmp) {
     data->sconn = NULL;
     data->session = NULL;
     data->global_smbXsrv_client = NULL;
+    data->mode_data = NULL;
+    data->share_mode_data_refcount = 0;
+    data->share_mode_lock_key.dptr = data->share_mode_lock_key_data;
+    data->share_mode_lock_key.dsize = sizeof(data->share_mode_lock_key_data);
 
     pthread_mutex_unlock(&g_init_mutex);
 
