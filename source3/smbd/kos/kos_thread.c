@@ -30,8 +30,9 @@ struct kos_thread_data {
     struct smbd_server_connection *sconn;
     struct share_mode_data *mode_data;
     int share_mode_data_refcount;
-    uint8_t share_mode_lock_key_data[sizeof(struct file_id)];
-    TDB_DATA share_mode_lock_key;
+    unsigned char share_mode_lock_key_data[sizeof(struct file_id)];
+    struct TDB_DATA share_mode_lock_key;
+    int share_mode_lock_key_refcount;
 };
 
 KHASH_MAP_INIT_INT(m32, struct kos_thread_data *)
@@ -146,6 +147,76 @@ int kos_get_share_mode_data_refcount() {
     }
     struct kos_thread_data *p = kh_val(g_hash_kos_thread_map, k);
     int ret = p->share_mode_data_refcount;
+
+    pthread_mutex_unlock(&g_hash_kos_thread_mutex);
+
+    return ret;
+}
+
+void kos_set_share_mode_lock_key_refcount(int share_mode_lock_key_refcount) {
+    pid_t my_id = gettid();
+
+    pthread_mutex_lock(&g_hash_kos_thread_mutex);
+
+    khint_t k = kh_get(m32, g_hash_kos_thread_map, my_id);
+    int miss = (kh_end(g_hash_kos_thread_map) == k);
+    if (miss) {
+        assert(0);
+    }
+    struct kos_thread_data *p = kh_val(g_hash_kos_thread_map, k);
+    p->share_mode_lock_key_refcount = share_mode_lock_key_refcount;
+
+    pthread_mutex_unlock(&g_hash_kos_thread_mutex);
+}
+
+int kos_get_share_mode_lock_key_refcount() {
+    pid_t my_id = gettid();
+
+    pthread_mutex_lock(&g_hash_kos_thread_mutex);
+
+    khint_t k = kh_get(m32, g_hash_kos_thread_map, my_id);
+    int miss = (kh_end(g_hash_kos_thread_map) == k);
+    if (miss) {
+        assert(0);
+    }
+    struct kos_thread_data *p = kh_val(g_hash_kos_thread_map, k);
+    int ret = p->share_mode_lock_key_refcount;
+
+    pthread_mutex_unlock(&g_hash_kos_thread_mutex);
+
+    return ret;
+}
+
+struct TDB_DATA kos_get_share_mode_lock_key() {
+    pid_t my_id = gettid();
+
+    pthread_mutex_lock(&g_hash_kos_thread_mutex);
+
+    khint_t k = kh_get(m32, g_hash_kos_thread_map, my_id);
+    int miss = (kh_end(g_hash_kos_thread_map) == k);
+    if (miss) {
+        assert(0);
+    }
+    struct kos_thread_data *p = kh_val(g_hash_kos_thread_map, k);
+    struct TDB_DATA ret = p->share_mode_lock_key;
+
+    pthread_mutex_unlock(&g_hash_kos_thread_mutex);
+
+    return ret;
+}
+
+unsigned char *kos_get_share_mode_lock_key_data() {
+    pid_t my_id = gettid();
+
+    pthread_mutex_lock(&g_hash_kos_thread_mutex);
+
+    khint_t k = kh_get(m32, g_hash_kos_thread_map, my_id);
+    int miss = (kh_end(g_hash_kos_thread_map) == k);
+    if (miss) {
+        assert(0);
+    }
+    struct kos_thread_data *p = kh_val(g_hash_kos_thread_map, k);
+    unsigned char *ret = p->share_mode_lock_key_data;
 
     pthread_mutex_unlock(&g_hash_kos_thread_mutex);
 
@@ -327,6 +398,7 @@ void kos_unreg_thread() {
     p->done = true;
     p->sconn = NULL;
     p->mode_data = NULL;
+    close(p->local_data->fd);
 
     pthread_mutex_unlock(&g_hash_kos_thread_mutex);
 
@@ -351,6 +423,7 @@ static void *thread_proc(void *tmp) {
     data->share_mode_data_refcount = 0;
     data->share_mode_lock_key.dptr = data->share_mode_lock_key_data;
     data->share_mode_lock_key.dsize = sizeof(data->share_mode_lock_key_data);
+    data->share_mode_lock_key_refcount = 0;
 
     pthread_mutex_unlock(&g_init_mutex);
 

@@ -17,6 +17,7 @@ struct file_id;
 struct smbXsrv_connection;
 struct smbXsrv_channel_global0;
 struct share_mode_data;
+struct TDB_DATA;
 
 int kos_run_conn(struct kos_conn_data data);
 void kos_unreg_thread();
@@ -36,6 +37,10 @@ void kos_reg_share_mode_data(struct share_mode_data *p);
 struct share_mode_data *kos_get_share_mode_data();
 void kos_set_share_mode_data_refcount(int mode_data_refcount);
 int kos_get_share_mode_data_refcount();
+struct TDB_DATA kos_get_share_mode_lock_key();
+unsigned char *kos_get_share_mode_lock_key_data();
+void kos_set_share_mode_lock_key_refcount(int share_mode_lock_key_refcount);
+int kos_get_share_mode_lock_key_refcount();
 
 #endif
 
