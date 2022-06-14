@@ -33,6 +33,7 @@ struct kos_thread_data {
     unsigned char share_mode_lock_key_data[sizeof(struct file_id)];
     struct TDB_DATA share_mode_lock_key;
     int share_mode_lock_key_refcount;
+    char *LastDir;
 };
 
 KHASH_MAP_INIT_INT(m32, struct kos_thread_data *)
@@ -181,6 +182,40 @@ int kos_get_share_mode_lock_key_refcount() {
     }
     struct kos_thread_data *p = kh_val(g_hash_kos_thread_map, k);
     int ret = p->share_mode_lock_key_refcount;
+
+    pthread_mutex_unlock(&g_hash_kos_thread_mutex);
+
+    return ret;
+}
+
+void kos_set_last_dir(char *last_dir) {
+    pid_t my_id = gettid();
+
+    pthread_mutex_lock(&g_hash_kos_thread_mutex);
+
+    khint_t k = kh_get(m32, g_hash_kos_thread_map, my_id);
+    int miss = (kh_end(g_hash_kos_thread_map) == k);
+    if (miss) {
+        assert(0);
+    }
+    struct kos_thread_data *p = kh_val(g_hash_kos_thread_map, k);
+    p->LastDir = last_dir;
+
+    pthread_mutex_unlock(&g_hash_kos_thread_mutex);
+}
+
+char *kos_get_last_dir() {
+    pid_t my_id = gettid();
+
+    pthread_mutex_lock(&g_hash_kos_thread_mutex);
+
+    khint_t k = kh_get(m32, g_hash_kos_thread_map, my_id);
+    int miss = (kh_end(g_hash_kos_thread_map) == k);
+    if (miss) {
+        assert(0);
+    }
+    struct kos_thread_data *p = kh_val(g_hash_kos_thread_map, k);
+    char *ret = p->LastDir;
 
     pthread_mutex_unlock(&g_hash_kos_thread_mutex);
 
@@ -424,6 +459,7 @@ static void *thread_proc(void *tmp) {
     data->share_mode_lock_key.dptr = data->share_mode_lock_key_data;
     data->share_mode_lock_key.dsize = sizeof(data->share_mode_lock_key_data);
     data->share_mode_lock_key_refcount = 0;
+    data->LastDir = NULL;
 
     pthread_mutex_unlock(&g_init_mutex);
 

@@ -41,6 +41,8 @@ struct TDB_DATA kos_get_share_mode_lock_key();
 unsigned char *kos_get_share_mode_lock_key_data();
 void kos_set_share_mode_lock_key_refcount(int share_mode_lock_key_refcount);
 int kos_get_share_mode_lock_key_refcount();
+void kos_set_last_dir(char *last_dir);
+char *kos_get_last_dir();
 
 #endif
 

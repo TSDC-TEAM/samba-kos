@@ -367,7 +367,9 @@ static void set_sec_ctx_internal(uid_t uid, gid_t gid,
 	 */
 #ifdef KOS_NO_FORK
     // @todo: free???
-	// SAFE_FREE(LastDir);
+    char *last_dir = kos_get_last_dir();
+	SAFE_FREE(last_dir);
+    kos_set_last_dir(NULL);
 #endif
 }
 

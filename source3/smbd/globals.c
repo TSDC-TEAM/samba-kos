@@ -74,7 +74,9 @@ int conn_ctx_stack_ndx = 0;
 
 struct vfs_init_function_entry *backends = NULL;
 char *sparse_buf = NULL;
+#ifndef KOS_NO_FORK
 char *LastDir = NULL;
+#endif
 
 struct smbd_parent_context *am_parent = NULL;
 struct memcache *smbd_memcache_ctx = NULL;

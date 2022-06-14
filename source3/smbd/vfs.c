@@ -889,8 +889,10 @@ int vfs_ChDir(connection_struct *conn, const struct smb_filename *smb_fname)
 	int ret;
 	struct smb_filename *cwd = NULL;
 
-	if (!LastDir) {
-		LastDir = SMB_STRDUP("");
+    char *last_dir = kos_get_last_dir();
+	if (!last_dir) {
+		last_dir = SMB_STRDUP("");
+        kos_set_last_dir(last_dir);
 	}
 
 	if (ISDOT(smb_fname->base_name)) {
@@ -923,7 +925,7 @@ int vfs_ChDir(connection_struct *conn, const struct smb_filename *smb_fname)
 	}
 
 	if (smb_fname->base_name[0] == '/' &&
-	    strcsequal(LastDir,smb_fname->base_name))
+	    strcsequal(last_dir, smb_fname->base_name))
 	{
 		/*
 		 * conn->cwd_fsp->fsp_name and the kernel
@@ -988,8 +990,9 @@ int vfs_ChDir(connection_struct *conn, const struct smb_filename *smb_fname)
 
 	/* vfs_GetWd() succeeded. */
 	/* Replace global cache. */
-	SAFE_FREE(LastDir);
-	LastDir = SMB_STRDUP(smb_fname->base_name);
+	SAFE_FREE(last_dir);
+    last_dir = SMB_STRDUP(smb_fname->base_name);
+    kos_set_last_dir(last_dir);
 
 	/*
 	 * (Indirect) Callers of vfs_ChDir() may still hold references to the
