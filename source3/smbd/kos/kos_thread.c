@@ -311,6 +311,9 @@ void kos_reg_smbd_server_connection(struct smbd_server_connection *sconn) {
 
 struct files_struct *kos_get_files_struct(struct smbd_server_connection *sconn, struct file_id id,
                                           unsigned long file_id) {
+    // @todo: TMP
+    return NULL;
+
     int count=0;
     files_struct *fsp;
     pthread_mutex_lock(&g_hash_kos_thread_mutex);
@@ -352,7 +355,6 @@ struct files_struct *kos_get_files_struct(struct smbd_server_connection *sconn, 
                 }
                 struct files_struct *ret = fsp;
                 pthread_mutex_unlock(&g_hash_kos_thread_mutex);
-                fprintf(stderr, "=== Found\n");
                 return ret;
             }
         }
@@ -360,7 +362,6 @@ struct files_struct *kos_get_files_struct(struct smbd_server_connection *sconn, 
 
     pthread_mutex_unlock(&g_hash_kos_thread_mutex);
 
-    fprintf(stderr, "=== Not Found\n");
     return NULL;
 }
 

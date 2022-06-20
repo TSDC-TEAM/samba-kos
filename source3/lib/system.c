@@ -1016,8 +1016,11 @@ char *sys_realpath(const char *path)
 {
 	char *result;
 
-#ifdef REALPATH_TAKES_NULL
+#if 1 // REALPATH_TAKES_NULL
 	result = realpath(path, NULL);
+    if (result && *result != '/') {
+        return NULL;
+    }
 #else
 	result = SMB_MALLOC_ARRAY(char, PATH_MAX + 1);
 	if (result) {

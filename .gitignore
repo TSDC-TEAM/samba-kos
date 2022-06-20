@@ -496,6 +496,6 @@ compile_commands.json
 /bin/default/source4/heimdal_build/asn1_compile
 /bin/default/source3/client/smbclient
 
-build-qemu/**
+build-qemu*/**
 kos/resources/ramfs/srv/share/**
 kos/resources/ramfs/usr/share
