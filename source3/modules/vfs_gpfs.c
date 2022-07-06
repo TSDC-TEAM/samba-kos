@@ -2624,7 +2624,7 @@ NTSTATUS vfs_gpfs_init(TALLOC_CTX *ctx)
 
 	ret = gpfswrap_init();
 	if (ret != 0) {
-		DEBUG(1, ("Could not initialize GPFS library wrapper\n"));
+		DEBUG(2, ("Could not initialize GPFS library wrapper\n"));
 	}
 
 	return smb_register_vfs(SMB_VFS_INTERFACE_VERSION, "gpfs",

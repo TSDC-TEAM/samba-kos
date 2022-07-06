@@ -182,7 +182,7 @@ bool vfs_init_custom(connection_struct *conn, const char *vfs_object)
 
 		status = smb_load_module("vfs", module_path);
 		if (!NT_STATUS_IS_OK(status)) {
-			DEBUG(0, ("error probing vfs module '%s': %s\n",
+			DEBUG(2, ("error probing vfs module '%s': %s\n",
 				  module_path, nt_errstr(status)));
 			goto fail;
 		}
@@ -396,7 +396,7 @@ bool smbd_vfs_init(connection_struct *conn)
 
 	for (j=i-1; j >= 0; j--) {
 		if (!vfs_init_custom(conn, vfs_objects[j])) {
-			DEBUG(0, ("smbd_vfs_init: vfs_init_custom failed for %s\n", vfs_objects[j]));
+			DEBUG(2, ("smbd_vfs_init: vfs_init_custom failed for %s\n", vfs_objects[j]));
 #if 1 // __KOS__
             continue;
 #endif

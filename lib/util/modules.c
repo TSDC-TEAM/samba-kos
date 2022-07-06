@@ -45,8 +45,7 @@ init_module_fn load_module(const char *path, bool is_probe, void **handle_out)
 	error = dlerror();
 
 	if (handle == NULL) {
-		int level = is_probe ? 5 : 0;
-		DEBUG(level, ("Error loading module '%s': %s\n", path, error ? error : ""));
+		DEBUG(2, ("Error loading module '%s': %s\n", path, error ? error : ""));
 		return NULL;
 	}
 

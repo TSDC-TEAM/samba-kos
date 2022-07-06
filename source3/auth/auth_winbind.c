@@ -125,7 +125,7 @@ static NTSTATUS check_winbind_security(const struct auth_context *auth_context,
 
 		status = pdb_enum_trusted_domains(talloc_tos(), &num_domains, &domains);
 		if (!NT_STATUS_IS_OK(status)) {
-			DBG_ERR("pdb_enum_trusted_domains() failed - %s\n",
+			DBG_INFO("pdb_enum_trusted_domains() failed - %s\n",
 				nt_errstr(status));
 			return status;
 		}
