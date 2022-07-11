@@ -3,6 +3,8 @@
 import sys, getopt, os, errno
 
 def main(argv):
+    privateDirName = "private"
+
     folderName = ''
     try:
         opts, args = getopt.getopt(argv,"f:", ["folder="])
@@ -14,6 +16,8 @@ def main(argv):
 
     try:
         os.mkdir(folderName)
+        os.mkdir(folderName + "2")
+        os.mkdir(privateDirName)
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
@@ -21,6 +25,8 @@ def main(argv):
             exit(0)
 
     os.chmod(folderName, 0o777)
+    os.chmod(folderName + "2", 0o777)
+    os.chmod(privateDirName, 0o666)
 
     try:
         contName = folderName.rpartition("/")[0] + "/smb.conf"
