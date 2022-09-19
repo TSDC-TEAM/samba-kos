@@ -1561,16 +1561,12 @@ int kos_net_init(void) {
 
 #ifdef __KOS__
     if (!configure_net_iface(DEFAULT_INTERFACE, DEFAULT_ADDR, DEFAULT_MASK, DEFAULT_GATEWAY, DEFAULT_MTU)) {
-        perror("Can not init network");
+        perror("Fail to setup network interface\n");
         return -1;
     }
-    if (mkdir("/dev", S_IRWXU | S_IRWXG | S_IRWXO) != 0) {
-        fprintf(stderr, "Failed to create \"/dev\" dir: %s\n", strerror(errno));
-        return -1;
-    }
-    // mount /dev/urandom
-    if (mount("devfs", "/dev", "devfs", 0, "") != 0) {
-        fprintf(stderr, "Failed to mount devfs /dev, devfs(error %d: \"%s\")\n", errno, strerror(errno));
+
+    if (!list_network_ifaces()) {
+        perror("Fail to list network interfaces\n");
         return -1;
     }
 #endif

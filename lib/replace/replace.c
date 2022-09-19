@@ -32,7 +32,7 @@
 #include "system/syslog.h"
 #include "system/locale.h"
 #include "system/wait.h"
-#include "kos/libs_kos/bsd/kosbsd.h"
+#include "kos/samba/libs/bsd/kosbsd.h"
 
 #ifdef _WIN32
 #define mkdir(d,m) _mkdir(d)

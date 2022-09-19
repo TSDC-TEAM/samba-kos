@@ -1,0 +1,14 @@
+entities:
+
+- name: samba.Smbd
+  env:
+    VFS_FILESYSTEM_BACKEND: client:@ROOTFS_ENTITY@
+    VFS_NETWORK_BACKEND: client:kl.VfsNet
+  connections:
+  - target: kl.VfsNet
+    id: kl.VfsNet
+  - target: @ROOTFS_ENTITY@
+    id: @ROOTFS_ENTITY@
+@INIT_Smbd_ENTITY_CONNECTIONS+@
+
+@INIT_EXTERNAL_ENTITIES@

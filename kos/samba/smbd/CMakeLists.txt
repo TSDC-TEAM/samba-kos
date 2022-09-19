@@ -1,3 +1,5 @@
+project(samba)
+
 set(TARGET_NAME Smbd)
 
 set(TARGET_EDL samba_smbd)
@@ -11,14 +13,38 @@ set(TARGET_SRC
         ${SMB_SRC_ROOT}/source3/smbd/smbd_cleanupd.c
         ${SMB_SRC_ROOT}/source3/rpc_server/epmd.c
         ${SMB_SRC_ROOT}/source3/smbd/kos/kos_thread.c
-        )
+)
 
 set(TARGET_LIBS
         ${SAMBA_EXT_MODULES}
         ${SAMBA_THIRD_PARTY_LIBS}
-        )
+)
 
-include(executable)
+if (KOS)
+    # Setting compilation flags.
+    project_header_default ("STANDARD_GNU_11:YES" "STRICT_WARNINGS:NO")
+
+    nk_build_edl_files (${TARGET_EDL}
+            NK_MODULE ${PROJECT_NAME}
+            EDL ${TARGET_NAME}.edl)
+
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions")
+
+    add_executable(${TARGET_NAME} ${TARGET_SRC} ${EDL_FILES})
+
+    add_dependencies(${TARGET_NAME} ${TARGET_EDL})
+
+    target_link_libraries(${TARGET_NAME} ${TARGET_LIBS} ${vfs_CLIENT_LIB})
+
+    # We do not need default VFS entity here, which comes from ${vfs_CLIENT_LIB}
+    set_target_properties (${TARGET_NAME} PROPERTIES ${vfs_ENTITY}_REPLACEMENT "")
+else ()
+    add_executable(${TARGET_NAME} ${TARGET_SRC})
+
+    if (TARGET_LIBS)
+        target_link_libraries(${TARGET_NAME} ${TARGET_LIBS})
+    endif ()
+endif ()
 
 target_include_directories(
         ${TARGET_NAME}
@@ -249,4 +275,6 @@ add_dependencies(${TARGET_NAME} shareconfig)
 add_custom_target(shareconfig
         COMMAND ${SMB_SRC_ROOT}/kos_create_share_and_conf.py -f ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/test
         WORKING_DIRECTORY ${SMB_SRC_ROOT}
-        )
+)
+
+install(TARGETS ${TARGET_NAME})

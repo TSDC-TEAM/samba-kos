@@ -45,7 +45,7 @@
 #ifndef __KOS__
 #include <arpa/nameser.h>
 #endif
-#include <kos/libs_kos/resolv/kosresolv.h>
+#include <kos/samba/libs/resolv/kosresolv.h>
 
 struct dns_ex_state {
 	bool do_fallback;

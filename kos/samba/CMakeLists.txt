@@ -1,10 +1,21 @@
+cmake_minimum_required (VERSION 3.12)
+
 option(KOS_HW "Build for KOS HW (default is FALSE)" OFF)
 
-if (KOS)
-    list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/kos)
-else()
-    list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/linux)
+project(samba LANGUAGES C CXX)
+
+set(SANITIZE 1)
+
+if(SANITIZE AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    add_compile_options("-fsanitize=address" "-fno-omit-frame-pointer")
+    add_link_options("-fsanitize=address")
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set(GCCDEFS "-fstack-clash-protection")
 endif()
+
+set(CMAKE_C_STANDARD 11)
+
+set(SMB_SRC_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../../)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -18,7 +29,7 @@ set(RESOURCES_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resources)
 if (KOS)
     # Initialize CMake library for Kaspersky OS SDK.
     include (platform)
-    initialize_platform ()
+    initialize_platform (FORCE_STATIC)
 
     # Connect artifact installation functions.
     include (platform/install)
@@ -52,10 +63,31 @@ if (KOS)
     include_directories(${CMAKE_CURRENT_BINARY_DIR})
 endif ()
 
-add_subdirectory(libs_kos)
+add_subdirectory(libs)
 add_subdirectory(smbd)
 
-if (KOS)
-    add_subdirectory(env)
-    add_subdirectory(einit)
-endif ()
+#
+# Package configure file
+#
+include(CMakePackageConfigHelpers)
+
+set(LIB_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib)
+set(BIN_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/bin)
+
+configure_package_config_file(samba-config.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/samba-config.cmake
+        INSTALL_DESTINATION ${LIB_INSTALL_DIR}/samba/cmake
+        PATH_VARS BIN_INSTALL_DIR
+)
+
+write_basic_package_version_file(
+        ${CMAKE_CURRENT_BINARY_DIR}/samba-config-version.cmake
+        VERSION 1.0.0
+        COMPATIBILITY SameMajorVersion
+)
+
+install(FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/samba-config.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/samba-config-version.cmake
+        DESTINATION ${LIB_INSTALL_DIR}/cmake/samba
+)
