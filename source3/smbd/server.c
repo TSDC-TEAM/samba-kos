@@ -1663,7 +1663,7 @@ int kos_net_init(void) {
 
 	log_stdout = (debug_get_log_type() == DEBUG_STDOUT);
 
-        if (cmdline_daemon_cfg->interactive) {
+    if (cmdline_daemon_cfg->interactive) {
 		log_stdout = True;
 	}
     log_stdout = true;

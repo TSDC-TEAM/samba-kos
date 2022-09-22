@@ -132,20 +132,21 @@ add_dependencies(c combined)
 set_target_properties(c
         PROPERTIES
         IMPORTED_LOCATION ${C_LIB}
-        )
+)
 
 set(SAMBA_EXT_MODULES
         c
         PARENT_SCOPE
-        )
+)
 
 set(DEF_LIBS pthread ssl crypto z)
 
 if (NOT KOS)
     list(APPEND DEF_LIBS "dl")
+    list(APPEND DEF_LIBS "popt")
 endif()
 
 set(SAMBA_THIRD_PARTY_LIBS
         ${DEF_LIBS}
         PARENT_SCOPE
-        )
+)

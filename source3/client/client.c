@@ -6426,7 +6426,7 @@ int main(int argc,char *argv[])
 	lp_set_cmdline("log level", "1");
 
 	/* skip argv(0) */
-	pc = samba_popt_get_context(getprogname(),
+	pc = samba_popt_get_context("smbclient",
 				    argc,
 				    const_argv,
 				    long_options,

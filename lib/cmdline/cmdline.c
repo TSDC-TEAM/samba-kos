@@ -24,6 +24,7 @@
 
 #include <samba/version.h>
 
+static const char *CLIENT_PROG_NAME = "smbclient";
 static TALLOC_CTX *cmdline_mem_ctx;
 static struct loadparm_context *cmdline_lp_ctx;
 static struct cli_credentials *cmdline_creds;
@@ -70,7 +71,7 @@ bool samba_cmdline_init_common(TALLOC_CTX *mem_ctx)
 	 * Log to stdout by default.
 	 * This can be changed to stderr using the option: --debug-stdout
 	 */
-	setup_logging(getprogname(), DEBUG_DEFAULT_STDERR);
+	setup_logging(CLIENT_PROG_NAME, DEBUG_DEFAULT_STDERR);
 
 	talloc_set_log_fn(_samba_cmdline_talloc_log);
 	talloc_set_abort_fn(smb_panic);
@@ -341,7 +342,7 @@ static void popt_samba_callback(poptContext popt_ctx,
 	bool ok;
 
 	/* Find out basename of current program */
-	pname = getprogname();
+	pname = CLIENT_PROG_NAME;
 
 	if (reason == POPT_CALLBACK_REASON_PRE) {
 		if (lp_ctx == NULL) {
@@ -368,7 +369,7 @@ static void popt_samba_callback(poptContext popt_ctx,
 		if (!ok) {
 			fprintf(stderr,
 				"%s - Failed to load config file!\n",
-				getprogname());
+                CLIENT_PROG_NAME);
 			exit(1);
 		}
 

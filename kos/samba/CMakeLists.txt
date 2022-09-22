@@ -65,6 +65,7 @@ endif ()
 
 add_subdirectory(libs)
 add_subdirectory(smbd)
+add_subdirectory(smbclient)
 
 #
 # Package configure file

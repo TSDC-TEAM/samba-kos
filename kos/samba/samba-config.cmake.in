@@ -1,13 +1,21 @@
 set(SMBD_VERSION 1.0.0)
+set(SMBCLIENT_VERSION 1.0.0)
 
 @PACKAGE_INIT@
 
 add_executable(Smbd IMPORTED)
+add_executable(Smbclient IMPORTED)
 
 set_property(TARGET Smbd APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
 set_target_properties(Smbd
 	PROPERTIES
 		IMPORTED_LOCATION_RELEASE "@PACKAGE_BIN_INSTALL_DIR@/Smbd"
+)
+
+set_property(TARGET Smbclient APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+set_target_properties(Smbclient
+	PROPERTIES
+		IMPORTED_LOCATION_RELEASE "@PACKAGE_BIN_INSTALL_DIR@/Smbclient"
 )
 
 check_required_components(samba)
