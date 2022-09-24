@@ -3,7 +3,7 @@
 import sys, getopt, os, errno
 
 def main(argv):
-    passdbFile = os.getcwd() + "/kos/resources/ramfs/usr/local/samba/private/passdb.tdb"
+    passdbFile = os.getcwd() + "/kos/example/smbd/resources/hdd/usr/local/samba/private/passdb.tdb"
     print(passdbFile)
 
     privateDirName = "/private"
