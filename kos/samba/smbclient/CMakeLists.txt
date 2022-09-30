@@ -12,10 +12,6 @@ set(TARGET_SRC
         ${SMB_SRC_ROOT}/source3/client/dnsbrowse.c
         ${SMB_SRC_ROOT}/libcli/smbreadline/smbreadline.c
         ${SMB_SRC_ROOT}/source3/smbd/kos/kos_thread.c
-        ./popt.c
-        ./poptint.c
-        ./popthelp.c
-        ./poptparse.c
 )
 
 set(TARGET_LIBS

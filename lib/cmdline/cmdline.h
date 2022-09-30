@@ -19,7 +19,7 @@
 #define _CMDLINE_H
 
 #include "auth/credentials/credentials.h"
-#include "kos/samba/smbclient/popt.h"
+#include "kos/samba/libs/popt/popt.h"
 
 #ifndef POPT_TABLEEND
 #define POPT_TABLEEND { \

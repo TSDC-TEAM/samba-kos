@@ -1,12 +1,11 @@
 set(TARGET_NAME popt)
 
 set(TARGET_SRC
-        ${SMB_SRC_ROOT}/third_party/popt/popt.c
-        ${SMB_SRC_ROOT}/third_party/popt/poptconfig.c
-        ${SMB_SRC_ROOT}/third_party/popt/popthelp.c
-        ${SMB_SRC_ROOT}/third_party/popt/poptint.c
-        ${SMB_SRC_ROOT}/third_party/popt/poptparse.c
-        )
+        ./popt.c
+        ./poptint.c
+        ./popthelp.c
+        ./poptparse.c
+)
 
 add_library(
         ${TARGET_NAME}
