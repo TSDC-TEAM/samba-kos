@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 
-project (exmaple_smbd)
+project (example_smbd)
 
 # Add functions for installing artefacts.
 include (platform/install)

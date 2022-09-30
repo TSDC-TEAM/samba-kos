@@ -6265,12 +6265,68 @@ static int do_message_op(struct cli_credentials *creds)
 	return 0;
 }
 
+#ifdef __KOS__
+#include <kos_net.h>
+#endif
+
+int kos_net_init(void) {
+    fprintf(stderr, "Start setup network\n");
+
+#ifdef __KOS__
+    if (!configure_net_iface(DEFAULT_INTERFACE, DEFAULT_ADDR, DEFAULT_MASK, DEFAULT_GATEWAY, DEFAULT_MTU)) {
+        perror("Fail to setup network interface\n");
+        return -1;
+    }
+
+    if (!list_network_ifaces()) {
+        perror("Fail to list network interfaces\n");
+        return -1;
+    }
+#endif
+
+    fprintf(stderr, "Setup network done\n");
+
+    return 0;
+}
+
 /****************************************************************************
   main program
 ****************************************************************************/
 
 int main(int argc,char *argv[])
 {
+#ifdef __KOS__
+    int init_res = kos_net_init();
+    if (-1 == init_res) {
+        fprintf(stderr, "Failed to init network\n");
+        return EXIT_FAILURE;
+    }
+#endif
+
+    int custom_argc = 8;
+    char **custom_argv = (char **)malloc(sizeof(char **) * custom_argc);
+
+    custom_argv[0] = strdup("./Smbclient");
+    custom_argv[1] = strdup("-s");
+#ifdef __KOS__
+    custom_argv[2] = strdup("/usr/local/samba/etc/smb.conf");
+#else
+    custom_argv[2] = strdup("./smb.conf");
+#endif
+    custom_argv[3] = strdup("-d=10");
+#ifdef __KOS__
+    custom_argv[4] = strdup("//10.0.2.2/tmp");
+#else
+    custom_argv[4] = strdup("//127.0.0.1/tmp");
+#endif
+    custom_argv[5] = strdup("--port=1490");
+    custom_argv[6] = strdup("-U=user%localntdc2pass");
+    custom_argv[7] = strdup("-c=ls");
+    custom_argv[custom_argc] = NULL;
+
+    argv = custom_argv;
+    argc = custom_argc;
+
 	const char **const_argv = discard_const_p(const char *, argv);
 	char *base_directory = NULL;
 	int opt;
@@ -6631,5 +6687,11 @@ int main(int argc,char *argv[])
 	}
 
 	TALLOC_FREE(frame);
+
+    for (int i = 0; i < custom_argc; ++i) {
+        free(custom_argv[i]);
+    }
+    free(custom_argv);
+
 	return rc;
 }

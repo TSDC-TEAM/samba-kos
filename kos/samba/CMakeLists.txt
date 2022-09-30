@@ -75,20 +75,38 @@ include(CMakePackageConfigHelpers)
 set(LIB_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib)
 set(BIN_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/bin)
 
-configure_package_config_file(samba-config.cmake.in
-        ${CMAKE_CURRENT_BINARY_DIR}/samba-config.cmake
-        INSTALL_DESTINATION ${LIB_INSTALL_DIR}/samba/cmake
+configure_package_config_file(smbd-config.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/smbd-config.cmake
+        INSTALL_DESTINATION ${LIB_INSTALL_DIR}/smbd/cmake
         PATH_VARS BIN_INSTALL_DIR
 )
 
 write_basic_package_version_file(
-        ${CMAKE_CURRENT_BINARY_DIR}/samba-config-version.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/smbd-config-version.cmake
         VERSION 1.0.0
         COMPATIBILITY SameMajorVersion
 )
 
 install(FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/samba-config.cmake
-        ${CMAKE_CURRENT_BINARY_DIR}/samba-config-version.cmake
-        DESTINATION ${LIB_INSTALL_DIR}/cmake/samba
+        ${CMAKE_CURRENT_BINARY_DIR}/smbd-config.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/smbd-config-version.cmake
+        DESTINATION ${LIB_INSTALL_DIR}/cmake/smbd
+)
+
+configure_package_config_file(smbclient-config.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/smbclient-config.cmake
+        INSTALL_DESTINATION ${LIB_INSTALL_DIR}/smbclient/cmake
+        PATH_VARS BIN_INSTALL_DIR
+)
+
+write_basic_package_version_file(
+        ${CMAKE_CURRENT_BINARY_DIR}/smbclient-config-version.cmake
+        VERSION 1.0.0
+        COMPATIBILITY SameMajorVersion
+)
+
+install(FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/smbclient-config.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/smbclient-config-version.cmake
+        DESTINATION ${LIB_INSTALL_DIR}/cmake/smbclient
 )

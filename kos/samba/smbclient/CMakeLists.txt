@@ -12,6 +12,10 @@ set(TARGET_SRC
         ${SMB_SRC_ROOT}/source3/client/dnsbrowse.c
         ${SMB_SRC_ROOT}/libcli/smbreadline/smbreadline.c
         ${SMB_SRC_ROOT}/source3/smbd/kos/kos_thread.c
+        ./popt.c
+        ./poptint.c
+        ./popthelp.c
+        ./poptparse.c
 )
 
 set(TARGET_LIBS
@@ -107,11 +111,6 @@ target_compile_definitions(
         _REENTRANT
 )
 
-add_dependencies(${TARGET_NAME} shareconfig_client)
-
-add_custom_target(shareconfig_client
-        COMMAND ${SMB_SRC_ROOT}/kos_create_share_and_conf.py -f ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/test
-        WORKING_DIRECTORY ${SMB_SRC_ROOT}
-)
+add_dependencies(${TARGET_NAME} shareconfig)
 
 install(TARGETS ${TARGET_NAME})

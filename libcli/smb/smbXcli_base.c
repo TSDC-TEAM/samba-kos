@@ -5398,10 +5398,12 @@ static void smbXcli_negprot_smb2_done(struct tevent_req *subreq)
 		return;
 	}
 
+#if 0 // __KOS__
 	status = smbXcli_negprot_smb3_check_capabilities(req);
 	if (tevent_req_nterror(req, status)) {
 		return;
 	}
+#endif
 
 	tevent_req_done(req);
 }
@@ -5492,6 +5494,9 @@ NTSTATUS smbXcli_negprot(struct smbXcli_conn *conn,
 			 enum protocol_types min_protocol,
 			 enum protocol_types max_protocol)
 {
+    min_protocol = PROTOCOL_NT1;
+    max_protocol = PROTOCOL_SMB3_11;
+
 	TALLOC_CTX *frame = talloc_stackframe();
 	struct tevent_context *ev;
 	struct tevent_req *req;

@@ -19,9 +19,7 @@
 #define _CMDLINE_H
 
 #include "auth/credentials/credentials.h"
-#ifndef __KOS__
-#include <popt.h>
-#endif
+#include "kos/samba/smbclient/popt.h"
 
 #ifndef POPT_TABLEEND
 #define POPT_TABLEEND { \
@@ -179,12 +177,10 @@ bool samba_cmdline_sanity_check(const struct poptOption *opts);
  *
  * @return The initialized popt context or NULL on error.
  */
-#ifndef __KOS__
 poptContext samba_popt_get_context(const char * name,
 				   int argc, const char ** argv,
 				   const struct poptOption * options,
 				   unsigned int flags);
-#endif
 
 /**
  * @brief A popt structure for common debug options only.
