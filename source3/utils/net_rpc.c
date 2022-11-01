@@ -111,11 +111,17 @@ NTSTATUS net_get_remote_domain_sid(struct cli_state *cli, TALLOC_CTX *mem_ctx,
 					    LSA_POLICY_INFO_ACCOUNT_DOMAIN,
 					    &info,
 					    &result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
 		d_fprintf(stderr, "lsaquery %s: %s\n",
 			  _("failed"),
 			  nt_errstr(status));
 		return status;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		d_fprintf(stderr, "lsaquery %s: %s\n",
+			  _("failed"),
+			  nt_errstr(result));
+		return result;
 	}
 
 	*domain_name = info->account_domain.name.string;
@@ -1134,7 +1140,7 @@ static int rpc_user_info(struct net_context *c, int argc, const char **argv)
 	struct GROUP_USERS_INFO_0 *u0 = NULL;
 	uint32_t entries_read = 0;
 	uint32_t total_entries = 0;
-	uint32_t i;
+	int i;
 
 
 	if (argc < 1 || c->display_usage) {
@@ -1798,7 +1804,7 @@ static NTSTATUS rpc_group_delete_internals(struct net_context *c,
 	uint32_t group_rid;
 	struct samr_RidAttrArray *rids = NULL;
 	/* char **names; */
-	uint32_t i;
+	int i;
 	/* struct samr_RidWithAttribute *user_gids; */
 	struct dcerpc_binding_handle *b = pipe_hnd->binding_handle;
 
@@ -3043,7 +3049,7 @@ static NTSTATUS rpc_list_group_members(struct net_context *c,
 	NTSTATUS result, status;
 	struct policy_handle group_pol;
 	uint32_t num_members, *group_rids;
-	uint32_t i;
+	int i;
 	struct samr_RidAttrArray *rids = NULL;
 	struct lsa_Strings names;
 	struct samr_Ids types;
@@ -3077,7 +3083,7 @@ static NTSTATUS rpc_list_group_members(struct net_context *c,
 	group_rids = rids->rids;
 
 	while (num_members > 0) {
-		uint32_t this_time = 512;
+		int this_time = 512;
 
 		if (num_members < this_time)
 			this_time = num_members;
@@ -3145,7 +3151,7 @@ static NTSTATUS rpc_list_alias_members(struct net_context *c,
 	char **domains;
 	char **names;
 	enum lsa_SidType *types;
-	uint32_t i;
+	int i;
 	struct lsa_SidArray sid_array;
 	struct dcerpc_binding_handle *b = pipe_hnd->binding_handle;
 
@@ -4700,7 +4706,7 @@ static NTSTATUS rpc_aliaslist_dump(struct net_context *c,
 				int argc,
 				const char **argv)
 {
-	uint32_t i;
+	int i;
 	NTSTATUS result;
 	struct policy_handle lsa_pol;
 	struct dcerpc_binding_handle *b = pipe_hnd->binding_handle;
@@ -4841,7 +4847,7 @@ struct user_token {
 
 static void dump_user_token(struct user_token *token)
 {
-	uint32_t i;
+	int i;
 
 	d_printf("%s\n", token->name);
 
@@ -4854,7 +4860,7 @@ static void dump_user_token(struct user_token *token)
 
 static bool is_alias_member(struct dom_sid *sid, struct full_alias *alias)
 {
-	uint32_t i;
+	int i;
 
 	for (i=0; i<alias->num_members; i++) {
 		if (dom_sid_equal(sid, &alias->members[i])) {
@@ -6872,6 +6878,7 @@ static int rpc_trustdom_vampire(struct net_context *c, int argc,
 
 	/* trusted domains listing variables */
 	unsigned int enum_ctx = 0;
+	int i;
 	struct lsa_DomainList dom_list;
 	fstring pdc_name;
 	struct dcerpc_binding_handle *b;
@@ -6966,8 +6973,6 @@ static int rpc_trustdom_vampire(struct net_context *c, int argc,
 	d_printf(_("Vampire trusted domains:\n\n"));
 
 	do {
-		uint32_t i;
-
 		nt_status = dcerpc_lsa_EnumTrustDom(b, mem_ctx,
 						    &connect_hnd,
 						    &enum_ctx,
@@ -7047,7 +7052,7 @@ static int rpc_trustdom_list(struct net_context *c, int argc, const char **argv)
 
 	/* trusted domains listing variables */
 	unsigned int num_domains, enum_ctx = 0;
-	uint32_t i;
+	int i;
 	struct lsa_DomainList dom_list;
 	fstring pdc_name;
 	bool found_domain;

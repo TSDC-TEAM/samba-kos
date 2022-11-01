@@ -82,7 +82,8 @@ free a data blob
 _PUBLIC_ void data_blob_free(DATA_BLOB *d)
 {
 	if (d) {
-		TALLOC_FREE(d->data);
+		talloc_free(d->data);
+		d->data = NULL;
 		d->length = 0;
 	}
 }
@@ -211,11 +212,9 @@ _PUBLIC_ DATA_BLOB data_blob_const(const void *p, size_t length)
 **/
 _PUBLIC_ bool data_blob_realloc(TALLOC_CTX *mem_ctx, DATA_BLOB *blob, size_t length)
 {
-	uint8_t *tmp = talloc_realloc(mem_ctx, blob->data, uint8_t, length);
-	if (tmp == NULL) {
+	blob->data = talloc_realloc(mem_ctx, blob->data, uint8_t, length);
+	if (blob->data == NULL)
 		return false;
-	}
-	blob->data = tmp;
 	blob->length = length;
 	return true;
 }

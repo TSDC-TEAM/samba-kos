@@ -26,7 +26,7 @@ def create_credential(lp, other):
     c.set_gensec_features(other.get_gensec_features())
     return c
 
-parser = optparse.OptionParser("bind [options] <host>")
+parser = optparse.OptionParser("ldap [options] <host>")
 sambaopts = options.SambaOptions(parser)
 parser.add_option_group(sambaopts)
 

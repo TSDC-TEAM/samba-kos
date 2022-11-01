@@ -22,7 +22,6 @@
 #include "source3/param/loadparm.h"
 #include "source3/param/param_proto.h"
 #include "lib/cmdline/cmdline.h"
-#include "lib/cmdline/closefrom_except.h"
 #include "lib/util/talloc_stack.h"
 #include "lib/util/debug.h"
 #include "lib/util/signal.h"
@@ -41,7 +40,6 @@
 #include "source3/lib/util_procid.h"
 #include "source3/auth/proto.h"
 #include "source3/printing/queue_process.h"
-#include "source3/lib/substitute.h"
 
 static void watch_handler(struct tevent_req *req)
 {
@@ -157,9 +155,86 @@ static int samba_bgqd_pidfile_create(
 	return EAGAIN;
 }
 
+static int closeall_except(int *fds, size_t num_fds)
+{
+	size_t i;
+	int max_keep = -1;
+	int fd, ret;
+
+	for (i=0; i<num_fds; i++) {
+		max_keep = MAX(max_keep, fds[i]);
+	}
+	if (max_keep == -1) {
+		return 0;
+	}
+
+	for (fd = 0; fd < max_keep; fd++) {
+		bool keep = false;
+
+		/*
+		 * O(num_fds*max_keep), but we expect the number of
+		 * fds to keep to be very small, typically 0,1,2 and
+		 * very few more.
+		 */
+		for (i=0; i<num_fds; i++) {
+			if (fd == fds[i]) {
+				keep = true;
+				break;
+			}
+		}
+		if (keep) {
+			continue;
+		}
+		ret = close(fd);
+		if ((ret == -1) && (errno != EBADF)) {
+			return errno;
+		}
+	}
+
+	closefrom(max_keep+1);
+	return 0;
+}
+
+static int closeall_except_fd_params(
+	size_t num_fd_params,
+	const char *fd_params[],
+	int argc,
+	const char *argv[])
+{
+	int fds[num_fd_params+3];
+	size_t i;
+	struct poptOption long_options[num_fd_params + 1];
+	poptContext pc;
+	int ret;
+
+	for (i=0; i<num_fd_params; i++) {
+		fds[i] = -1;
+		long_options[i] = (struct poptOption) {
+			.longName = fd_params[i],
+			.argInfo = POPT_ARG_INT,
+			.arg = &fds[i],
+		};
+	}
+	long_options[num_fd_params] = (struct poptOption) { .longName=NULL, };
+
+	fds[num_fd_params] = 0;
+	fds[num_fd_params+1] = 1;
+	fds[num_fd_params+2] = 2;
+
+	pc = poptGetContext(argv[0], argc, argv, long_options, 0);
+
+	while ((ret = poptGetNextOpt(pc)) != -1) {
+		/* do nothing */
+	}
+
+	poptFreeContext(pc);
+
+	ret = closeall_except(fds, ARRAY_SIZE(fds));
+	return ret;
+}
+
 int main(int argc, const char *argv[])
 {
-	struct samba_cmdline_daemon_cfg *cmdline_daemon_cfg = NULL;
 	const struct loadparm_substitution *lp_sub =
 		loadparm_s3_global_substitution();
 	const char *progname = getprogname();
@@ -170,6 +245,8 @@ int main(int argc, const char *argv[])
 	struct tevent_req *watch_req = NULL;
 	struct tevent_signal *sigterm_handler = NULL;
 	struct bq_state *bq = NULL;
+	int foreground = 0;
+	int no_process_group = 0;
 	int log_stdout = 0;
 	int ready_signal_fd = -1;
 	int watch_fd = -1;
@@ -182,7 +259,21 @@ int main(int argc, const char *argv[])
 	struct poptOption long_options[] = {
 		POPT_AUTOHELP
 		POPT_COMMON_SAMBA
-		POPT_COMMON_DAEMON
+		{
+			.longName   = "foreground",
+			.shortName  = 'F',
+			.argInfo    = POPT_ARG_NONE,
+			.arg        = &foreground,
+			.descrip    = "Run daemon in foreground "
+				      "(for daemontools, etc.)",
+		},
+		{
+			.longName   = "no-process-group",
+			.shortName  = '\0',
+			.argInfo    = POPT_ARG_NONE,
+			.arg        = &no_process_group,
+			.descrip    = "Don't create a new process group" ,
+		},
 
 		/*
 		 * File descriptor to write the PID of the helper
@@ -213,14 +304,13 @@ int main(int argc, const char *argv[])
 			"ready-signal-fd", "parent-watch-fd",
 		};
 
-		closefrom_except_fd_params(
-			3, ARRAY_SIZE(fd_params), fd_params, argc, argv);
+		closeall_except_fd_params(
+			ARRAY_SIZE(fd_params), fd_params, argc, argv);
 	}
 
-	talloc_enable_null_tracking();
 	frame = talloc_stackframe();
+
 	umask(0);
-	set_remote_machine_name("smbd-bgqd", true);
 
 	ok = samba_cmdline_init(frame,
 				SAMBA_CMDLINE_CONFIG_SERVER,
@@ -229,8 +319,6 @@ int main(int argc, const char *argv[])
 		DBG_ERR("Failed to setup cmdline parser!\n");
 		exit(ENOMEM);
 	}
-
-	cmdline_daemon_cfg = samba_cmdline_get_daemon_cfg();
 
 	pc = samba_popt_get_context(progname,
 				    argc,
@@ -252,12 +340,16 @@ int main(int argc, const char *argv[])
 
 	log_stdout = (debug_get_log_type() == DEBUG_STDOUT);
 
-	if (!cmdline_daemon_cfg->fork) {
+	if (foreground) {
 		daemon_status(progname, "Starting process ... ");
 	} else {
-		become_daemon(true,
-			      cmdline_daemon_cfg->no_process_group,
-			      log_stdout);
+		become_daemon(true, no_process_group, log_stdout);
+	}
+
+	if (log_stdout) {
+		setup_logging(progname, DEBUG_STDOUT);
+	} else {
+		setup_logging(progname, DEBUG_FILE);
 	}
 
 	BlockSignals(true, SIGPIPE);

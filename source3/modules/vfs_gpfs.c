@@ -156,14 +156,14 @@ static int set_gpfs_sharemode(files_struct *fsp, uint32_t access_mask,
 	return result;
 }
 
-static int vfs_gpfs_filesystem_sharemode(vfs_handle_struct *handle,
-					 files_struct *fsp,
-					 uint32_t share_access,
-					 uint32_t access_mask)
+static int vfs_gpfs_kernel_flock(vfs_handle_struct *handle, files_struct *fsp,
+				 uint32_t share_access, uint32_t access_mask)
 {
 
 	struct gpfs_config_data *config;
 	int ret = 0;
+
+	START_PROFILE(syscall_kernel_flock);
 
 	SMB_VFS_HANDLE_GET_DATA(handle, config,
 				struct gpfs_config_data,
@@ -176,7 +176,7 @@ static int vfs_gpfs_filesystem_sharemode(vfs_handle_struct *handle,
 	/*
 	 * A named stream fsp will have the basefile open in the fsp
 	 * fd, so lacking a distinct fd for the stream we have to skip
-	 * set_gpfs_sharemode for stream.
+	 * kernel_flock and set_gpfs_sharemode for stream.
 	 */
 	if (is_named_stream(fsp->fsp_name)) {
 		DBG_NOTICE("Not requesting GPFS sharemode on stream: %s/%s\n",
@@ -185,7 +185,11 @@ static int vfs_gpfs_filesystem_sharemode(vfs_handle_struct *handle,
 		return 0;
 	}
 
+	kernel_flock(fsp_get_io_fd(fsp), share_access, access_mask);
+
 	ret = set_gpfs_sharemode(fsp, access_mask, share_access);
+
+	END_PROFILE(syscall_kernel_flock);
 
 	return ret;
 }
@@ -2582,7 +2586,7 @@ static struct vfs_fn_pointers vfs_gpfs_fns = {
 	.disk_free_fn = vfs_gpfs_disk_free,
 	.get_quota_fn = vfs_gpfs_get_quota,
 	.fs_capabilities_fn = vfs_gpfs_capabilities,
-	.filesystem_sharemode_fn = vfs_gpfs_filesystem_sharemode,
+	.kernel_flock_fn = vfs_gpfs_kernel_flock,
 	.linux_setlease_fn = vfs_gpfs_setlease,
 	.get_real_filename_fn = vfs_gpfs_get_real_filename,
 	.get_dos_attributes_send_fn = vfs_not_implemented_get_dos_attributes_send,

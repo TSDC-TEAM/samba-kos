@@ -1626,7 +1626,7 @@ int vfs_fake_fd(void)
 
 /*
  * This is just a helper to make
- * users of vfs_fake_fd() more symmetric
+ * users of vfs_fake_fd() more symetric
  */
 int vfs_fake_fd_close(int fd)
 {
@@ -2283,16 +2283,13 @@ int smb_vfs_call_fallocate(struct vfs_handle_struct *handle,
 	return handle->fns->fallocate_fn(handle, fsp, mode, offset, len);
 }
 
-int smb_vfs_call_filesystem_sharemode(struct vfs_handle_struct *handle,
-				      struct files_struct *fsp,
-				      uint32_t share_mode,
-				      uint32_t access_mask)
+int smb_vfs_call_kernel_flock(struct vfs_handle_struct *handle,
+			      struct files_struct *fsp, uint32_t share_mode,
+			      uint32_t access_mask)
 {
-	VFS_FIND(filesystem_sharemode);
-	return handle->fns->filesystem_sharemode_fn(handle,
-						    fsp,
-						    share_mode,
-						    access_mask);
+	VFS_FIND(kernel_flock);
+	return handle->fns->kernel_flock_fn(handle, fsp, share_mode,
+					 access_mask);
 }
 
 int smb_vfs_call_fcntl(struct vfs_handle_struct *handle,
@@ -2516,12 +2513,10 @@ struct tevent_req *smb_vfs_call_offload_read_send(TALLOC_CTX *mem_ctx,
 NTSTATUS smb_vfs_call_offload_read_recv(struct tevent_req *req,
 					struct vfs_handle_struct *handle,
 					TALLOC_CTX *mem_ctx,
-					uint32_t *flags,
-					uint64_t *xferlen,
 					DATA_BLOB *token_blob)
 {
 	VFS_FIND(offload_read_recv);
-	return handle->fns->offload_read_recv_fn(req, handle, mem_ctx, flags, xferlen, token_blob);
+	return handle->fns->offload_read_recv_fn(req, handle, mem_ctx, token_blob);
 }
 
 struct tevent_req *smb_vfs_call_offload_write_send(struct vfs_handle_struct *handle,

@@ -34,13 +34,9 @@ from selftesthelpers import smbtorture4, ntlm_auth3, samba3srcdir
 print("OPTIONS %s" % " ".join(smbtorture4_options), file=sys.stderr)
 
 
-def plansmbtorture4testsuite(name, env, options, modname=None, environ={}):
-    return selftesthelpers.plansmbtorture4testsuite(name,
-                                                    env,
-                                                    options,
-                                                    target='samba4',
-                                                    modname=modname,
-                                                    environ=environ)
+def plansmbtorture4testsuite(name, env, options, modname=None):
+    return selftesthelpers.plansmbtorture4testsuite(name, env, options,
+                                                    target='samba4', modname=modname)
 
 
 samba4srcdir = source4dir()
@@ -201,11 +197,7 @@ all_rpc_tests = ncalrpc_tests + ncacn_np_tests + ncacn_ip_tcp_tests + slow_ncacn
 rpc_s3only = [
     "rpc.mdssvc",
 ]
-rpc_fipsonly = [
-    "rpc.fips.netlogon.crypto",
-]
-rpc_exclude = rpc_s3only + rpc_fipsonly
-rpc_tests = [x for x in smbtorture4_testsuites("rpc.") if x not in rpc_exclude]
+rpc_tests = [x for x in smbtorture4_testsuites("rpc.") if x not in rpc_s3only]
 auto_rpc_tests = list(filter(lambda t: t not in all_rpc_tests, rpc_tests))
 
 for bindoptions in ["seal,padcheck"] + validate_list + ["bigendian"]:
@@ -602,53 +594,12 @@ if have_gnutls_fips_mode_support:
     plantestsuite("samba4.blackbox.weak_crypto.client", "ad_dc", [os.path.join(bbdir, "test_weak_crypto.sh"), '$SERVER', '$USERNAME', '$PASSWORD', '$REALM', '$DOMAIN', "$PREFIX/ad_dc"])
 
     for env in ["ad_dc_fips", "ad_member_fips"]:
-        plantestsuite("samba4.blackbox.weak_crypto.server",
-                      env,
-                      [os.path.join(bbdir, "test_weak_crypto_server.sh"),
-                       '$SERVER',
-                       '$USERNAME',
-                       '$PASSWORD',
-                       '$REALM',
-                       '$DOMAIN',
-                       "$PREFIX/ad_dc_fips",
-                       configuration],
-                      environ={'GNUTLS_FORCE_FIPS_MODE': '1',
-                               'OPENSSL_FORCE_FIPS_MODE': '1'})
-
-    plantestsuite("samba4.blackbox.net_ads_fips",
-                  "ad_dc_fips:client",
-                  [os.path.join(bbdir, "test_net_ads_fips.sh"),
-                   '$DC_SERVER',
-                   '$DC_USERNAME',
-                   '$DC_PASSWORD',
-                   '$PREFIX_ABS'],
-                  environ={'GNUTLS_FORCE_FIPS_MODE': '1',
-                           'OPENSSL_FORCE_FIPS_MODE': '1'})
+        plantestsuite("samba4.blackbox.weak_crypto.server", env, [os.path.join(bbdir, "test_weak_crypto_server.sh"), '$SERVER', '$USERNAME', '$PASSWORD', '$REALM', '$DOMAIN', "$PREFIX/ad_dc_fips", configuration])
+    plantestsuite("samba4.blackbox.net_ads_fips", "ad_dc_fips:client", [os.path.join(bbdir, "test_net_ads_fips.sh"), '$DC_SERVER', '$DC_USERNAME', '$DC_PASSWORD', '$PREFIX_ABS'])
 
     t = "--krb5auth=$DOMAIN/$DC_USERNAME%$DC_PASSWORD"
-    plantestsuite("samba3.wbinfo_simple.fips.%s" % t,
-                  "ad_member_fips:local",
-                  [os.path.join(srcdir(), "nsswitch/tests/test_wbinfo_simple.sh"), t],
-                  environ={'GNUTLS_FORCE_FIPS_MODE': '1',
-                           'OPENSSL_FORCE_FIPS_MODE': '1'})
-    plantestsuite("samba4.wbinfo_name_lookup.fips",
-                  "ad_member_fips",
-                  [os.path.join(srcdir(), "nsswitch/tests/test_wbinfo_name_lookup.sh"),
-                   '$DOMAIN',
-                   '$REALM',
-                   '$DC_USERNAME'],
-                  environ={'GNUTLS_FORCE_FIPS_MODE': '1',
-                           'OPENSSL_FORCE_FIPS_MODE': '1'})
-
-    plansmbtorture4testsuite('rpc.fips.netlogon.crypto',
-                             'ad_dc_fips',
-                             ['ncacn_np:$SERVER[krb5]',
-                              '-U$USERNAME%$PASSWORD',
-                              '--workgroup=$DOMAIN',
-                              '--client-protection=encrypt'],
-                             'samba4.rpc.fips.netlogon.crypto',
-                             environ={'GNUTLS_FORCE_FIPS_MODE': '1',
-                                      'OPENSSL_FORCE_FIPS_MODE': '1'})
+    plantestsuite("samba3.wbinfo_simple.fips.%s" % t, "ad_member_fips:local", [os.path.join(srcdir(), "nsswitch/tests/test_wbinfo_simple.sh"), t])
+    plantestsuite("samba4.wbinfo_name_lookup.fips", "ad_member_fips", [os.path.join(srcdir(), "nsswitch/tests/test_wbinfo_name_lookup.sh"), '$DOMAIN', '$REALM', '$DC_USERNAME'])
 
 plansmbtorture4testsuite('rpc.echo', "ad_dc_ntvfs", ['ncacn_np:$NETBIOSALIAS', '-U$DOMAIN/$USERNAME%$PASSWORD'], "samba4.rpc.echo against NetBIOS alias")
 
@@ -803,14 +754,8 @@ def planoldpythontestsuite(env, module, name=None, extra_path=[], environ={}, ex
     plantestsuite_loadlist(name, env, args)
 
 if have_gnutls_fips_mode_support:
-    planoldpythontestsuite("ad_dc",
-                           "samba.tests.dcerpc.createtrustrelax",
-                           environ={'GNUTLS_FORCE_FIPS_MODE': '1',
-                                    'OPENSSL_FORCE_FIPS_MODE': '1'})
-    planoldpythontestsuite("ad_dc_fips",
-                           "samba.tests.dcerpc.createtrustrelax",
-                           environ={'GNUTLS_FORCE_FIPS_MODE': '1',
-                                    'OPENSSL_FORCE_FIPS_MODE': '1'})
+    planoldpythontestsuite("ad_dc", "samba.tests.dcerpc.createtrustrelax", environ={'GNUTLS_FORCE_FIPS_MODE':'1'})
+    planoldpythontestsuite("ad_dc_fips", "samba.tests.dcerpc.createtrustrelax", environ={'GNUTLS_FORCE_FIPS_MODE':'1'})
 
 # Run complex search expressions test once for each database backend.
 # Right now ad_dc has mdb and ad_dc_ntvfs has tdb
@@ -902,9 +847,7 @@ planpythontestsuite("chgdcpass:local", "samba.tests.samba_tool.dnscmd")
 planpythontestsuite("chgdcpass:local", "samba.tests.dcerpc.rpcecho")
 
 planoldpythontestsuite("nt4_dc", "samba.tests.netbios", extra_args=['-U"$USERNAME%$PASSWORD"'])
-test_bin = os.path.abspath(os.path.join(os.getenv('BINDIR', './bin'), '../python/samba/tests/bin'))
-planoldpythontestsuite("ad_dc:local", "samba.tests.gpo", extra_args=['-U"$USERNAME%$PASSWORD"'],
-                       environ={'PATH':':'.join([test_bin, os.getenv('PATH', '')])})
+planoldpythontestsuite("ad_dc:local", "samba.tests.gpo", extra_args=['-U"$USERNAME%$PASSWORD"'])
 planoldpythontestsuite("ad_member", "samba.tests.gpo_member", extra_args=['-U"$USERNAME%$PASSWORD"'])
 planoldpythontestsuite("ad_dc:local", "samba.tests.dckeytab", extra_args=['-U"$USERNAME%$PASSWORD"'])
 
@@ -981,28 +924,12 @@ planoldpythontestsuite("ad_dc_smb1", "samba.tests.krb5.test_smb",
                            'TKT_SIG_SUPPORT': tkt_sig_support,
                            'EXPECT_PAC': expect_pac
                        })
-planoldpythontestsuite("ad_member_idmap_nss:local",
+planoldpythontestsuite("ad_member_no_nss_wb:local",
                        "samba.tests.krb5.test_min_domain_uid",
                        environ={
                            'ADMIN_USERNAME': '$DC_USERNAME',
                            'ADMIN_PASSWORD': '$DC_PASSWORD',
                            'STRICT_CHECKING': '0'
-                       })
-planoldpythontestsuite("ad_member_idmap_nss:local",
-                       "samba.tests.krb5.test_idmap_nss",
-                       environ={
-                           'ADMIN_USERNAME': '$DC_USERNAME',
-                           'ADMIN_PASSWORD': '$DC_PASSWORD',
-                           'MAPPED_USERNAME': 'bob',
-                           'MAPPED_PASSWORD': 'Secret007',
-                           'UNMAPPED_USERNAME': 'jane',
-                           'UNMAPPED_PASSWORD': 'Secret007',
-                           'INVALID_USERNAME': 'joe',
-                           'INVALID_PASSWORD': 'Secret007',
-                           'STRICT_CHECKING': '0',
-                           'FAST_SUPPORT': have_fast_support,
-                           'TKT_SIG_SUPPORT': tkt_sig_support,
-                           'EXPECT_PAC': expect_pac
                        })
 
 for env in ["ad_dc", smbv1_disabled_testenv]:

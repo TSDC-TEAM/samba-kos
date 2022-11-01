@@ -77,9 +77,12 @@ NTSTATUS open_np_file(struct smb_request *smb_req, const char *name,
 		uint16_t dialect = xconn->smb2.server.dialect;
 		uint16_t srv_smb_encrypt = DCERPC_SMB_ENCRYPTION_REQUIRED;
 		uint16_t cipher = xconn->smb2.server.cipher;
-		struct dom_sid smb3_sid = global_sid_Samba_SMB3;
+		char smb3_sid_str[SID_MAX_SIZE];
+		struct dom_sid smb3_dom_sid;
+		struct dom_sid smb3_sid;
 		uint32_t i;
 		bool ok;
+		int rc;
 
 		session_info = copy_session_info(fsp, conn->session_info);
 		if (session_info == NULL) {
@@ -88,6 +91,12 @@ NTSTATUS open_np_file(struct smb_request *smb_req, const char *name,
 			return NT_STATUS_NO_MEMORY;
 		}
 		security_token = session_info->security_token;
+
+		ok = dom_sid_parse(SID_SAMBA_SMB3, &smb3_dom_sid);
+		if (!ok) {
+			file_free(smb_req, fsp);
+			return NT_STATUS_BUFFER_TOO_SMALL;
+		}
 
 		/*
 		 * Security check:
@@ -98,7 +107,7 @@ NTSTATUS open_np_file(struct smb_request *smb_req, const char *name,
 			int cmp;
 
 			cmp = dom_sid_compare_domain(&security_token->sids[i],
-						     &smb3_sid);
+						     &smb3_dom_sid);
 			if (cmp == 0) {
 				DBG_ERR("ERROR: An SMB3 SID has already been "
 					"detected in the security token!\n");
@@ -107,14 +116,24 @@ NTSTATUS open_np_file(struct smb_request *smb_req, const char *name,
 			}
 		}
 
-		ok = sid_append_rid(&smb3_sid, dialect);
-		ok &= sid_append_rid(&smb3_sid, srv_smb_encrypt);
-		ok &= sid_append_rid(&smb3_sid, cipher);
-
-		if (!ok) {
-			DBG_ERR("sid too small\n");
+		rc = snprintf(smb3_sid_str,
+			      sizeof(smb3_sid_str),
+			      "%s-%u-%u-%u",
+			      SID_SAMBA_SMB3,
+			      dialect,
+			      srv_smb_encrypt,
+			      cipher);
+		if (rc < 0) {
+			DBG_ERR("Buffer too small\n");
 			file_free(smb_req, fsp);
 			return NT_STATUS_BUFFER_TOO_SMALL;
+		}
+
+		ok = dom_sid_parse(smb3_sid_str, &smb3_sid);
+		if (!ok) {
+			DBG_ERR("Failed to parse SMB3 SID\n");
+			file_free(smb_req, fsp);
+			return NT_STATUS_INVALID_PARAMETER;
 		}
 
 		status = add_sid_to_array_unique(security_token,

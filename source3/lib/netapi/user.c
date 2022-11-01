@@ -448,8 +448,12 @@ WERROR NetUserAdd_r(struct libnetapi_ctx *ctx,
 					 &access_granted,
 					 &rid,
 					 &result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
 		werr = ntstatus_to_werror(status);
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		werr = ntstatus_to_werror(result);
 		goto done;
 	}
 
@@ -458,8 +462,12 @@ WERROR NetUserAdd_r(struct libnetapi_ctx *ctx,
 					   16,
 					   &user_info,
 					   &result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
 		werr = ntstatus_to_werror(status);
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		werr = ntstatus_to_werror(result);
 		goto done;
 	}
 
@@ -472,8 +480,12 @@ WERROR NetUserAdd_r(struct libnetapi_ctx *ctx,
 					   &user_handle,
 					   &pw_info,
 					   &result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
 		werr = ntstatus_to_werror(status);
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		werr = ntstatus_to_werror(result);
 		goto done;
 	}
 
@@ -572,8 +584,12 @@ WERROR NetUserDel_r(struct libnetapi_ctx *ctx,
 					discard_const_p(struct dom_sid, &global_sid_Builtin),
 					&builtin_handle,
 					&result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
 		werr = ntstatus_to_werror(status);
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		werr = ntstatus_to_werror(result);
 		goto done;
 	}
 
@@ -586,8 +602,12 @@ WERROR NetUserDel_r(struct libnetapi_ctx *ctx,
 					 &user_rids,
 					 &name_types,
 					 &result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
 		werr = ntstatus_to_werror(status);
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		werr = ntstatus_to_werror(result);
 		goto done;
 	}
 	if (user_rids.count != 1) {
@@ -605,8 +625,12 @@ WERROR NetUserDel_r(struct libnetapi_ctx *ctx,
 				      user_rids.ids[0],
 				      &user_handle,
 				      &result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
 		werr = ntstatus_to_werror(status);
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		werr = ntstatus_to_werror(result);
 		goto done;
 	}
 
@@ -616,16 +640,24 @@ WERROR NetUserDel_r(struct libnetapi_ctx *ctx,
 							   &builtin_handle,
 							   &user_sid,
 							   &result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
 		werr = ntstatus_to_werror(status);
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		werr = ntstatus_to_werror(result);
 		goto done;
 	}
 
 	status = dcerpc_samr_DeleteUser(b, talloc_tos(),
 					&user_handle,
 					&result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
 		werr = ntstatus_to_werror(status);
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		werr = ntstatus_to_werror(result);
 		goto done;
 	}
 
@@ -714,7 +746,11 @@ static NTSTATUS libnetapi_samr_lookup_user(TALLOC_CTX *mem_ctx,
 				      rid,
 				      &user_handle,
 				      &result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		status = result;
 		goto done;
 	}
 
@@ -723,7 +759,11 @@ static NTSTATUS libnetapi_samr_lookup_user(TALLOC_CTX *mem_ctx,
 					   21,
 					   &user_info,
 					   &result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		status = result;
 		goto done;
 	}
 
@@ -732,7 +772,11 @@ static NTSTATUS libnetapi_samr_lookup_user(TALLOC_CTX *mem_ctx,
 					   SECINFO_DACL,
 					   sec_desc,
 					   &result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		status = result;
 		goto done;
 	}
 
@@ -748,7 +792,11 @@ static NTSTATUS libnetapi_samr_lookup_user(TALLOC_CTX *mem_ctx,
 						      &user_handle,
 						      &rid_array,
 						      &result);
-		if (any_nt_status_not_ok(status, result, &status)) {
+		if (!NT_STATUS_IS_OK(status)) {
+			goto done;
+		}
+		if (!NT_STATUS_IS_OK(result)) {
+			status = result;
 			goto done;
 		}
 
@@ -772,7 +820,11 @@ static NTSTATUS libnetapi_samr_lookup_user(TALLOC_CTX *mem_ctx,
 							&sid_array,
 							&alias_rids,
 							&result);
-		if (any_nt_status_not_ok(status, result, &status)) {
+		if (!NT_STATUS_IS_OK(status)) {
+			goto done;
+		}
+		if (!NT_STATUS_IS_OK(result)) {
+			status = result;
 			goto done;
 		}
 
@@ -1754,8 +1806,12 @@ WERROR NetUserGetInfo_r(struct libnetapi_ctx *ctx,
 					 &user_rids,
 					 &name_types,
 					 &result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
 		werr = ntstatus_to_werror(status);
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		werr = ntstatus_to_werror(result);
 		goto done;
 	}
 	if (user_rids.count != 1) {
@@ -1923,8 +1979,12 @@ WERROR NetUserSetInfo_r(struct libnetapi_ctx *ctx,
 					 &user_rids,
 					 &name_types,
 					 &result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
 		werr = ntstatus_to_werror(status);
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		werr = ntstatus_to_werror(result);
 		goto done;
 	}
 	if (user_rids.count != 1) {
@@ -1942,8 +2002,12 @@ WERROR NetUserSetInfo_r(struct libnetapi_ctx *ctx,
 				      user_rids.ids[0],
 				      &user_handle,
 				      &result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
 		werr = ntstatus_to_werror(status);
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		werr = ntstatus_to_werror(result);
 		goto done;
 	}
 
@@ -2982,8 +3046,12 @@ WERROR NetUserGetGroups_r(struct libnetapi_ctx *ctx,
 					 &user_rids,
 					 &name_types,
 					 &result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
 		werr = ntstatus_to_werror(status);
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		werr = ntstatus_to_werror(result);
 		goto done;
 	}
 	if (user_rids.count != 1) {
@@ -3001,8 +3069,12 @@ WERROR NetUserGetGroups_r(struct libnetapi_ctx *ctx,
 				      user_rids.ids[0],
 				      &user_handle,
 				      &result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
 		werr = ntstatus_to_werror(status);
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		werr = ntstatus_to_werror(result);
 		goto done;
 	}
 
@@ -3010,8 +3082,12 @@ WERROR NetUserGetGroups_r(struct libnetapi_ctx *ctx,
 					      &user_handle,
 					      &rid_array,
 					      &result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
 		werr = ntstatus_to_werror(status);
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		werr = ntstatus_to_werror(result);
 		goto done;
 	}
 
@@ -3161,8 +3237,12 @@ WERROR NetUserSetGroups_r(struct libnetapi_ctx *ctx,
 					 &user_rids,
 					 &name_types,
 					 &result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
 		werr = ntstatus_to_werror(status);
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		werr = ntstatus_to_werror(result);
 		goto done;
 	}
 	if (user_rids.count != 1) {
@@ -3180,8 +3260,12 @@ WERROR NetUserSetGroups_r(struct libnetapi_ctx *ctx,
 				      user_rids.ids[0],
 				      &user_handle,
 				      &result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
 		werr = ntstatus_to_werror(status);
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		werr = ntstatus_to_werror(result);
 		goto done;
 	}
 
@@ -3221,8 +3305,12 @@ WERROR NetUserSetGroups_r(struct libnetapi_ctx *ctx,
 					 &group_rids,
 					 &name_types,
 					 &result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
 		werr = ntstatus_to_werror(status);
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		werr = ntstatus_to_werror(result);
 		goto done;
 	}
 	if (group_rids.count != r->in.num_entries) {
@@ -3240,8 +3328,12 @@ WERROR NetUserSetGroups_r(struct libnetapi_ctx *ctx,
 					      &user_handle,
 					      &rid_array,
 					      &result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
 		werr = ntstatus_to_werror(status);
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		werr = ntstatus_to_werror(result);
 		goto done;
 	}
 
@@ -3294,8 +3386,12 @@ WERROR NetUserSetGroups_r(struct libnetapi_ctx *ctx,
 					       add_rids[i],
 					       &group_handle,
 					       &result);
-		if (any_nt_status_not_ok(status, result, &status)) {
+		if (!NT_STATUS_IS_OK(status)) {
 			werr = ntstatus_to_werror(status);
+			goto done;
+		}
+		if (!NT_STATUS_IS_OK(result)) {
+			werr = ntstatus_to_werror(result);
 			goto done;
 		}
 
@@ -3304,8 +3400,12 @@ WERROR NetUserSetGroups_r(struct libnetapi_ctx *ctx,
 						    user_rids.ids[0],
 						    7 /* ? */,
 						    &result);
-		if (any_nt_status_not_ok(status, result, &status)) {
+		if (!NT_STATUS_IS_OK(status)) {
 			werr = ntstatus_to_werror(status);
+			goto done;
+		}
+		if (!NT_STATUS_IS_OK(result)) {
+			werr = ntstatus_to_werror(result);
 			goto done;
 		}
 
@@ -3323,8 +3423,12 @@ WERROR NetUserSetGroups_r(struct libnetapi_ctx *ctx,
 					       del_rids[i],
 					       &group_handle,
 					       &result);
-		if (any_nt_status_not_ok(status, result, &status)) {
+		if (!NT_STATUS_IS_OK(status)) {
 			werr = ntstatus_to_werror(status);
+			goto done;
+		}
+		if (!NT_STATUS_IS_OK(result)) {
+			werr = ntstatus_to_werror(result);
 			goto done;
 		}
 
@@ -3332,8 +3436,12 @@ WERROR NetUserSetGroups_r(struct libnetapi_ctx *ctx,
 						       &group_handle,
 						       user_rids.ids[0],
 						       &result);
-		if (any_nt_status_not_ok(status, result, &status)) {
+		if (!NT_STATUS_IS_OK(status)) {
 			werr = ntstatus_to_werror(status);
+			goto done;
+		}
+		if (!NT_STATUS_IS_OK(result)) {
+			werr = ntstatus_to_werror(result);
 			goto done;
 		}
 
@@ -3482,8 +3590,12 @@ WERROR NetUserGetLocalGroups_r(struct libnetapi_ctx *ctx,
 					 &user_rids,
 					 &name_types,
 					 &result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
 		werr = ntstatus_to_werror(status);
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		werr = ntstatus_to_werror(result);
 		goto done;
 	}
 	if (user_rids.count != 1) {
@@ -3501,8 +3613,12 @@ WERROR NetUserGetLocalGroups_r(struct libnetapi_ctx *ctx,
 				      user_rids.ids[0],
 				      &user_handle,
 				      &result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
 		werr = ntstatus_to_werror(status);
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		werr = ntstatus_to_werror(result);
 		goto done;
 	}
 
@@ -3510,8 +3626,12 @@ WERROR NetUserGetLocalGroups_r(struct libnetapi_ctx *ctx,
 					      &user_handle,
 					      &rid_array,
 					      &result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
 		werr = ntstatus_to_werror(status);
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		werr = ntstatus_to_werror(result);
 		goto done;
 	}
 
@@ -3553,8 +3673,12 @@ WERROR NetUserGetLocalGroups_r(struct libnetapi_ctx *ctx,
 						&sid_array,
 						&domain_rids,
 						&result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
 		werr = ntstatus_to_werror(status);
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		werr = ntstatus_to_werror(result);
 		goto done;
 	}
 
@@ -3571,8 +3695,12 @@ WERROR NetUserGetLocalGroups_r(struct libnetapi_ctx *ctx,
 						&sid_array,
 						&builtin_rids,
 						&result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
 		werr = ntstatus_to_werror(status);
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		werr = ntstatus_to_werror(result);
 		goto done;
 	}
 
@@ -3591,8 +3719,12 @@ WERROR NetUserGetLocalGroups_r(struct libnetapi_ctx *ctx,
 					&names,
 					&types,
 					&result);
-	if (any_nt_status_not_ok(status, result, &status)) {
+	if (!NT_STATUS_IS_OK(status)) {
 		werr = ntstatus_to_werror(status);
+		goto done;
+	}
+	if (!NT_STATUS_IS_OK(result)) {
+		werr = ntstatus_to_werror(result);
 		goto done;
 	}
 	if (names.count != num_rids) {

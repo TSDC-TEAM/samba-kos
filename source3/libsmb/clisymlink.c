@@ -27,7 +27,6 @@
 #include "libcli/security/secdesc.h"
 #include "libcli/security/security.h"
 #include "../libcli/smb/smbXcli_base.h"
-#include "libcli/smb/reparse_symlink.h"
 
 struct cli_symlink_state {
 	struct tevent_context *ev;
@@ -378,34 +377,34 @@ NTSTATUS cli_readlink_recv(struct tevent_req *req, TALLOC_CTX *mem_ctx,
 {
 	struct cli_readlink_state *state = tevent_req_data(
 		req, struct cli_readlink_state);
-	struct symlink_reparse_struct *symlink = NULL;
 	NTSTATUS status;
+	char *substitute_name;
+	char *print_name;
+	uint32_t flags;
 
 	if (tevent_req_is_nterror(req, &status)) {
 		return status;
 	}
 
-	symlink = symlink_reparse_buffer_parse(
-		talloc_tos(), state->data, state->num_data);
-	if (symlink == NULL) {
+	if (!symlink_reparse_buffer_parse(state->data, state->num_data,
+					  talloc_tos(), &substitute_name,
+					  &print_name, &flags)) {
 		return NT_STATUS_INVALID_NETWORK_RESPONSE;
 	}
 
 	if (psubstitute_name != NULL) {
-		*psubstitute_name = talloc_move(
-			mem_ctx, &symlink->substitute_name);
+		*psubstitute_name = talloc_move(mem_ctx, &substitute_name);
 	}
+	TALLOC_FREE(substitute_name);
 
 	if (pprint_name != NULL) {
-		*pprint_name = talloc_move(mem_ctx, &symlink->print_name);
+		*pprint_name = talloc_move(mem_ctx, &print_name);
 	}
+	TALLOC_FREE(print_name);
 
 	if (pflags != NULL) {
-		*pflags = symlink->flags;
+		*pflags = flags;
 	}
-
-	TALLOC_FREE(symlink);
-
 	return NT_STATUS_OK;
 }
 

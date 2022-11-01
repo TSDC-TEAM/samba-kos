@@ -25,6 +25,7 @@
 #include "tldap_util.h"
 #include "passdb.h"
 #include "lib/param/param.h"
+#include "utils/net.h"
 #include "auth/gensec/gensec.h"
 #include "librpc/gen_ndr/ndr_netlogon.h"
 #include "libads/ldap_schema_oids.h"

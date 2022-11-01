@@ -360,11 +360,9 @@
  * Version 45 - Remove SYS_ACL_BLOB_GET_FILE
  * Version 45 - Add SMB_VFS_FCHFLAGS
  * Version 45 - Remove SMB_VFS_GETXATTR
- * Version 46 - Rename SMB_VFS_KERNEL_FLOCK to SMB_VFS_FILESYSTEM_SHAREMODE
- * Version 46 - Add flags and xferlen args to SMB_VFS_OFFLOAD_READ_RECV
  */
 
-#define SMB_VFS_INTERFACE_VERSION 46
+#define SMB_VFS_INTERFACE_VERSION 45
 
 /*
     All intercepted VFS operations must be declared as static functions inside module source
@@ -523,7 +521,7 @@ typedef struct files_struct {
  * file descriptor that can be used with all VFS calls.
  *
  * The flag "is_fsa" is a property of the FSA layer in Samba. The term FSA
- * layer refers to the parts of smbd that implement Windows NTFS semantics
+ * layer refers to the parts of smbs that implement Windows NTFS semantics
  * on-top of a POSIX filesystem. If "is_fsa" is true, the fsp was
  * processed by the SMB_VFS_CREATE_FILE() VFS call, otherwise the fsp was
  * created by openat_pathref_fsp() which only connected the low-level
@@ -573,7 +571,7 @@ typedef struct files_struct {
  * reference to a filesystem object by opening it with the O_RDONLY flag
  * requires that the caller have read permission on the object, even when
  * the subsequent operation (e.g., fchdir(2), fstat(2)) does not require
- * read permission on the object. [1]
+ * read permis‐ sion on the object. [1]
  *
  * If for example Samba receives an SMB request to open a file requesting
  * SEC_FILE_READ_ATTRIBUTE access rights because the client wants to read
@@ -626,7 +624,7 @@ typedef struct files_struct {
  *
  * A fallback is needed that allows opening a file-handle with the same
  * higher level semantics even if the system doesn't support O_PATH. This
- * is implemented by impersonating the root user for the open()
+ * is implemented by qimpersonating the root user for the open()
  * syscall. To avoid bypassing restrictive permissions on intermediate
  * directories components of a path, the root user is only impersonated
  * after changing directory to the parent directory of the client
@@ -634,7 +632,7 @@ typedef struct files_struct {
  *
  * In order to avoid privilege escalation security issues with these root
  * opened file-handles we must carefully control their usage throughout
- * the codebase. Therefore we
+ * the codebase. Therefor we
  *
  * - tag the pathref fsp's with the flag "is_pathref" and
  *
@@ -1041,10 +1039,8 @@ struct vfs_fn_pointers {
 			    off_t offset,
 			    off_t len);
 	bool (*lock_fn)(struct vfs_handle_struct *handle, struct files_struct *fsp, int op, off_t offset, off_t count, int type);
-	int (*filesystem_sharemode_fn)(struct vfs_handle_struct *handle,
-				       struct files_struct *fsp,
-				       uint32_t share_access, uint32_t
-				       access_mask);
+	int (*kernel_flock_fn)(struct vfs_handle_struct *handle, struct files_struct *fsp,
+			       uint32_t share_access, uint32_t access_mask);
 	int (*fcntl_fn)(struct vfs_handle_struct *handle,
 			struct files_struct *fsp, int cmd, va_list cmd_arg);
 	int (*linux_setlease_fn)(struct vfs_handle_struct *handle, struct files_struct *fsp, int leasetype);
@@ -1090,8 +1086,6 @@ struct vfs_fn_pointers {
 	NTSTATUS (*offload_read_recv_fn)(struct tevent_req *req,
 					 struct vfs_handle_struct *handle,
 					 TALLOC_CTX *mem_ctx,
-					 uint32_t *flags,
-					 uint64_t *xferlen,
 					 DATA_BLOB *token_blob);
 	struct tevent_req *(*offload_write_send_fn)(struct vfs_handle_struct *handle,
 						    TALLOC_CTX *mem_ctx,
@@ -1549,10 +1543,9 @@ int smb_vfs_call_fallocate(struct vfs_handle_struct *handle,
 bool smb_vfs_call_lock(struct vfs_handle_struct *handle,
 		       struct files_struct *fsp, int op, off_t offset,
 		       off_t count, int type);
-int smb_vfs_call_filesystem_sharemode(struct vfs_handle_struct *handle,
-				      struct files_struct *fsp,
-				      uint32_t share_access,
-				      uint32_t access_mask);
+int smb_vfs_call_kernel_flock(struct vfs_handle_struct *handle,
+			      struct files_struct *fsp, uint32_t share_access,
+			      uint32_t access_mask);
 int smb_vfs_call_fcntl(struct vfs_handle_struct *handle,
 		       struct files_struct *fsp, int cmd, ...);
 int smb_vfs_call_linux_setlease(struct vfs_handle_struct *handle,
@@ -1662,8 +1655,6 @@ struct tevent_req *smb_vfs_call_offload_read_send(
 NTSTATUS smb_vfs_call_offload_read_recv(struct tevent_req *req,
 					struct vfs_handle_struct *handle,
 					TALLOC_CTX *mem_ctx,
-					uint32_t *flags,
-					uint64_t *xferlen,
 					DATA_BLOB *token_blob);
 struct tevent_req *smb_vfs_call_offload_write_send(struct vfs_handle_struct *handle,
 						   TALLOC_CTX *mem_ctx,
@@ -1973,10 +1964,9 @@ int vfs_not_implemented_fallocate(vfs_handle_struct *handle, files_struct *fsp,
 				  uint32_t mode, off_t offset, off_t len);
 bool vfs_not_implemented_lock(vfs_handle_struct *handle, files_struct *fsp, int op,
 			      off_t offset, off_t count, int type);
-int vfs_not_implemented_filesystem_sharemode(struct vfs_handle_struct *handle,
-					     struct files_struct *fsp,
-					     uint32_t share_access,
-					     uint32_t access_mask);
+int vfs_not_implemented_kernel_flock(struct vfs_handle_struct *handle,
+				     struct files_struct *fsp,
+				     uint32_t share_access, uint32_t access_mask);
 int vfs_not_implemented_fcntl(struct vfs_handle_struct *handle,
 			      struct files_struct *fsp, int cmd, va_list cmd_arg);
 int vfs_not_implemented_linux_setlease(struct vfs_handle_struct *handle,
@@ -2029,8 +2019,6 @@ struct tevent_req *vfs_not_implemented_offload_read_send(
 NTSTATUS vfs_not_implemented_offload_read_recv(struct tevent_req *req,
 				       struct vfs_handle_struct *handle,
 				       TALLOC_CTX *mem_ctx,
-				       uint32_t *flags,
-				       uint64_t *xferlen,
 				       DATA_BLOB *_token_blob);
 struct tevent_req *vfs_not_implemented_offload_write_send(
 			struct vfs_handle_struct *handle,

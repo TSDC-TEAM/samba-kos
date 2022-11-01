@@ -55,6 +55,7 @@ yum install -y \
     libcap-devel \
     libicu-devel \
     libpcap-devel \
+    libsemanage-python \
     libtasn1-devel \
     libtasn1-tools \
     libtirpc-devel \
@@ -79,11 +80,10 @@ yum install -y \
     perl-generators \
     perl-interpreter \
     pkgconfig \
+    policycoreutils-python \
     popt-devel \
     procps-ng \
     psmisc \
-    python3-libsemanage \
-    python3-policycoreutils \
     python36 \
     python36-cryptography \
     python36-devel \

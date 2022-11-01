@@ -2,7 +2,7 @@
 
 import os, sys, re
 
-from waflib import Build, Options, Logs, Utils, Errors, Scripting
+from waflib import Build, Options, Logs, Utils, Errors
 from waflib.Logs import debug
 from waflib.Configure import conf
 from waflib import ConfigSet
@@ -1087,9 +1087,6 @@ def load_samba_deps(bld, tgt_list):
 def check_project_rules(bld):
     '''check the project rules - ensuring the targets are sane'''
 
-    if bld.__class__.__name__ == "ClangDbContext":
-        return
-
     loops = {}
     inc_loops = {}
 
@@ -1169,13 +1166,6 @@ def check_project_rules(bld):
     debug("deps: save_samba_deps: %s" % str(timer))
 
     Logs.info("Project rules pass")
-
-    timer = Utils.Timer()
-
-    bld.load('clang_compilation_database')
-    Scripting.run_command('clangdb')
-
-    debug("deps: clang_compilation_database: %s" % str(timer))
 
 
 def CHECK_PROJECT_RULES(bld):

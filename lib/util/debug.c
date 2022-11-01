@@ -24,8 +24,6 @@
 #include "system/filesys.h"
 #include "system/syslog.h"
 #include "system/locale.h"
-#include "system/network.h"
-#include "system/time.h"
 #include "time_basic.h"
 #include "close_low_fd.h"
 #include "memory.h"
@@ -91,17 +89,12 @@ static struct {
 	bool initialized;
 	enum debug_logtype logtype; /* The type of logging we are doing: eg stdout, file, stderr */
 	char prog_name[255];
-	char hostname[HOST_NAME_MAX+1];
 	bool reopening_logs;
 	bool schedule_reopen_logs;
 
 	struct debug_settings settings;
 	debug_callback_fn callback;
 	void *callback_private;
-	char header_str[300];
-	char header_str_no_nl[300];
-	size_t hs_len;
-	char msg_no_nl[FORMAT_BUFR_SIZE];
 } state = {
 	.settings = {
 		.timestamp_logs = true
@@ -209,64 +202,13 @@ static int debug_level_to_priority(int level)
 #endif
 
 /* -------------------------------------------------------------------------- **
- * Produce a version of the given buffer without any trailing newlines.
- */
-#if defined(HAVE_LIBSYSTEMD_JOURNAL) || defined(HAVE_LIBSYSTEMD) || \
-	defined(HAVE_LTTNG_TRACEF) || defined(HAVE_GPFS)
-static void copy_no_nl(char *out,
-		       size_t out_size,
-		       const char *in,
-		       size_t in_len)
-{
-	size_t len;
-	/*
-	 * Some backends already add an extra newline, so also provide
-	 * a buffer without the newline character.
-	 */
-	len = MIN(in_len, out_size - 1);
-	if ((len > 0) && (in[len - 1] == '\n')) {
-		len--;
-	}
-
-	memcpy(out, in, len);
-	out[len] = '\0';
-}
-
-static void ensure_copy_no_nl(char *out,
-			      size_t out_size,
-			      const char *in,
-			      size_t in_len)
-{
-	/*
-	 * Assume out is a static buffer that is reused as a cache.
-	 * If it isn't empty then this has already been done with the
-	 * same input.
-	 */
-	if (out[0] != '\0') {
-		return;
-	}
-
-	copy_no_nl(out, out_size, in, in_len);
-}
-#endif
-
-/* -------------------------------------------------------------------------- **
  * Debug backends. When logging to DEBUG_FILE, send the log entries to
  * all active backends.
  */
 
-static void debug_file_log(int msg_level, const char *msg, size_t msg_len)
+static void debug_file_log(int msg_level,
+			   const char *msg, const char *msg_no_nl)
 {
-	struct iovec iov[] = {
-		{
-			.iov_base = discard_const(state.header_str),
-			.iov_len = state.hs_len,
-		},
-		{
-			.iov_base = discard_const(msg),
-			.iov_len = msg_len,
-		},
-	};
 	ssize_t ret;
 	int fd;
 
@@ -279,7 +221,7 @@ static void debug_file_log(int msg_level, const char *msg, size_t msg_len)
 	}
 
 	do {
-		ret = writev(fd, iov, ARRAY_SIZE(iov));
+		ret = write(fd, msg, strlen(msg));
 	} while (ret == -1 && errno == EINTR);
 }
 
@@ -306,7 +248,8 @@ static void debug_syslog_reload(bool enabled, bool previously_enabled,
 	}
 }
 
-static void debug_syslog_log(int msg_level, const char *msg, size_t msg_len)
+static void debug_syslog_log(int msg_level,
+			     const char *msg, const char *msg_no_nl)
 {
 	int priority;
 
@@ -318,34 +261,16 @@ static void debug_syslog_log(int msg_level, const char *msg, size_t msg_len)
 	 */
 	priority |= SYSLOG_FACILITY;
 
-	if (state.hs_len > 0) {
-		syslog(priority, "%s", state.header_str);
-	}
 	syslog(priority, "%s", msg);
 }
 #endif /* WITH_SYSLOG */
 
 #if defined(HAVE_LIBSYSTEMD_JOURNAL) || defined(HAVE_LIBSYSTEMD)
 #include <systemd/sd-journal.h>
-static void debug_systemd_log(int msg_level, const char *msg, size_t msg_len)
+static void debug_systemd_log(int msg_level,
+			      const char *msg, const char *msg_no_nl)
 {
-	if (state.hs_len > 0) {
-		ensure_copy_no_nl(state.header_str_no_nl,
-				  sizeof(state.header_str_no_nl),
-				  state.header_str,
-				  state.hs_len);
-		sd_journal_send("MESSAGE=%s",
-				state.header_str_no_nl,
-				"PRIORITY=%d",
-				debug_level_to_priority(msg_level),
-				"LEVEL=%d",
-				msg_level,
-				NULL);
-	}
-	ensure_copy_no_nl(state.msg_no_nl,
-			  sizeof(state.msg_no_nl),
-			  msg, msg_len);
-	sd_journal_send("MESSAGE=%s", state.msg_no_nl,
+	sd_journal_send("MESSAGE=%s", msg_no_nl,
 			"PRIORITY=%d", debug_level_to_priority(msg_level),
 			"LEVEL=%d", msg_level,
 			NULL);
@@ -354,19 +279,10 @@ static void debug_systemd_log(int msg_level, const char *msg, size_t msg_len)
 
 #ifdef HAVE_LTTNG_TRACEF
 #include <lttng/tracef.h>
-static void debug_lttng_log(int msg_level, const char *msg, size_t msg_len)
+static void debug_lttng_log(int msg_level,
+			    const char *msg, const char *msg_no_nl)
 {
-	if (state.hs_len > 0) {
-		ensure_copy_no_nl(state.header_str_no_nl,
-				  sizeof(state.header_str_no_nl),
-				  state.header_str,
-				  state.hs_len);
-		tracef(state.header_str_no_nl);
-	}
-	ensure_copy_no_nl(state.msg_no_nl,
-			  sizeof(state.msg_no_nl),
-			  msg, msg_len);
-	tracef(state.msg_no_nl);
+	tracef(msg_no_nl);
 }
 #endif /* WITH_LTTNG_TRACEF */
 
@@ -395,19 +311,10 @@ static void debug_gpfs_reload(bool enabled, bool previously_enabled,
 	}
 }
 
-static void debug_gpfs_log(int msg_level, const char *msg, size_t msg_len)
+static void debug_gpfs_log(int msg_level,
+			   const char *msg, const char *msg_no_nl)
 {
-	if (state.hs_len > 0) {
-		ensure_copy_no_nl(state.header_str_no_nl,
-				  sizeof(state.header_str_no_nl),
-				  state.header_str,
-				  state.hs_len);
-		gpfswrap_add_trace(msg_level, state.header_str_no_nl);
-	}
-	ensure_copy_no_nl(state.msg_no_nl,
-			  sizeof(state.msg_no_nl),
-			  msg, msg_len);
-	gpfswrap_add_trace(msg_level, state.msg_no_nl);
+	gpfswrap_add_trace(msg_level, msg_no_nl);
 }
 #endif /* HAVE_GPFS */
 
@@ -459,8 +366,11 @@ static void debug_ringbuf_reload(bool enabled, bool previously_enabled,
 	}
 }
 
-static void _debug_ringbuf_log(int msg_level, const char *msg, size_t msg_len)
+static void debug_ringbuf_log(int msg_level,
+			      const char *msg,
+			      const char *msg_no_nl)
 {
+	size_t msglen = strlen(msg);
 	size_t allowed_size;
 
 	if (debug_ringbuf == NULL) {
@@ -470,28 +380,20 @@ static void _debug_ringbuf_log(int msg_level, const char *msg, size_t msg_len)
 	/* Ensure the buffer is always \0 terminated */
 	allowed_size = debug_ringbuf_size - 1;
 
-	if (msg_len > allowed_size) {
+	if (msglen > allowed_size) {
 		return;
 	}
 
-	if ((debug_ringbuf_ofs + msg_len) < debug_ringbuf_ofs) {
+	if ((debug_ringbuf_ofs + msglen) < debug_ringbuf_ofs) {
 		return;
 	}
 
-	if ((debug_ringbuf_ofs + msg_len) > allowed_size) {
+	if ((debug_ringbuf_ofs + msglen) > allowed_size) {
 		debug_ringbuf_ofs = 0;
 	}
 
-	memcpy(debug_ringbuf + debug_ringbuf_ofs, msg, msg_len);
-	debug_ringbuf_ofs += msg_len;
-}
-
-static void debug_ringbuf_log(int msg_level, const char *msg, size_t msg_len)
-{
-	if (state.hs_len > 0) {
-		_debug_ringbuf_log(msg_level, state.header_str, state.hs_len);
-	}
-	_debug_ringbuf_log(msg_level, msg, msg_len);
+	memcpy(debug_ringbuf + debug_ringbuf_ofs, msg, msglen);
+	debug_ringbuf_ofs += msglen;
 }
 
 static struct debug_backend {
@@ -500,9 +402,7 @@ static struct debug_backend {
 	int new_log_level;
 	void (*reload)(bool enabled, bool prev_enabled,
 		       const char *prog_name, char *option);
-	void (*log)(int msg_level,
-		    const char *msg,
-		    size_t len);
+	void (*log)(int msg_level, const char *msg, const char *msg_no_nl);
 	char *option;
 } debug_backends[] = {
 	{
@@ -658,25 +558,29 @@ static void debug_set_backends(const char *param)
 	}
 }
 
-static void debug_backends_log(const char *msg, size_t msg_len, int msg_level)
+static void debug_backends_log(const char *msg, int msg_level)
 {
+	char msg_no_nl[FORMAT_BUFR_SIZE];
 	size_t i;
+	size_t len;
 
 	/*
-	 * Some backends already add an extra newline, so initialize a
-	 * buffer without the newline character.  It will be filled by
-	 * the first backend that needs it.
+	 * Some backends already add an extra newline, so also provide
+	 * a buffer without the newline character.
 	 */
-	state.msg_no_nl[0] = '\0';
+	len = MIN(strlen(msg), FORMAT_BUFR_SIZE - 1);
+	if ((len > 0) && (msg[len - 1] == '\n')) {
+		len--;
+	}
+
+	memcpy(msg_no_nl, msg, len);
+	msg_no_nl[len] = '\0';
 
 	for (i = 0; i < ARRAY_SIZE(debug_backends); i++) {
 		if (msg_level <= debug_backends[i].log_level) {
-			debug_backends[i].log(msg_level, msg, msg_len);
+			debug_backends[i].log(msg_level, msg, msg_no_nl);
 		}
 	}
-
-	/* Only log the header once */
-	state.hs_len = 0;
 }
 
 int debuglevel_get_class(size_t idx)
@@ -1074,35 +978,6 @@ void debug_set_settings(struct debug_settings *settings,
 	debug_set_backends(logging_param);
 }
 
-static void ensure_hostname(void)
-{
-	int ret;
-
-	if (state.hostname[0] != '\0') {
-		return;
-	}
-
-	ret = gethostname(state.hostname, sizeof(state.hostname));
-	if (ret != 0) {
-		strlcpy(state.hostname, "unknown", sizeof(state.hostname));
-		return;
-	}
-
-	/*
-	 * Ensure NUL termination, since POSIX isn't clear about that.
-	 *
-	 * Don't worry about truncating at the first '.' or similar,
-	 * since this is usually not fully qualified.  Trying to
-	 * truncate opens up the multibyte character gates of hell.
-	 */
-	state.hostname[sizeof(state.hostname) - 1] = '\0';
-}
-
-void debug_set_hostname(const char *name)
-{
-	strlcpy(state.hostname, name, sizeof(state.hostname));
-}
-
 /**
   control the name of the logfile and whether logging will be to stdout, stderr
   or a file, and set up syslog
@@ -1143,8 +1018,6 @@ void debug_set_logfile(const char *name)
 	}
 	TALLOC_FREE(dbgc_config[DBGC_ALL].logfile);
 	dbgc_config[DBGC_ALL].logfile = talloc_strdup(NULL, name);
-
-	reopen_logs_internal();
 }
 
 static void debug_close_fd(int fd)
@@ -1183,8 +1056,9 @@ void debug_set_callback(void *private_ptr, debug_callback_fn fn)
 	}
 }
 
-static void debug_callback_log(const char *msg, size_t msg_len, int msg_level)
+static void debug_callback_log(const char *msg, int msg_level)
 {
+	size_t msg_len = strlen(msg);
 	char msg_copy[msg_len];
 
 	if ((msg_len > 0) && (msg[msg_len-1] == '\n')) {
@@ -1251,6 +1125,7 @@ bool reopen_logs_internal(void)
 {
 	struct debug_backend *b = NULL;
 	mode_t oldumask;
+	int new_fd = 0;
 	size_t i;
 	bool ok;
 
@@ -1315,7 +1190,7 @@ bool reopen_logs_internal(void)
 	 * If log file was opened or created successfully, take over stderr to
 	 * catch output into logs.
 	 */
-	if (dbgc_config[DBGC_ALL].fd > 0) {
+	if (new_fd != -1) {
 		if (dup2(dbgc_config[DBGC_ALL].fd, 2) == -1) {
 			/* Close stderr too, if dup2 can't point it -
 			   at the logfile.  There really isn't much
@@ -1521,10 +1396,10 @@ void check_log_size( void )
 
 /*************************************************************************
  Write an debug message on the debugfile.
- This is called by format_debug_text().
+ This is called by dbghdr() and format_debug_text().
 ************************************************************************/
 
-static void Debug1(const char *msg, size_t msg_len)
+static void Debug1(const char *msg)
 {
 	int old_errno = errno;
 
@@ -1532,7 +1407,7 @@ static void Debug1(const char *msg, size_t msg_len)
 
 	switch(state.logtype) {
 	case DEBUG_CALLBACK:
-		debug_callback_log(msg, msg_len, current_msg_level);
+		debug_callback_log(msg, current_msg_level);
 		break;
 	case DEBUG_STDOUT:
 	case DEBUG_STDERR:
@@ -1543,12 +1418,12 @@ static void Debug1(const char *msg, size_t msg_len)
 			do {
 				ret = write(dbgc_config[DBGC_ALL].fd,
 					    msg,
-					    msg_len);
+					    strlen(msg));
 			} while (ret == -1 && errno == EINTR);
 		}
 		break;
 	case DEBUG_FILE:
-		debug_backends_log(msg, msg_len, current_msg_level);
+		debug_backends_log(msg, current_msg_level);
 		break;
 	};
 
@@ -1564,7 +1439,7 @@ static void Debug1(const char *msg, size_t msg_len)
 static void bufr_print( void )
 {
 	format_bufr[format_pos] = '\0';
-	(void)Debug1(format_bufr, format_pos);
+	(void)Debug1(format_bufr);
 	format_pos = 0;
 }
 
@@ -1610,9 +1485,8 @@ static void format_debug_text( const char *msg )
 		 * continuation indicator.
 		 */
 		if (format_pos >= FORMAT_BUFR_SIZE - 1) {
-			const char cont[] = " +>\n";
 			bufr_print();
-			(void)Debug1(cont , sizeof(cont) - 1);
+			(void)Debug1( " +>\n" );
 		}
 	}
 
@@ -1644,7 +1518,7 @@ bool dbgsetclass(int level, int cls)
 }
 
 /***************************************************************************
- Put a Debug Header into header_str.
+ Print a Debug Header.
 
  Input:  level    - Debug level of the message (not the system-wide debug
                     level. )
@@ -1669,16 +1543,10 @@ bool dbghdrclass(int level, int cls, const char *location, const char *func)
 	/* Ensure we don't lose any real errno value. */
 	int old_errno = errno;
 	bool verbose = false;
+	char header_str[300];
+	size_t hs_len;
 	struct timeval tv;
 	struct timeval_buf tvbuf;
-
-	/*
-	 * This might be overkill, but if another early return is
-	 * added later then initialising these avoids potential
-	 * problems
-	 */
-	state.hs_len = 0;
-	state.header_str[0] = '\0';
 
 	if( format_pos ) {
 		/* This is a fudge.  If there is stuff sitting in the format_bufr, then
@@ -1704,61 +1572,17 @@ bool dbghdrclass(int level, int cls, const char *location, const char *func)
 	 * not yet loaded, then default to timestamps on.
 	 */
 	if (!(state.settings.timestamp_logs ||
-	      state.settings.debug_prefix_timestamp ||
-	      state.settings.debug_syslog_format)) {
+	      state.settings.debug_prefix_timestamp)) {
 		return true;
 	}
 
 	GetTimeOfDay(&tv);
-
-	if (state.settings.debug_syslog_format) {
-		if (state.settings.debug_hires_timestamp) {
-			timeval_str_buf(&tv, true, true, &tvbuf);
-		} else {
-			time_t t;
-			struct tm *tm;
-
-			t = (time_t)tv.tv_sec;
-			tm = localtime(&t);
-			if (tm != NULL) {
-				size_t len;
-				len = strftime(tvbuf.buf,
-					       sizeof(tvbuf.buf),
-					       "%b %e %T",
-					       tm);
-				if (len == 0) {
-					/* Trigger default time format below */
-					tm = NULL;
-				}
-			}
-			if (tm == NULL) {
-				snprintf(tvbuf.buf,
-					 sizeof(tvbuf.buf),
-					 "%ld seconds since the Epoch", (long)t);
-			}
-		}
-
-		ensure_hostname();
-		state.hs_len = snprintf(state.header_str,
-					sizeof(state.header_str),
-					"%s %s %s[%u]: ",
-					tvbuf.buf,
-					state.hostname,
-					state.prog_name,
-					(unsigned int) getpid());
-
-		goto full;
-	}
-
 	timeval_str_buf(&tv, false, state.settings.debug_hires_timestamp,
 			&tvbuf);
 
-	state.hs_len = snprintf(state.header_str,
-				sizeof(state.header_str),
-				"[%s, %2d",
-				tvbuf.buf,
-				level);
-	if (state.hs_len >= sizeof(state.header_str) - 1) {
+	hs_len = snprintf(header_str, sizeof(header_str), "[%s, %2d",
+			  tvbuf.buf, level);
+	if (hs_len >= sizeof(header_str)) {
 		goto full;
 	}
 
@@ -1767,71 +1591,54 @@ bool dbghdrclass(int level, int cls, const char *location, const char *func)
 	}
 
 	if (verbose || state.settings.debug_pid) {
-		state.hs_len += snprintf(state.header_str + state.hs_len,
-					 sizeof(state.header_str) - state.hs_len,
-					 ", pid=%u",
-					 (unsigned int)getpid());
-		if (state.hs_len >= sizeof(state.header_str) - 1) {
+		hs_len += snprintf(
+			header_str + hs_len, sizeof(header_str) - hs_len,
+			", pid=%u", (unsigned int)getpid());
+		if (hs_len >= sizeof(header_str)) {
 			goto full;
 		}
 	}
 
 	if (verbose || state.settings.debug_uid) {
-		state.hs_len += snprintf(state.header_str + state.hs_len,
-					 sizeof(state.header_str) - state.hs_len,
-					 ", effective(%u, %u), real(%u, %u)",
-					 (unsigned int)geteuid(),
-					 (unsigned int)getegid(),
-					 (unsigned int)getuid(),
-					 (unsigned int)getgid());
-		if (state.hs_len >= sizeof(state.header_str) - 1) {
+		hs_len += snprintf(
+			header_str + hs_len, sizeof(header_str) - hs_len,
+			", effective(%u, %u), real(%u, %u)",
+			(unsigned int)geteuid(), (unsigned int)getegid(),
+			(unsigned int)getuid(), (unsigned int)getgid());
+		if (hs_len >= sizeof(header_str)) {
 			goto full;
 		}
 	}
 
 	if ((verbose || state.settings.debug_class)
 	    && (cls != DBGC_ALL)) {
-		state.hs_len += snprintf(state.header_str + state.hs_len,
-					 sizeof(state.header_str) - state.hs_len,
-					 ", class=%s",
-					 classname_table[cls]);
+		hs_len += snprintf(
+			header_str + hs_len, sizeof(header_str) - hs_len,
+			", class=%s", classname_table[cls]);
+		if (hs_len >= sizeof(header_str)) {
+			goto full;
+		}
 	}
 
-	if (state.hs_len >= sizeof(state.header_str) - 1) {
+	/*
+	 * No +=, see man man strlcat
+	 */
+	hs_len = strlcat(header_str, "] ", sizeof(header_str));
+	if (hs_len >= sizeof(header_str)) {
 		goto full;
 	}
-	state.header_str[state.hs_len] = ']';
-	state.hs_len++;
-	if (state.hs_len < sizeof(state.header_str) - 1) {
-		state.header_str[state.hs_len] = ' ';
-		state.hs_len++;
-	}
-	state.header_str[state.hs_len] = '\0';
 
 	if (!state.settings.debug_prefix_timestamp) {
-		state.hs_len += snprintf(state.header_str + state.hs_len,
-					 sizeof(state.header_str) - state.hs_len,
-					 "%s(%s)\n",
-					 location,
-					 func);
-		if (state.hs_len >= sizeof(state.header_str)) {
+		hs_len += snprintf(
+			header_str + hs_len, sizeof(header_str) - hs_len,
+			"%s(%s)\n", location, func);
+		if (hs_len >= sizeof(header_str)) {
 			goto full;
 		}
 	}
 
 full:
-	/*
-	 * Above code never overflows state.header_str and always
-	 * NUL-terminates correctly.  However, state.hs_len can point
-	 * past the end of the buffer to indicate that truncation
-	 * occurred, so fix it if necessary, since state.hs_len is
-	 * expected to be used after return.
-	 */
-	if (state.hs_len >= sizeof(state.header_str)) {
-		state.hs_len = sizeof(state.header_str) - 1;
-	}
-
-	state.header_str_no_nl[0] = '\0';
+	(void)Debug1(header_str);
 
 	errno = old_errno;
 	return( true );

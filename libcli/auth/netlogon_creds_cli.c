@@ -39,7 +39,6 @@
 #include "libds/common/roles.h"
 #include "lib/crypto/md4.h"
 #include "auth/credentials/credentials.h"
-#include "lib/param/loadparm.h"
 
 struct netlogon_creds_cli_locked_state;
 
@@ -413,17 +412,6 @@ NTSTATUS netlogon_creds_cli_context_global(struct loadparm_context *lp_ctx,
 		required_flags |= NETLOGON_NEG_ARCFOUR;
 		required_flags |= NETLOGON_NEG_STRONG_KEYS;
 		required_flags |= NETLOGON_NEG_AUTHENTICATED_RPC;
-	}
-
-	/*
-	 * If weak crypto is disabled, do not announce that we support RC4 and
-	 * require AES.
-	 */
-	if (lpcfg_weak_crypto(lp_ctx) == SAMBA_WEAK_CRYPTO_DISALLOWED) {
-		required_flags &= ~NETLOGON_NEG_ARCFOUR;
-		required_flags |= NETLOGON_NEG_SUPPORTS_AES;
-		proposed_flags &= ~NETLOGON_NEG_ARCFOUR;
-		proposed_flags |= NETLOGON_NEG_SUPPORTS_AES;
 	}
 
 	proposed_flags |= required_flags;
@@ -3820,20 +3808,6 @@ static void netlogon_creds_cli_SendToSam_done(struct tevent_req *subreq)
 	tevent_req_done(req);
 }
 
-NTSTATUS netlogon_creds_cli_SendToSam_recv(struct tevent_req *req)
-{
-	NTSTATUS status;
-
-	if (tevent_req_is_nterror(req, &status)) {
-		netlogon_creds_cli_SendToSam_cleanup(req, status);
-		tevent_req_received(req);
-		return status;
-	}
-
-	tevent_req_received(req);
-	return NT_STATUS_OK;
-}
-
 NTSTATUS netlogon_creds_cli_SendToSam(struct netlogon_creds_cli_context *context,
 				      struct dcerpc_binding_handle *b,
 				      struct netr_SendToSamBase *message)
@@ -3841,7 +3815,7 @@ NTSTATUS netlogon_creds_cli_SendToSam(struct netlogon_creds_cli_context *context
 	TALLOC_CTX *frame = talloc_stackframe();
 	struct tevent_context *ev;
 	struct tevent_req *req;
-	NTSTATUS status = NT_STATUS_NO_MEMORY;
+	NTSTATUS status = NT_STATUS_OK;
 
 	ev = samba_tevent_context_init(frame);
 	if (ev == NULL) {
@@ -3854,7 +3828,8 @@ NTSTATUS netlogon_creds_cli_SendToSam(struct netlogon_creds_cli_context *context
 	if (!tevent_req_poll_ntstatus(req, ev, &status)) {
 		goto fail;
 	}
-	status = netlogon_creds_cli_SendToSam_recv(req);
+
+	/* Ignore the result */
  fail:
 	TALLOC_FREE(frame);
 	return status;

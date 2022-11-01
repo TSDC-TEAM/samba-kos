@@ -30,12 +30,6 @@
 #include "smbd/smbd.h"
 #include "smbd/globals.h"
 
-static int get_real_filename(connection_struct *conn,
-			     struct smb_filename *path,
-			     const char *name,
-			     TALLOC_CTX *mem_ctx,
-			     char **found_name);
-
 uint32_t ucf_flags_from_smb_request(struct smb_request *req)
 {
 	uint32_t ucf_flags = 0;
@@ -332,7 +326,7 @@ static NTSTATUS rearrange_snapshot_path(struct smb_filename *smb_fname,
 				smb_fname->base_name,
 				&parent,
 				&last_component);
-	if (!ret) {
+	if (ret == false) {
 		/* Must terminate debug with \n */
 		DBG_DEBUG("NT_STATUS_NO_MEMORY\n");
 		return NT_STATUS_NO_MEMORY;
@@ -464,18 +458,10 @@ NTSTATUS canonicalize_snapshot_path(struct smb_filename *smb_fname,
  * Performs an in-place case conversion guaranteed to stay the same size.
  */
 
-static NTSTATUS normalize_filename_case(connection_struct *conn,
-					char *filename,
-					uint32_t ucf_flags)
+static NTSTATUS normalize_filename_case(connection_struct *conn, char *filename)
 {
 	bool ok;
 
-	if (ucf_flags & UCF_POSIX_PATHNAMES) {
-		/*
-		 * POSIX never normalizes filename case.
-		 */
-		return NT_STATUS_OK;
-	}
 	if (!conn->case_sensitive) {
 		return NT_STATUS_OK;
 	}
@@ -540,9 +526,6 @@ struct uc_state {
 	bool posix_pathnames;
 	bool allow_wcard_last_component;
 	bool done;
-	bool case_sensitive;
-	bool case_preserve;
-	bool short_case_preserve;
 };
 
 static NTSTATUS unix_convert_step_search_fail(struct uc_state *state)
@@ -620,23 +603,16 @@ static NTSTATUS unix_convert_step_search_fail(struct uc_state *state)
 	}
 
 	/*
-	 * POSIX pathnames must never call into mangling.
-	 */
-	if (state->posix_pathnames) {
-		goto done;
-	}
-
-	/*
 	 * Just the last part of the name doesn't exist.
 	 * We need to strupper() or strlower() it as
 	 * this conversion may be used for file creation
 	 * purposes. Fix inspired by
 	 * Thomas Neumann <t.neumann@iku-ag.de>.
 	 */
-	if (!state->case_preserve ||
+	if (!state->conn->case_preserve ||
 	    (mangle_is_8_3(state->name, false,
 			   state->conn->params) &&
-	     !state->short_case_preserve)) {
+	     !state->conn->short_case_preserve)) {
 		if (!strnorm(state->name,
 			     lp_default_case(SNUM(state->conn)))) {
 			DBG_DEBUG("strnorm %s failed\n",
@@ -678,8 +654,6 @@ static NTSTATUS unix_convert_step_search_fail(struct uc_state *state)
 			state->smb_fname->base_name + name_ofs;
 		state->end = state->name + strlen(state->name);
 	}
-
-  done:
 
 	DBG_DEBUG("New file [%s]\n", state->name);
 	state->done = true;
@@ -957,7 +931,7 @@ static NTSTATUS unix_convert_step(struct uc_state *state)
 		stat_cache_add(state->orig_path,
 			       state->dirpath,
 			       state->smb_fname->twrp,
-			       state->case_sensitive);
+			       state->conn->case_sensitive);
 	}
 
 	/*
@@ -989,19 +963,9 @@ NTSTATUS unix_convert(TALLOC_CTX *mem_ctx,
 		.ucf_flags = ucf_flags,
 		.posix_pathnames = (ucf_flags & UCF_POSIX_PATHNAMES),
 		.allow_wcard_last_component = (ucf_flags & UCF_ALWAYS_ALLOW_WCARD_LCOMP),
-		.case_sensitive = conn->case_sensitive,
-		.case_preserve = conn->case_preserve,
-		.short_case_preserve = conn->short_case_preserve,
 	};
 
 	*smb_fname_out = NULL;
-
-	if (state->posix_pathnames) {
-		/* POSIX means ignore case settings on share. */
-		state->case_sensitive = true;
-		state->case_preserve = true;
-		state->short_case_preserve = true;
-	}
 
 	state->smb_fname = talloc_zero(state->mem_ctx, struct smb_filename);
 	if (state->smb_fname == NULL) {
@@ -1089,9 +1053,7 @@ NTSTATUS unix_convert(TALLOC_CTX *mem_ctx,
 	 * the man page. Thanks to jht@samba.org for finding this. JRA.
 	 */
 
-	status = normalize_filename_case(state->conn,
-					 state->smb_fname->base_name,
-					 ucf_flags);
+	status = normalize_filename_case(state->conn, state->smb_fname->base_name);
 	if (!NT_STATUS_IS_OK(status)) {
 		DBG_ERR("normalize_filename_case %s failed\n",
 				state->smb_fname->base_name);
@@ -1161,7 +1123,7 @@ NTSTATUS unix_convert(TALLOC_CTX *mem_ctx,
 	 * added and verified in build_stream_path().
 	 */
 
-	if (!state->case_sensitive ||
+	if (!state->conn->case_sensitive ||
 	    !(state->conn->fs_capabilities & FILE_CASE_SENSITIVE_SEARCH))
 	{
 		bool found;
@@ -1229,7 +1191,7 @@ NTSTATUS unix_convert(TALLOC_CTX *mem_ctx,
 			stat_cache_add(state->orig_path,
 				       state->smb_fname->base_name,
 				       state->smb_fname->twrp,
-				       state->case_sensitive);
+				       state->conn->case_sensitive);
 			DBG_DEBUG("Conversion of base_name finished "
 				  "[%s] -> [%s]\n",
 				  state->orig_path, state->smb_fname->base_name);
@@ -1269,12 +1231,9 @@ NTSTATUS unix_convert(TALLOC_CTX *mem_ctx,
 		 * A special case - if we don't have any wildcards or mangling chars and are case
 		 * sensitive or the underlying filesystem is case insensitive then searching
 		 * won't help.
-		 *
-		 * NB. As POSIX sets state->case_sensitive as
-		 * true we will never call into mangle_is_mangled() here.
 		 */
 
-		if ((state->case_sensitive || !(state->conn->fs_capabilities &
+		if ((state->conn->case_sensitive || !(state->conn->fs_capabilities &
 					FILE_CASE_SENSITIVE_SEARCH)) &&
 				!mangle_is_mangled(state->smb_fname->base_name, state->conn->params)) {
 
@@ -1356,13 +1315,7 @@ NTSTATUS unix_convert(TALLOC_CTX *mem_ctx,
 	 * just a component. JRA.
 	 */
 
-	if (state->posix_pathnames) {
-		/*
-		 * POSIX names are never mangled and we must not
-		 * call into mangling functions.
-		 */
-		state->component_was_mangled = false;
-	} else if (mangle_is_mangled(state->name, state->conn->params)) {
+	if (mangle_is_mangled(state->name, state->conn->params)) {
 		state->component_was_mangled = true;
 	}
 
@@ -1398,7 +1351,7 @@ NTSTATUS unix_convert(TALLOC_CTX *mem_ctx,
 		stat_cache_add(state->orig_path,
 			       state->smb_fname->base_name,
 			       state->smb_fname->twrp,
-			       state->case_sensitive);
+			       state->conn->case_sensitive);
 	}
 
 	/*
@@ -1732,11 +1685,11 @@ int get_real_filename_full_scan(connection_struct *conn,
  fallback.
 ****************************************************************************/
 
-static int get_real_filename(connection_struct *conn,
-			     struct smb_filename *path,
-			     const char *name,
-			     TALLOC_CTX *mem_ctx,
-			     char **found_name)
+int get_real_filename(connection_struct *conn,
+		      struct smb_filename *path,
+		      const char *name,
+		      TALLOC_CTX *mem_ctx,
+		      char **found_name)
 {
 	int ret;
 	bool mangled;
@@ -1954,7 +1907,7 @@ char *get_original_lcomp(TALLOC_CTX *ctx,
 	if (orig_lcomp == NULL) {
 		return NULL;
 	}
-	status = normalize_filename_case(conn, orig_lcomp, ucf_flags);
+	status = normalize_filename_case(conn, orig_lcomp);
 	if (!NT_STATUS_IS_OK(status)) {
 		TALLOC_FREE(orig_lcomp);
 		return NULL;

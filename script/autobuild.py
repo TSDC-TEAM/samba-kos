@@ -331,8 +331,6 @@ tasks = {
             "schema_pair_dc",
             "schema_dc",
             "clusteredmember",
-            "ad_dc_fips",
-            "ad_member_fips",
             ])),
             ("test-slow-none", make_test(cmd='make test', TESTS="--include=selftest/slow-none", include_envs=["none"])),
             ("lcov", LCOV_CMD),
@@ -399,8 +397,6 @@ tasks = {
             "schema_pair_dc",
             "schema_dc",
             "clusteredmember",
-            "ad_dc_fips",
-            "ad_member_fips",
             ])),
             ("lcov", LCOV_CMD),
             ("install", "make install"),
@@ -791,6 +787,7 @@ tasks = {
          "PKG_CONFIG_PATH=${PREFIX_DIR}/lib/pkgconfig:${PKG_CONFIG_PATH} "
          "./configure.developer ${PREFIX} "
          "--with-selftest-prefix=./bin/ab "
+         "--enable-clangdb "
          "--with-cluster-support "
          "--without-ad-dc "
          "--bundled-libraries=!tdb"),

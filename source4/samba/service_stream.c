@@ -87,7 +87,8 @@ void stream_terminate_connection(struct stream_connection *srv_conn, const char 
 		reason = "OOM - unknown reason";
 	}
 
-	TALLOC_FREE(srv_conn->event.fde);
+	talloc_free(srv_conn->event.fde);
+	srv_conn->event.fde = NULL;
 	imessaging_cleanup(srv_conn->msg_ctx);
 	TALLOC_FREE(srv_conn);
 	model_ops->terminate_connection(

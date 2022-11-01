@@ -108,7 +108,6 @@ EXCLUDE_USAGE = {
     'python/samba/tests/krb5/spn_tests.py',
     'python/samba/tests/krb5/alias_tests.py',
     'python/samba/tests/krb5/test_min_domain_uid.py',
-    'python/samba/tests/krb5/test_idmap_nss.py',
 }
 
 EXCLUDE_HELP = {
@@ -126,7 +125,6 @@ EXCLUDE_DIRS = {
     'bin/python/samba/tests',
     'bin/python/samba/tests/dcerpc',
     'bin/python/samba/tests/krb5',
-    'python/samba/tests/bin',
 }
 
 

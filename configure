@@ -1,5 +1,18 @@
 #!/bin/sh
 
+echo "Attention!"
+echo "The configuration was completed earlier like this:"
+echo "./configure --without-ad-dc --without-ldap --disable-python --with-static-modules='!vfs_snapper,ALL' --without-systemd --without-json --without-libarchive --without-acl-support --without-ads --without-pam --enable-debug"
+
+while true; do
+    read -p "Do you want to configure anyway? [yn]: " yn
+    case $yn in
+        [Yy]* ) break;;
+        [Nn]* ) exit;;
+        * ) echo "Please answer yes or no";;
+    esac
+done
+
 PREVPATH=`dirname $0`
 
 WAF=./buildtools/bin/waf
@@ -13,5 +26,5 @@ export JOBS
 unset LD_PRELOAD
 
 cd . || exit 1
-$PYTHON $WAF configure "$@" || exit 1
+$PYTHON $WAF configure $@ || exit 1
 cd $PREVPATH

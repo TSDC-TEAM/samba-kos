@@ -79,14 +79,7 @@ struct cli_state *cli_state_create(TALLOC_CTX *mem_ctx,
 	if (!GUID_all_zero(&cli_state_client_guid)) {
 		client_guid = cli_state_client_guid;
 	} else {
-		const char *str = NULL;
-
-		str = lp_parm_const_string(-1, "libsmb", "client_guid", NULL);
-		if (str != NULL) {
-			GUID_from_string(str, &client_guid);
-		} else {
-			client_guid = GUID_random();
-		}
+		client_guid = GUID_random();
 	}
 
 	/* Check the effective uid - make sure we are not setuid */
@@ -238,7 +231,7 @@ static void _cli_shutdown(struct cli_state *cli)
 	cli_nt_pipes_close(cli);
 
 	/*
-	 * tell our peer to free his resources.  Without this, when an
+	 * tell our peer to free his resources.  Wihtout this, when an
 	 * application attempts to do a graceful shutdown and calls
 	 * smbc_free_context() to clean up all connections, some connections
 	 * can remain active on the peer end, until some (long) timeout period

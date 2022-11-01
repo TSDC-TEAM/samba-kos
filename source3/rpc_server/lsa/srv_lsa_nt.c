@@ -53,7 +53,6 @@
 #include "librpc/rpc/dcesrv_core.h"
 #include "librpc/rpc/dcerpc_helper.h"
 #include "lib/param/loadparm.h"
-#include "source3/lib/substitute.h"
 
 #include "lib/crypto/gnutls_helpers.h"
 #include <gnutls/gnutls.h>
@@ -468,9 +467,10 @@ NTSTATUS _lsa_EnumTrustDom(struct pipes_struct *p,
 			   struct lsa_EnumTrustDom *r)
 {
 	struct lsa_info *info;
-	uint32_t i, count;
+	uint32_t count;
 	struct trustdom_info **domains;
 	struct lsa_DomainInfo *entries;
+	int i;
 	NTSTATUS nt_status;
 
 	info = find_policy_by_hnd(p,
@@ -683,7 +683,6 @@ NTSTATUS _lsa_QueryInfoPolicy(struct pipes_struct *p,
 		switch (lp_server_role()) {
 			case ROLE_DOMAIN_PDC:
 			case ROLE_DOMAIN_BDC:
-			case ROLE_IPA_DC:
 				name = get_global_sam_name();
 				sid = dom_sid_dup(p->mem_ctx, get_global_sam_sid());
 				if (!sid) {
@@ -1004,7 +1003,6 @@ NTSTATUS _lsa_LookupSids(struct pipes_struct *p,
 static NTSTATUS _lsa_LookupSids_common(struct pipes_struct *p,
 				struct lsa_LookupSids2 *r)
 {
-	struct dcesrv_call_state *dce_call = p->dce_call;
 	NTSTATUS status;
 	struct lsa_info *handle;
 	int num_sids = r->in.sids->num_sids;
@@ -1013,7 +1011,7 @@ static NTSTATUS _lsa_LookupSids_common(struct pipes_struct *p,
 	struct lsa_TranslatedName2 *names = NULL;
 	bool check_policy = true;
 
-	switch (dce_call->pkt.u.request.opnum) {
+	switch (p->opnum) {
 		case NDR_LSA_LOOKUPSIDS3:
 			check_policy = false;
 			break;
@@ -1292,7 +1290,6 @@ NTSTATUS _lsa_LookupNames2(struct pipes_struct *p,
 static NTSTATUS _lsa_LookupNames_common(struct pipes_struct *p,
 					struct lsa_LookupNames3 *r)
 {
-	struct dcesrv_call_state *dce_call = p->dce_call;
 	NTSTATUS status;
 	struct lsa_info *handle;
 	struct lsa_String *names = r->in.names;
@@ -1303,7 +1300,7 @@ static NTSTATUS _lsa_LookupNames_common(struct pipes_struct *p,
 	int flags = 0;
 	bool check_policy = true;
 
-	switch (dce_call->pkt.u.request.opnum) {
+	switch (p->opnum) {
 		case NDR_LSA_LOOKUPNAMES4:
 			check_policy = false;
 			break;

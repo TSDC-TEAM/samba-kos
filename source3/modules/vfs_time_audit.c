@@ -1349,25 +1349,23 @@ static bool smb_time_audit_lock(vfs_handle_struct *handle, files_struct *fsp,
 	return result;
 }
 
-static int smb_time_audit_filesystem_sharemode(struct vfs_handle_struct *handle,
-					       struct files_struct *fsp,
-					       uint32_t share_access,
-					       uint32_t access_mask)
+static int smb_time_audit_kernel_flock(struct vfs_handle_struct *handle,
+				       struct files_struct *fsp,
+				       uint32_t share_access,
+				       uint32_t access_mask)
 {
 	int result;
 	struct timespec ts1,ts2;
 	double timediff;
 
 	clock_gettime_mono(&ts1);
-	result = SMB_VFS_NEXT_FILESYSTEM_SHAREMODE(handle,
-						   fsp,
-						   share_access,
-						   access_mask);
+	result = SMB_VFS_NEXT_KERNEL_FLOCK(handle, fsp, share_access,
+					   access_mask);
 	clock_gettime_mono(&ts2);
 	timediff = nsec_time_diff(&ts2,&ts1)*1.0e-9;
 
 	if (timediff > audit_timeout) {
-		smb_time_audit_log_fsp("filesystem_sharemode", timediff, fsp);
+		smb_time_audit_log_fsp("kernel_flock", timediff, fsp);
 	}
 
 	return result;
@@ -1392,7 +1390,7 @@ static int smb_time_audit_fcntl(struct vfs_handle_struct *handle,
 
 	timediff = nsec_time_diff(&ts2,&ts1)*1.0e-9;
 	if (timediff > audit_timeout) {
-		smb_time_audit_log_fsp("fcntl", timediff, fsp);
+		smb_time_audit_log_fsp("kernel_flock", timediff, fsp);
 	}
 
 	return result;
@@ -2031,8 +2029,6 @@ static NTSTATUS smb_time_fset_dos_attributes(struct vfs_handle_struct *handle,
 struct time_audit_offload_read_state {
 	struct vfs_handle_struct *handle;
 	struct timespec ts_send;
-	uint32_t flags;
-	uint64_t xferlen;
 	DATA_BLOB token_blob;
 };
 
@@ -2083,8 +2079,6 @@ static void smb_time_audit_offload_read_done(struct tevent_req *subreq)
 	status = SMB_VFS_NEXT_OFFLOAD_READ_RECV(subreq,
 						state->handle,
 						state,
-						&state->flags,
-						&state->xferlen,
 						&state->token_blob);
 	TALLOC_FREE(subreq);
 	if (tevent_req_nterror(req, status)) {
@@ -2097,8 +2091,6 @@ static NTSTATUS smb_time_audit_offload_read_recv(
 	struct tevent_req *req,
 	struct vfs_handle_struct *handle,
 	TALLOC_CTX *mem_ctx,
-	uint32_t *flags,
-	uint64_t *xferlen,
 	DATA_BLOB *token_blob)
 {
 	struct time_audit_offload_read_state *state = tevent_req_data(
@@ -2118,8 +2110,6 @@ static NTSTATUS smb_time_audit_offload_read_recv(
 		return status;
 	}
 
-	*flags = state->flags;
-	*xferlen = state->xferlen;
 	token_blob->length = state->token_blob.length;
 	token_blob->data = talloc_move(mem_ctx, &state->token_blob.data);
 
@@ -2756,7 +2746,7 @@ static struct vfs_fn_pointers vfs_time_audit_fns = {
 	.ftruncate_fn = smb_time_audit_ftruncate,
 	.fallocate_fn = smb_time_audit_fallocate,
 	.lock_fn = smb_time_audit_lock,
-	.filesystem_sharemode_fn = smb_time_audit_filesystem_sharemode,
+	.kernel_flock_fn = smb_time_audit_kernel_flock,
 	.fcntl_fn = smb_time_audit_fcntl,
 	.linux_setlease_fn = smb_time_audit_linux_setlease,
 	.getlock_fn = smb_time_audit_getlock,

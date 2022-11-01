@@ -11,7 +11,7 @@ through Python versions 2.5 to 3.X and across different platforms (win32, linux,
 
 from __future__ import with_statement
 
-import atexit, os, sys, errno, inspect, re, datetime, platform, base64, signal, functools, time, shlex
+import atexit, os, sys, errno, inspect, re, datetime, platform, base64, signal, functools, time
 
 try:
 	import cPickle
@@ -577,13 +577,10 @@ def quote_define_name(s):
 	fu = fu.upper()
 	return fu
 
-# shlex.quote didn't exist until python 3.3. Prior to that it was a non-documented
-# function in pipes.
-try:
-	shell_quote = shlex.quote
-except AttributeError:
-	import pipes
-	shell_quote = pipes.quote
+re_sh = re.compile('\\s|\'|"')
+"""
+Regexp used for shell_escape below
+"""
 
 def shell_escape(cmd):
 	"""
@@ -592,7 +589,7 @@ def shell_escape(cmd):
 	"""
 	if isinstance(cmd, str):
 		return cmd
-	return ' '.join(shell_quote(x) for x in cmd)
+	return ' '.join(repr(x) if re_sh.search(x) else x for x in cmd)
 
 def h_list(lst):
 	"""

@@ -24,6 +24,13 @@
 
 #undef strcasecmp
 
+#define IF_NULL_FAIL_RET(x) do {     \
+		if (!x) {		\
+			return NULL;	\
+		}			\
+	} while (0) 
+
+
 char *schema_attribute_description(TALLOC_CTX *mem_ctx, 
 					  enum dsdb_schema_convert_target target,
 					  const char *separator,
@@ -41,78 +48,82 @@ char *schema_attribute_description(TALLOC_CTX *mem_ctx,
 {
 	char *schema_entry = talloc_asprintf(mem_ctx, 
 					     "(%s%s%s", separator, oid, separator);
-
-	talloc_asprintf_addbuf(
-		&schema_entry, "NAME '%s'%s", name, separator);
-
+	
+	schema_entry = talloc_asprintf_append(schema_entry, 
+					      "NAME '%s'%s", name, separator);
+	IF_NULL_FAIL_RET(schema_entry);
+	
 	if (equality) {
-		talloc_asprintf_addbuf(
-			&schema_entry, "EQUALITY %s%s", equality, separator);
+		schema_entry = talloc_asprintf_append(schema_entry, 
+						      "EQUALITY %s%s", equality, separator);
+		IF_NULL_FAIL_RET(schema_entry);
 	}
 	if (substring) {
-		talloc_asprintf_addbuf(
-			&schema_entry, "SUBSTR %s%s", substring, separator);
+		schema_entry = talloc_asprintf_append(schema_entry, 
+						      "SUBSTR %s%s", substring, separator);
+		IF_NULL_FAIL_RET(schema_entry);
 	}
 
 	if (syntax) {
-		talloc_asprintf_addbuf(
-			&schema_entry, "SYNTAX %s%s", syntax, separator);
+		schema_entry = talloc_asprintf_append(schema_entry,
+						      "SYNTAX %s%s", syntax, separator);
+		IF_NULL_FAIL_RET(schema_entry);
 	}
 
 	if (single_value) {
-		talloc_asprintf_addbuf(
-			&schema_entry, "SINGLE-VALUE%s", separator);
+		schema_entry = talloc_asprintf_append(schema_entry, 
+						      "SINGLE-VALUE%s", separator);
+		IF_NULL_FAIL_RET(schema_entry);
 	}
-
+	
 	if (operational) {
-		talloc_asprintf_addbuf(
-			&schema_entry, "NO-USER-MODIFICATION%s", separator);
+		schema_entry = talloc_asprintf_append(schema_entry, 
+						      "NO-USER-MODIFICATION%s", separator);
+		IF_NULL_FAIL_RET(schema_entry);
 	}
 
 	if (range_lower) {
-		talloc_asprintf_addbuf(
-			&schema_entry,
-			"RANGE-LOWER '%u'%s",
-			*range_lower,
-			separator);
+		schema_entry = talloc_asprintf_append(schema_entry,
+						      "RANGE-LOWER '%u'%s",
+						      *range_lower, separator);
+		IF_NULL_FAIL_RET(schema_entry);
 	}
 
 	if (range_upper) {
-		talloc_asprintf_addbuf(
-			&schema_entry,
-			"RANGE-UPPER '%u'%s",
-			*range_upper,
-			separator);
+		schema_entry = talloc_asprintf_append(schema_entry,
+						      "RANGE-UPPER '%u'%s",
+						      *range_upper, separator);
+		IF_NULL_FAIL_RET(schema_entry);
 	}
 
 	if (property_guid) {
-		talloc_asprintf_addbuf(
-			&schema_entry,
-			"PROPERTY-GUID '%s'%s",
-			property_guid,
-			separator);
+		schema_entry = talloc_asprintf_append(schema_entry,
+						      "PROPERTY-GUID '%s'%s",
+						      property_guid, separator);
+		IF_NULL_FAIL_RET(schema_entry);
 	}
 
 	if (property_set_guid) {
-		talloc_asprintf_addbuf(
-			&schema_entry,
-			"PROPERTY-SET-GUID '%s'%s",
-			property_set_guid,
-			separator);
+		schema_entry = talloc_asprintf_append(schema_entry,
+						      "PROPERTY-SET-GUID '%s'%s",
+						      property_set_guid, separator);
+		IF_NULL_FAIL_RET(schema_entry);
 	}
 
 	if (indexed) {
-		talloc_asprintf_addbuf(
-			&schema_entry, "INDEXED%s", separator);
+		schema_entry = talloc_asprintf_append(schema_entry,
+						      "INDEXED%s", separator);
+		IF_NULL_FAIL_RET(schema_entry);
 	}
 
 	if (system_only) {
-		talloc_asprintf_addbuf(
-			&schema_entry, "SYSTEM-ONLY%s", separator);
+		schema_entry = talloc_asprintf_append(schema_entry,
+						      "SYSTEM-ONLY%s", separator);
+		IF_NULL_FAIL_RET(schema_entry);
 	}
 
-	talloc_asprintf_addbuf(&schema_entry, ")");
-
+	schema_entry = talloc_asprintf_append(schema_entry, 
+					      ")");
 	return schema_entry;
 }
 
@@ -172,15 +183,18 @@ char *schema_attribute_to_extendedInfo(TALLOC_CTX *mem_ctx, const struct dsdb_at
 		for (k=0; attributes && attributes[k]; k++) {		\
 			const char *attr_name = attributes[k];		\
 									\
-			talloc_asprintf_addbuf(&schema_entry,           \
+			schema_entry = talloc_asprintf_append(schema_entry, \
 							      "%s ",	\
 							      attr_name); \
+			IF_NULL_FAIL_RET(schema_entry);			\
 			if (attributes[k+1]) {				\
+				IF_NULL_FAIL_RET(schema_entry);		\
 				if (target == TARGET_OPENLDAP && ((k+1)%5 == 0)) { \
-					talloc_asprintf_addbuf(&schema_entry, \
+					schema_entry = talloc_asprintf_append(schema_entry, \
 									      "$%s ", separator); \
+					IF_NULL_FAIL_RET(schema_entry);	\
 				} else {				\
-					talloc_asprintf_addbuf(&schema_entry, \
+					schema_entry = talloc_asprintf_append(schema_entry, \
 									      "$ "); \
 				}					\
 			}						\
@@ -209,22 +223,31 @@ char *schema_class_description(TALLOC_CTX *mem_ctx,
 {
 	char *schema_entry = talloc_asprintf(mem_ctx, 
 					     "(%s%s%s", separator, oid, separator);
+	
+	IF_NULL_FAIL_RET(schema_entry);
 
-	talloc_asprintf_addbuf(&schema_entry, "NAME '%s'%s", name, separator);
-
+	schema_entry = talloc_asprintf_append(schema_entry, 
+					      "NAME '%s'%s", name, separator);
+	IF_NULL_FAIL_RET(schema_entry);
+	
 	if (auxillary_classes) {
-		talloc_asprintf_addbuf(&schema_entry, "AUX ( ");
-
+		schema_entry = talloc_asprintf_append(schema_entry, 
+						      "AUX ( ");
+		IF_NULL_FAIL_RET(schema_entry);
+		
 		APPEND_ATTRS(auxillary_classes);
-
-		talloc_asprintf_addbuf(&schema_entry, ")%s", separator);
+		
+		schema_entry = talloc_asprintf_append(schema_entry, 
+						      ")%s", separator);
+		IF_NULL_FAIL_RET(schema_entry);
 	}
 
 	if (subClassOf && strcasecmp(subClassOf, name) != 0) {
-		talloc_asprintf_addbuf(
-			&schema_entry, "SUP %s%s", subClassOf, separator);
+		schema_entry = talloc_asprintf_append(schema_entry, 
+						      "SUP %s%s", subClassOf, separator);
+		IF_NULL_FAIL_RET(schema_entry);
 	}
-
+	
 	switch (objectClassCategory) {
 	case -1:
 		break;
@@ -235,57 +258,60 @@ char *schema_class_description(TALLOC_CTX *mem_ctx,
 		 *       e.g. 2.5.6.6 NAME 'person'
 		 *	 but w2k3 gives STRUCTURAL here!
 		 */
-		talloc_asprintf_addbuf(
-			&schema_entry, "STRUCTURAL%s", separator);
+		schema_entry = talloc_asprintf_append(schema_entry, 
+						      "STRUCTURAL%s", separator);
+		IF_NULL_FAIL_RET(schema_entry);
 		break;
 	case 1:
-		talloc_asprintf_addbuf(
-			&schema_entry, "STRUCTURAL%s", separator);
+		schema_entry = talloc_asprintf_append(schema_entry, 
+						      "STRUCTURAL%s", separator);
+		IF_NULL_FAIL_RET(schema_entry);
 		break;
 	case 2:
-		talloc_asprintf_addbuf(
-			&schema_entry, "ABSTRACT%s", separator);
+		schema_entry = talloc_asprintf_append(schema_entry, 
+						      "ABSTRACT%s", separator);
+		IF_NULL_FAIL_RET(schema_entry);
 		break;
 	case 3:
-		talloc_asprintf_addbuf(
-			&schema_entry, "AUXILIARY%s", separator);
+		schema_entry = talloc_asprintf_append(schema_entry, 
+						      "AUXILIARY%s", separator);
+		IF_NULL_FAIL_RET(schema_entry);
 		break;
 	}
-
+	
 	if (must) {
-		talloc_asprintf_addbuf(
-			&schema_entry,
-			"MUST (%s",
-			target == TARGET_AD_SCHEMA_SUBENTRY ? "" : " ");
-
+		schema_entry = talloc_asprintf_append(schema_entry, 
+						      "MUST (%s", target == TARGET_AD_SCHEMA_SUBENTRY ? "" : " ");
+		IF_NULL_FAIL_RET(schema_entry);
+		
 		APPEND_ATTRS(must);
-
-		talloc_asprintf_addbuf(
-			&schema_entry, ")%s", separator);
+		
+		schema_entry = talloc_asprintf_append(schema_entry, 
+						      ")%s", separator);
+		IF_NULL_FAIL_RET(schema_entry);
 	}
-
+	
 	if (may) {
-		talloc_asprintf_addbuf(
-			&schema_entry,
-			"MAY (%s",
-			target == TARGET_AD_SCHEMA_SUBENTRY ? "" : " ");
-
+		schema_entry = talloc_asprintf_append(schema_entry, 
+						      "MAY (%s", target == TARGET_AD_SCHEMA_SUBENTRY ? "" : " ");
+		IF_NULL_FAIL_RET(schema_entry);
+		
 		APPEND_ATTRS(may);
-
-		talloc_asprintf_addbuf(
-			&schema_entry, ")%s", separator);
+		
+		schema_entry = talloc_asprintf_append(schema_entry, 
+						      ")%s", separator);
+		IF_NULL_FAIL_RET(schema_entry);
 	}
 
 	if (schemaHexGUID) {
-		talloc_asprintf_addbuf(
-			&schema_entry,
-			"CLASS-GUID '%s'%s",
-			schemaHexGUID,
-			separator);
+		schema_entry = talloc_asprintf_append(schema_entry,
+						      "CLASS-GUID '%s'%s",
+						      schemaHexGUID, separator);
+		IF_NULL_FAIL_RET(schema_entry);
 	}
 
-	talloc_asprintf_addbuf(&schema_entry, ")");
-
+	schema_entry = talloc_asprintf_append(schema_entry, 
+					      ")");
 	return schema_entry;
 }
 

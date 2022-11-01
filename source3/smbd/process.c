@@ -23,7 +23,6 @@
 #include "system/filesys.h"
 #include "smbd/smbd.h"
 #include "smbd/globals.h"
-#include "smbd/smbXsrv_open.h"
 #include "librpc/gen_ndr/netlogon.h"
 #include "../lib/async_req/async_sock.h"
 #include "ctdbd_conn.h"
@@ -47,7 +46,6 @@
 #include "libcli/smb/smbXcli_base.h"
 #include "lib/util/time_basic.h"
 #include "smb1_utils.h"
-#include "source3/lib/substitute.h"
 
 /* Internal message queue for deferred opens. */
 struct pending_message_list {

@@ -1,19 +1,19 @@
-/*
+/* 
    Unix SMB/CIFS implementation.
-
+   
    Copyright (C) Stefan Metzmacher	2004
    Copyright (C) Andrew Bartlett <abartlet@samba.org> 2005
-
+   
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation; either version 3 of the License, or
    (at your option) any later version.
-
+   
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-
+   
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
@@ -23,8 +23,6 @@
 #include "libcli/auth/libcli_auth.h"
 #include "librpc/gen_ndr/ndr_samr_c.h"
 #include "source4/librpc/rpc/dcerpc.h"
-#include "auth/credentials/credentials.h"
-#include "libcli/smb/smb_constants.h"
 
 #include "lib/crypto/gnutls_helpers.h"
 #include <gnutls/gnutls.h>
@@ -247,7 +245,7 @@ static NTSTATUS libnet_ChangePassword_samr(struct libnet_context *ctx, TALLOC_CT
 		if (!NT_STATUS_IS_OK(status)) {
 			r->samr.out.error_string = talloc_asprintf(mem_ctx,
 								   "samr_ChangePasswordUser2 for '%s\\%s' failed: %s",
-								   r->samr.in.domain_name, r->samr.in.account_name,
+								   r->samr.in.domain_name, r->samr.in.account_name, 
 								   nt_errstr(status));
 		}
 		goto disconnect;
@@ -298,7 +296,7 @@ static NTSTATUS libnet_ChangePassword_samr(struct libnet_context *ctx, TALLOC_CT
 		if (!NT_STATUS_IS_OK(oe2.out.result)) {
 			r->samr.out.error_string = talloc_asprintf(mem_ctx,
 								   "samr_OemChangePasswordUser2 for '%s\\%s' failed: %s",
-								   r->samr.in.domain_name, r->samr.in.account_name,
+								   r->samr.in.domain_name, r->samr.in.account_name, 
 								   nt_errstr(status));
 		}
 		goto disconnect;
@@ -339,7 +337,7 @@ static NTSTATUS libnet_ChangePassword_samr(struct libnet_context *ctx, TALLOC_CT
 	if (!NT_STATUS_IS_OK(pw.out.result)) {
 		r->samr.out.error_string = talloc_asprintf(mem_ctx,
 						"samr_ChangePasswordUser for '%s\\%s' failed: %s",
-						r->samr.in.domain_name, r->samr.in.account_name,
+						r->samr.in.domain_name, r->samr.in.account_name, 
 						nt_errstr(pw.out.result));
 		if (NT_STATUS_EQUAL(pw.out.result, NT_STATUS_PASSWORD_RESTRICTION)) {
 			status = pw.out.result;
@@ -428,7 +426,7 @@ static NTSTATUS libnet_SetPassword_samr_handle_26(struct libnet_context *ctx, TA
 	sui.in.user_handle = r->samr_handle.in.user_handle;
 	sui.in.info = &u_info;
 	sui.in.level = 26;
-
+	
 	/* 7. try samr_SetUserInfo2 level 26 to set the password */
 	status = dcerpc_samr_SetUserInfo2_r(r->samr_handle.in.dcerpc_pipe->binding_handle, mem_ctx, &sui);
 	/* check result of samr_SetUserInfo2 level 26 */
@@ -673,7 +671,7 @@ static NTSTATUS libnet_SetPassword_samr_handle(struct libnet_context *ctx, TALLO
 		}
 		break;
 	}
-
+	
 	return status;
 }
 /*
@@ -709,7 +707,7 @@ static NTSTATUS libnet_SetPassword_samr(struct libnet_context *ctx, TALLOC_CTX *
 	c.level               = LIBNET_RPC_CONNECT_PDC;
 	c.in.name             = r->samr.in.domain_name;
 	c.in.dcerpc_iface     = &ndr_table_samr;
-
+	
 	/* 1. connect to the SAMR pipe of users domain PDC (maybe a standalone server or workstation) */
 	status = libnet_RpcConnect(ctx, mem_ctx, &c);
 	if (!NT_STATUS_IS_OK(status)) {
@@ -804,7 +802,7 @@ static NTSTATUS libnet_SetPassword_samr(struct libnet_context *ctx, TALLOC_CTX *
 						"samr_LookupNames for [%s] returns %d RIDs",
 						r->samr.in.account_name, ln.out.rids->count);
 		status = NT_STATUS_INVALID_NETWORK_RESPONSE;
-		goto disconnect;
+		goto disconnect;	
 	}
 
 	if (ln.out.types->count != 1) {
@@ -872,55 +870,28 @@ static NTSTATUS libnet_SetPassword_generic(struct libnet_context *ctx, TALLOC_CT
 
 NTSTATUS libnet_SetPassword(struct libnet_context *ctx, TALLOC_CTX *mem_ctx, union libnet_SetPassword *r)
 {
-	enum smb_encryption_setting encryption_state =
-		cli_credentials_get_smb_encryption(ctx->cred);
-	NTSTATUS status =  NT_STATUS_INVALID_LEVEL;
-
 	switch (r->generic.level) {
 		case LIBNET_SET_PASSWORD_GENERIC:
-			status = libnet_SetPassword_generic(ctx, mem_ctx, r);
-			break;
+			return libnet_SetPassword_generic(ctx, mem_ctx, r);
 		case LIBNET_SET_PASSWORD_SAMR:
-			status = libnet_SetPassword_samr(ctx, mem_ctx, r);
-			break;
+			return libnet_SetPassword_samr(ctx, mem_ctx, r);
 		case LIBNET_SET_PASSWORD_SAMR_HANDLE:
-			status = libnet_SetPassword_samr_handle(ctx, mem_ctx, r);
-			break;
+			return libnet_SetPassword_samr_handle(ctx, mem_ctx, r);
 		case LIBNET_SET_PASSWORD_SAMR_HANDLE_26:
-			if (encryption_state == SMB_ENCRYPTION_REQUIRED) {
-				GNUTLS_FIPS140_SET_LAX_MODE();
-			}
-			status = libnet_SetPassword_samr_handle_26(ctx, mem_ctx, r);
-			break;
+			return libnet_SetPassword_samr_handle_26(ctx, mem_ctx, r);
 		case LIBNET_SET_PASSWORD_SAMR_HANDLE_25:
-			if (encryption_state == SMB_ENCRYPTION_REQUIRED) {
-				GNUTLS_FIPS140_SET_LAX_MODE();
-			}
-			status = libnet_SetPassword_samr_handle_25(ctx, mem_ctx, r);
-			break;
+			return libnet_SetPassword_samr_handle_25(ctx, mem_ctx, r);
 		case LIBNET_SET_PASSWORD_SAMR_HANDLE_24:
-			if (encryption_state == SMB_ENCRYPTION_REQUIRED) {
-				GNUTLS_FIPS140_SET_LAX_MODE();
-			}
-			status = libnet_SetPassword_samr_handle_24(ctx, mem_ctx, r);
-			break;
+			return libnet_SetPassword_samr_handle_24(ctx, mem_ctx, r);
 		case LIBNET_SET_PASSWORD_SAMR_HANDLE_23:
-			if (encryption_state == SMB_ENCRYPTION_REQUIRED) {
-				GNUTLS_FIPS140_SET_LAX_MODE();
-			}
-			status = libnet_SetPassword_samr_handle_23(ctx, mem_ctx, r);
-			break;
+			return libnet_SetPassword_samr_handle_23(ctx, mem_ctx, r);
 		case LIBNET_SET_PASSWORD_KRB5:
-			status = NT_STATUS_NOT_IMPLEMENTED;
-			break;
+			return NT_STATUS_NOT_IMPLEMENTED;
 		case LIBNET_SET_PASSWORD_LDAP:
-			status = NT_STATUS_NOT_IMPLEMENTED;
-			break;
+			return NT_STATUS_NOT_IMPLEMENTED;
 		case LIBNET_SET_PASSWORD_RAP:
-			status = NT_STATUS_NOT_IMPLEMENTED;
-			break;
+			return NT_STATUS_NOT_IMPLEMENTED;
 	}
 
-	GNUTLS_FIPS140_SET_STRICT_MODE();
-	return status;
+	return NT_STATUS_INVALID_LEVEL;
 }

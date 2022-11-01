@@ -88,6 +88,12 @@ services:
       #
       - $SAMBA_CI_REBUILD_BROKEN_IMAGES == "yes"
 
+# This is ONLY for oss-fuzz, so we test a fuzz build not a real one
+ubuntu1604:
+  extends: .build_image_template
+  variables:
+    SAMBA_CI_TEST_JOB: "samba-fuzz"
+
 ubuntu1804:
   extends: .build_image_template
 
@@ -97,13 +103,10 @@ ubuntu2004:
 debian10:
   extends: .build_image_template
 
-debian11:
+fedora33:
   extends: .build_image_template
 
 fedora34:
-  extends: .build_image_template
-
-fedora35:
   extends: .build_image_template
 
 centos8:

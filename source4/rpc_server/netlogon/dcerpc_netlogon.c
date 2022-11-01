@@ -44,7 +44,6 @@
 #include "librpc/gen_ndr/ndr_winbind_c.h"
 #include "lib/socket/netif.h"
 #include "lib/util/util_str_escape.h"
-#include "lib/param/loadparm.h"
 
 #define DCESRV_INTERFACE_NETLOGON_BIND(context, iface) \
        dcesrv_interface_netlogon_bind(context, iface)
@@ -65,6 +64,12 @@ static NTSTATUS dcesrv_interface_netlogon_bind(struct dcesrv_connection_context 
 {
 	return dcesrv_interface_bind_reject_connect(context, iface);
 }
+
+#define NETLOGON_SERVER_PIPE_STATE_MAGIC 0x4f555358
+struct netlogon_server_pipe_state {
+	struct netr_Credential client_challenge;
+	struct netr_Credential server_challenge;
+};
 
 static NTSTATUS dcesrv_netr_ServerReqChallenge(struct dcesrv_call_state *dce_call, TALLOC_CTX *mem_ctx,
 					struct netr_ServerReqChallenge *r)
@@ -217,14 +222,6 @@ static NTSTATUS dcesrv_netr_ServerAuthenticate3_helper(
 		       NETLOGON_NEG_SUPPORTS_AES |
 		       NETLOGON_NEG_AUTHENTICATED_RPC_LSASS |
 		       NETLOGON_NEG_AUTHENTICATED_RPC;
-
-	/*
-	 * If weak cryto is disabled, do not announce that we support RC4.
-	 */
-	if (lpcfg_weak_crypto(dce_call->conn->dce_ctx->lp_ctx) ==
-	    SAMBA_WEAK_CRYPTO_DISALLOWED) {
-		server_flags &= ~NETLOGON_NEG_ARCFOUR;
-	}
 
 	negotiate_flags = *r->in.negotiate_flags & server_flags;
 

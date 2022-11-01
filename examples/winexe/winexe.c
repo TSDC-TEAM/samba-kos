@@ -220,6 +220,8 @@ static void parse_args(int argc, const char *argv[],
 		*port_str = '\0';
 	}
 
+	poptFreeContext(pc);
+
 	if (options->runas == NULL && options->runas_file != NULL) {
 		struct cli_credentials *runas_cred;
 		const char *user;
@@ -251,19 +253,9 @@ static void parse_args(int argc, const char *argv[],
 
 	options->credentials = samba_cmdline_get_creds();
 
-	options->hostname = talloc_strdup(mem_ctx, argv_new[0] + 2);
-	if (options->hostname == NULL) {
-		DBG_ERR("Out of memory\n");
-		exit(1);
-	}
+	options->hostname = argv_new[0] + 2;
 	options->port = port;
-	options->cmd = talloc_strdup(mem_ctx, argv_new[1]);
-	if (options->cmd == NULL) {
-		DBG_ERR("Out of memory\n");
-		exit(1);
-	}
-
-	poptFreeContext(pc);
+	options->cmd = argv_new[1];
 
 	options->flags = flag_interactive;
 	if (flag_reinstall) {

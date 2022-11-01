@@ -22,7 +22,6 @@ bld.SAMBA3_BINARY('rpcclient',
                  cmd_witness.c
 		 cmd_iremotewinspool.c
                  cmd_spotlight.c
-                 cmd_unixinfo.c
 		 ''',
                  deps='''
                  talloc
@@ -57,5 +56,4 @@ bld.SAMBA3_BINARY('rpcclient',
                  RPC_NDR_WINSPOOL
                  mdssvc
                  RPC_NDR_MDSSVC
-                 RPC_NDR_UNIXINFO
                  ''')

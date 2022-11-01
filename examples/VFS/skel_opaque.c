@@ -428,10 +428,9 @@ static bool skel_lock(vfs_handle_struct *handle, files_struct *fsp, int op,
 	return false;
 }
 
-static int skel_filesystem_sharemode(struct vfs_handle_struct *handle,
-				     struct files_struct *fsp,
-				     uint32_t share_mode,
-				     uint32_t access_mask)
+static int skel_kernel_flock(struct vfs_handle_struct *handle,
+			     struct files_struct *fsp,
+			     uint32_t share_mode, uint32_t access_mask)
 {
 	errno = ENOSYS;
 	return -1;
@@ -560,8 +559,6 @@ static struct tevent_req *skel_offload_read_send(
 static NTSTATUS skel_offload_read_recv(struct tevent_req *req,
 				       struct vfs_handle_struct *handle,
 				       TALLOC_CTX *mem_ctx,
-				       uint32_t *flags,
-				       uint64_t *xferlen,
 				       DATA_BLOB *_token_blob)
 {
 	NTSTATUS status;
@@ -1012,7 +1009,7 @@ static struct vfs_fn_pointers skel_opaque_fns = {
 	.ftruncate_fn = skel_ftruncate,
 	.fallocate_fn = skel_fallocate,
 	.lock_fn = skel_lock,
-	.filesystem_sharemode_fn = skel_filesystem_sharemode,
+	.kernel_flock_fn = skel_kernel_flock,
 	.fcntl_fn = skel_fcntl,
 	.linux_setlease_fn = skel_linux_setlease,
 	.getlock_fn = skel_getlock,

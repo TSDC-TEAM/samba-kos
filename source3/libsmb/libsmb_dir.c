@@ -2048,10 +2048,9 @@ SMBC_chmod_ctx(SMBCCTX *context,
 	if ((newmode & S_IXGRP) && lp_map_system(-1)) attr |= FILE_ATTRIBUTE_SYSTEM;
 	if ((newmode & S_IXOTH) && lp_map_hidden(-1)) attr |= FILE_ATTRIBUTE_HIDDEN;
 
-	status = cli_setatr(targetcli, targetpath, attr, 0);
-	if (!NT_STATUS_IS_OK(status)) {
+	if (!NT_STATUS_IS_OK(cli_setatr(targetcli, targetpath, attr, 0))) {
+		errno = SMBC_errno(context, targetcli);
 		TALLOC_FREE(frame);
-		errno = cli_status_to_errno(status);
 		return -1;
 	}
 
@@ -2698,17 +2697,19 @@ SMBC_notify_ctx(SMBCCTX *context, SMBCFILE *dir, smbc_bool recursive,
 		FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,
 		FILE_OPEN, 0, 0, &fnum, NULL);
 	if (!NT_STATUS_IS_OK(status)) {
+		int err = SMBC_errno(context, cli);
 		TALLOC_FREE(frame);
-		errno = cli_status_to_errno(status);
+		errno = err;
 		return -1;
 	}
 
 	status = smbc_notify_cb(cli, fnum, recursive != 0, completion_filter,
 				callback_timeout_ms, cb, private_data);
 	if (!NT_STATUS_IS_OK(status)) {
+		int err = SMBC_errno(context, cli);
 		cli_close(cli, fnum);
 		TALLOC_FREE(frame);
-		errno = cli_status_to_errno(status);
+		errno = err;
 		return -1;
 	}
 

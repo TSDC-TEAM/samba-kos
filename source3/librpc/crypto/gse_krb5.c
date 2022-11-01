@@ -37,8 +37,9 @@ static krb5_error_code flush_keytab(krb5_context krbctx, krb5_keytab keytab)
 	ZERO_STRUCT(kt_entry);
 
 	ret = krb5_kt_start_seq_get(krbctx, keytab, &kt_cursor);
-	if (ret != 0) {
-		return ret;
+	if (ret == KRB5_KT_END || ret == ENOENT ) {
+		/* no entries */
+		return 0;
 	}
 
 	ret = krb5_kt_next_entry(krbctx, keytab, &kt_entry, &kt_cursor);
@@ -47,7 +48,7 @@ static krb5_error_code flush_keytab(krb5_context krbctx, krb5_keytab keytab)
 		/* we need to close and reopen enumeration because we modify
 		 * the keytab */
 		ret = krb5_kt_end_seq_get(krbctx, keytab, &kt_cursor);
-		if (ret != 0) {
+		if (ret) {
 			DEBUG(1, (__location__ ": krb5_kt_end_seq_get() "
 				  "failed (%s)\n", error_message(ret)));
 			goto out;
@@ -55,7 +56,7 @@ static krb5_error_code flush_keytab(krb5_context krbctx, krb5_keytab keytab)
 
 		/* remove the entry */
 		ret = krb5_kt_remove_entry(krbctx, keytab, &kt_entry);
-		if (ret != 0) {
+		if (ret) {
 			DEBUG(1, (__location__ ": krb5_kt_remove_entry() "
 				  "failed (%s)\n", error_message(ret)));
 			goto out;
@@ -65,7 +66,7 @@ static krb5_error_code flush_keytab(krb5_context krbctx, krb5_keytab keytab)
 
 		/* now reopen */
 		ret = krb5_kt_start_seq_get(krbctx, keytab, &kt_cursor);
-		if (ret != 0) {
+		if (ret) {
 			DEBUG(1, (__location__ ": krb5_kt_start_seq() failed "
 				  "(%s)\n", error_message(ret)));
 			goto out;
@@ -80,12 +81,6 @@ static krb5_error_code flush_keytab(krb5_context krbctx, krb5_keytab keytab)
 			  error_message(ret)));
 	}
 
-	ret = krb5_kt_end_seq_get(krbctx, keytab, &kt_cursor);
-	if (ret != 0) {
-		DEBUG(1, (__location__ ": krb5_kt_end_seq_get() "
-			  "failed (%s)\n", error_message(ret)));
-		goto out;
-	}
 	ret = 0;
 
 out:
@@ -161,7 +156,7 @@ static krb5_error_code fill_mem_keytab_from_secrets(krb5_context krbctx,
 						    krb5_keytab *keytab)
 {
 	TALLOC_CTX *frame = talloc_stackframe();
-	krb5_error_code ret, ret2;
+	krb5_error_code ret;
 	const char *domain = lp_workgroup();
 	struct secrets_domain_info1 *info = NULL;
 	const char *realm = NULL;
@@ -203,61 +198,55 @@ static krb5_error_code fill_mem_keytab_from_secrets(krb5_context krbctx,
 
 	/* check if the keytab already has any entry */
 	ret = krb5_kt_start_seq_get(krbctx, *keytab, &kt_cursor);
-	if (ret != 0) {
-		goto out;
-	}
-
-	/* check if we have our special enctype used to hold
-	 * the clear text password. If so, check it out so that
-	 * we can verify if the keytab needs to be upgraded */
-	while ((ret = krb5_kt_next_entry(krbctx, *keytab,
-				   &kt_entry, &kt_cursor)) == 0) {
-		if (smb_krb5_kt_get_enctype_from_entry(&kt_entry) ==
-		    CLEARTEXT_PRIV_ENCTYPE) {
-			break;
-		}
-		smb_krb5_kt_free_entry(krbctx, &kt_entry);
-		ZERO_STRUCT(kt_entry);
-	}
-
-	ret2 = krb5_kt_end_seq_get(krbctx, *keytab, &kt_cursor);
-	if (ret2 != 0) {
-		ret = ret2;
-		DEBUG(1, (__location__ ": krb5_kt_end_seq_get() "
-			  "failed (%s)\n", error_message(ret)));
-		goto out;
-	}
-
-	if (ret != 0 && ret != KRB5_KT_END && ret != ENOENT ) {
-		/* Error parsing keytab */
-		DEBUG(1, (__location__ ": Failed to parse memory "
-			  "keytab!\n"));
-		goto out;
-	}
-
-	if (ret == 0) {
-		/* found private entry,
-		 * check if keytab is up to date */
-
-		if ((ct->length == KRB5_KEY_LENGTH(KRB5_KT_KEY(&kt_entry))) &&
-		    (memcmp(KRB5_KEY_DATA(KRB5_KT_KEY(&kt_entry)),
-					ct->data, ct->length) == 0)) {
-			/* keytab is already up to date, return */
+	if (ret != KRB5_KT_END && ret != ENOENT ) {
+		/* check if we have our special enctype used to hold
+		 * the clear text password. If so, check it out so that
+		 * we can verify if the keytab needs to be upgraded */
+		while ((ret = krb5_kt_next_entry(krbctx, *keytab,
+					   &kt_entry, &kt_cursor)) == 0) {
+			if (smb_krb5_kt_get_enctype_from_entry(&kt_entry) ==
+			    CLEARTEXT_PRIV_ENCTYPE) {
+				break;
+			}
 			smb_krb5_kt_free_entry(krbctx, &kt_entry);
+			ZERO_STRUCT(kt_entry);
+		}
+
+		if (ret != 0 && ret != KRB5_KT_END && ret != ENOENT ) {
+			/* Error parsing keytab */
+			DEBUG(1, (__location__ ": Failed to parse memory "
+				  "keytab!\n"));
 			goto out;
 		}
 
-		smb_krb5_kt_free_entry(krbctx, &kt_entry);
-		ZERO_STRUCT(kt_entry);
+		if (ret == 0) {
+			/* found private entry,
+			 * check if keytab is up to date */
+
+			if ((ct->length == KRB5_KEY_LENGTH(KRB5_KT_KEY(&kt_entry))) &&
+			    (memcmp(KRB5_KEY_DATA(KRB5_KT_KEY(&kt_entry)),
+						ct->data, ct->length) == 0)) {
+				/* keytab is already up to date, return */
+				smb_krb5_kt_free_entry(krbctx, &kt_entry);
+				goto out;
+			}
+
+			smb_krb5_kt_free_entry(krbctx, &kt_entry);
+			ZERO_STRUCT(kt_entry);
 
 
-		/* flush keytab, we need to regen it */
-		ret = flush_keytab(krbctx, *keytab);
-		if (ret) {
-			DEBUG(1, (__location__ ": Failed to flush "
-				  "memory keytab!\n"));
-			goto out;
+			/* flush keytab, we need to regen it */
+			ret = flush_keytab(krbctx, *keytab);
+			if (ret) {
+				DEBUG(1, (__location__ ": Failed to flush "
+					  "memory keytab!\n"));
+				goto out;
+			}
 		}
+	}
+
+	if (!all_zero((uint8_t *)&kt_cursor, sizeof(kt_cursor)) && *keytab) {
+		krb5_kt_end_seq_get(krbctx, *keytab, &kt_cursor);
 	}
 
 	/* keytab is not up to date, fill it up */
@@ -332,6 +321,9 @@ static krb5_error_code fill_mem_keytab_from_secrets(krb5_context krbctx,
 	ret = 0;
 
 out:
+	if (!all_zero((uint8_t *)&kt_cursor, sizeof(kt_cursor)) && *keytab) {
+		krb5_kt_end_seq_get(krbctx, *keytab, &kt_cursor);
+	}
 
 	if (princ) {
 		krb5_free_principal(krbctx, princ);
@@ -541,7 +533,7 @@ static krb5_error_code fill_mem_keytab_from_dedicated_keytab(krb5_context krbctx
 	krb5_kt_end_seq_get(krbctx, keytab, &kt_cursor);
 
 out:
-
+	
 	krb5_kt_close(krbctx, keytab);
 
 	return ret;

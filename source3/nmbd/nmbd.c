@@ -29,7 +29,6 @@
 #include "util_cluster.h"
 #include "lib/gencache.h"
 #include "lib/global_contexts.h"
-#include "source3/lib/substitute.h"
 
 int ClientNMB       = -1;
 int ClientDGRAM     = -1;
