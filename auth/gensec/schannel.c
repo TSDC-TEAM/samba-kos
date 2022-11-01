@@ -40,8 +40,8 @@
 #endif
 
 #include "lib/crypto/gnutls_helpers.h"
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+#include "lib/gnutls/kosgnutls.h"
+
 
 #undef DBGC_CLASS
 #define DBGC_CLASS DBGC_AUTH

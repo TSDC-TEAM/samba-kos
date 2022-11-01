@@ -336,4 +336,6 @@ void debug_set_callback(void *private_ptr, debug_callback_fn fn);
 char *debug_get_ringbuf(void);
 size_t debug_get_ringbuf_size(void);
 
+const char *getprogname();
+
 #endif /* _SAMBA_DEBUG_H */

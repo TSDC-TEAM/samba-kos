@@ -20,7 +20,7 @@
 #include "replace.h"
 #include "system/filesys.h"
 
-#include <popt.h>
+
 #include <talloc.h>
 #include <tevent.h>
 

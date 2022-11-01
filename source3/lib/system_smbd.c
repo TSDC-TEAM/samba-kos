@@ -170,6 +170,10 @@ static int getgrouplist_internals(const char *user, gid_t gid, gid_t *groups,
 
 static int sys_getgrouplist(const char *user, gid_t gid, gid_t *groups, int *grpcnt)
 {
+#if 1 // __KOS__
+    // fprintf(stderr, "KOS: skipping %s\n", __func__);
+    return 0;
+#else
 	int retval;
 	bool winbind_env;
 
@@ -199,6 +203,7 @@ static int sys_getgrouplist(const char *user, gid_t gid, gid_t *groups, int *grp
 	}
 
 	return retval;
+#endif
 }
 
 bool getgroups_unix_user(TALLOC_CTX *mem_ctx, const char *user,

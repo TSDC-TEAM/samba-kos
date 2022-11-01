@@ -36,8 +36,8 @@
 #include "librpc/rpc/dcerpc_helper.h"
 
 #include "lib/crypto/gnutls_helpers.h"
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+
+
 
 static void log_password_change_event(struct imessaging_context *msg_ctx,
 				      struct loadparm_context *lp_ctx,

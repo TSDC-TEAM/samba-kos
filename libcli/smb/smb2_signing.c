@@ -20,8 +20,8 @@
 
 #include "includes.h"
 #include "system/filesys.h"
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+
+
 #define SMB2_SIGNING_KEY_GNUTLS_TYPES 1
 #include "../libcli/smb/smb_common.h"
 #include "../lib/crypto/crypto.h"

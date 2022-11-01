@@ -265,7 +265,9 @@ size_t rep_strlcat(char *d, const char *s, size_t bufsize);
 #endif
 
 #ifndef HAVE_CLOSEFROM
+#if 0 // @todo: KOS
 #define closefrom rep_closefrom
+#endif
 int rep_closefrom(int lower);
 #endif
 

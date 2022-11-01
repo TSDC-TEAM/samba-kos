@@ -24,7 +24,7 @@
 #include <talloc.h>
 
 #include <libtasn1.h>
-#include <gnutls/pkcs7.h>
+
 
 #include "mscat.h"
 

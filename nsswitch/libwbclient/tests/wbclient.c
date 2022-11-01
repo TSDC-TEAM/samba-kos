@@ -34,8 +34,8 @@
 #include "auth/credentials/credentials.h"
 #include "lib/cmdline/cmdline.h"
 
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+
+
 
 #define WBC_ERROR_EQUAL(x,y) (x == y)
 

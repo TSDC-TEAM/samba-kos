@@ -27,6 +27,13 @@
 #include "dbwrap/dbwrap_private.h"
 #include "lib/util/util_tdb.h"
 #include "lib/util/tevent_ntstatus.h"
+#include <source3/smbd/kos/kos_thread.h>
+#ifdef KOS_NO_FORK
+#include <stdatomic.h>
+#include <pthread.h>
+#endif
+
+#define STRANGE_BIG_VALUE 1024*1024*8
 
 /*
  * Fall back using fetch if no genuine exists operation is provided
@@ -123,11 +130,14 @@ NTSTATUS dbwrap_record_delete(struct db_record *rec)
 	return NT_STATUS_OK;
 }
 
+#ifndef KOS_NO_FORK
 const char *locked_dbs[DBWRAP_LOCK_ORDER_MAX];
+#endif
 
 static void debug_lock_order(int level)
 {
-	int i;
+#ifndef KOS_NO_FORK
+    int i;
 	DEBUG(level, ("lock order: "));
 	for (i=0; i<DBWRAP_LOCK_ORDER_MAX; i++) {
 		DEBUGADD(level,
@@ -136,6 +146,7 @@ static void debug_lock_order(int level)
 			  locked_dbs[i] ? locked_dbs[i] : "<none>"));
 	}
 	DEBUGADD(level, ("\n"));
+#endif
 }
 
 void dbwrap_lock_order_lock(const char *db_name,
@@ -154,7 +165,8 @@ void dbwrap_lock_order_lock(const char *db_name,
 		smb_panic("lock order violation");
 	}
 
-	for (idx=lock_order-1; idx<DBWRAP_LOCK_ORDER_MAX; idx++) {
+#ifndef KOS_NO_FORK
+    for (idx=lock_order-1; idx<DBWRAP_LOCK_ORDER_MAX; idx++) {
 		if (locked_dbs[idx] != NULL) {
 			DBG_ERR("Lock order violation: Trying %s at %d while "
 				"%s at %d is locked\n",
@@ -168,6 +180,7 @@ void dbwrap_lock_order_lock(const char *db_name,
 	}
 
 	locked_dbs[lock_order-1] = db_name;
+#endif
 
 	debug_lock_order(10);
 }
@@ -186,6 +199,7 @@ void dbwrap_lock_order_unlock(const char *db_name,
 		smb_panic("lock order violation");
 	}
 
+#ifndef KOS_NO_FORK
 	if (locked_dbs[lock_order-1] == NULL) {
 		DBG_ERR("db %s at order %d unlocked\n",
 			db_name,
@@ -202,6 +216,7 @@ void dbwrap_lock_order_unlock(const char *db_name,
 	}
 
 	locked_dbs[lock_order-1] = NULL;
+#endif
 }
 
 struct dbwrap_lock_order_state {
@@ -306,6 +321,9 @@ NTSTATUS dbwrap_fetch(struct db_context *db, TALLOC_CTX *mem_ctx,
 	if ((state.data.dsize != 0) && (state.data.dptr == NULL)) {
 		return NT_STATUS_NO_MEMORY;
 	}
+    if (state.data.dsize > STRANGE_BIG_VALUE) {
+        return NT_STATUS_NO_MEMORY;
+    }
 	*value = state.data;
 	return NT_STATUS_OK;
 }
@@ -538,6 +556,10 @@ NTSTATUS dbwrap_parse_record_recv(struct tevent_req *req)
 	return tevent_req_simple_recv_ntstatus(req);
 }
 
+#ifdef KOS_NO_FORK
+pthread_mutex_t g_db_mutex;
+#endif
+
 NTSTATUS dbwrap_do_locked(struct db_context *db, TDB_DATA key,
 			  void (*fn)(struct db_record *rec,
 				     TDB_DATA value,
@@ -545,6 +567,16 @@ NTSTATUS dbwrap_do_locked(struct db_context *db, TDB_DATA key,
 			  void *private_data)
 {
 	struct db_record *rec;
+#ifdef KOS_NO_FORK
+    static atomic_int first_run = 1;
+    if (first_run) {
+        pthread_mutexattr_t attr;
+        pthread_mutexattr_init(&attr);
+        pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+        pthread_mutex_init(&g_db_mutex, &attr);
+        first_run = 0;
+    }
+#endif
 
 	if (db->do_locked != NULL) {
 		NTSTATUS status;
@@ -553,7 +585,13 @@ NTSTATUS dbwrap_do_locked(struct db_context *db, TDB_DATA key,
 			dbwrap_lock_order_lock(db->name, db->lock_order);
 		}
 
+#ifdef KOS_NO_FORK
+        pthread_mutex_lock(&g_db_mutex);
 		status = db->do_locked(db, key, fn, private_data);
+        pthread_mutex_unlock(&g_db_mutex);
+#else
+        status = db->do_locked(db, key, fn, private_data);
+#endif
 
 		if (db->lock_order != DBWRAP_LOCK_ORDER_NONE) {
 			dbwrap_lock_order_unlock(db->name, db->lock_order);

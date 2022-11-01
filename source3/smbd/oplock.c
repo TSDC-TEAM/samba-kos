@@ -89,6 +89,10 @@ NTSTATUS set_file_oplock(files_struct *fsp)
 		 (int)fsp->open_time.tv_sec,
 		 (int)fsp->open_time.tv_usec);
 
+#ifdef KOS_NO_FORK
+    kos_reg_smbd_server_connection(sconn);
+#endif
+
 	return NT_STATUS_OK;
 }
 
@@ -764,6 +768,12 @@ static files_struct *initial_break_processing(
 	fsp = file_find_dif(sconn, id, file_id);
 
 	if(fsp == NULL) {
+#ifdef KOS_NO_FORK
+        fsp = kos_get_files_struct(sconn, id, file_id);
+        if (fsp) {
+            return fsp;
+        }
+#endif
 		/* The file could have been closed in the meantime - return success. */
 		DBG_NOTICE("cannot find open file "
 			   "with file_id %s gen_id = %lu, allowing break to "
@@ -1426,6 +1436,10 @@ bool init_oplocks(struct smbd_server_connection *sconn)
 {
 	DEBUG(3,("init_oplocks: initializing messages.\n"));
 
+#ifdef KOS_NO_FORK
+    kos_reg_smbd_server_connection(sconn);
+#endif
+
 	messaging_register(sconn->msg_ctx, sconn, MSG_SMB_BREAK_REQUEST,
 			   process_oplock_break_message);
 	messaging_register(sconn->msg_ctx, sconn, MSG_SMB_KERNEL_BREAK,
@@ -1436,6 +1450,10 @@ bool init_oplocks(struct smbd_server_connection *sconn)
 void init_kernel_oplocks(struct smbd_server_connection *sconn)
 {
 	struct kernel_oplocks *koplocks = sconn->oplocks.kernel_ops;
+
+#ifdef KOS_NO_FORK
+    kos_reg_smbd_server_connection(sconn);
+#endif
 
 	/* only initialize once */
 	if (koplocks == NULL) {

@@ -46,6 +46,7 @@
 #include "libcli/smb/smbXcli_base.h"
 #include "lib/util/time_basic.h"
 #include "smb1_utils.h"
+#include <source3/smbd/kos/kos_thread.h>
 
 /* Internal message queue for deferred opens. */
 struct pending_message_list {
@@ -2001,7 +2002,7 @@ static void process_smb(struct smbXsrv_connection *xconn,
 			uint8_t exitcode = CVAL(inbuf, 8);
 			DBG_WARNING("SUICIDE: Exiting immediately with code %d\n",
 				    (int)exitcode);
-			exit(exitcode);
+            exit_server_cleanly("Non-SMB packet");
 		}
 
 		exit_server_cleanly("Non-SMB packet");
@@ -4012,10 +4013,7 @@ void smbd_process(struct tevent_context *ev_ctx,
 		exit_server_cleanly("talloc_zero(struct smbXsrv_client).\n");
 	}
 
-	/*
-	 * TODO: remove this...:-)
-	 */
-	global_smbXsrv_client = client;
+    kos_reg_global_smbXsrv_client(client);
 
 	sconn = talloc_zero(client, struct smbd_server_connection);
 	if (sconn == NULL) {
@@ -4251,6 +4249,7 @@ void smbd_process(struct tevent_context *ev_ctx,
 
 	TALLOC_FREE(trace_state.frame);
 
+    // @todo: KOS: check free tasks
 	exit_server_cleanly(NULL);
 }
 

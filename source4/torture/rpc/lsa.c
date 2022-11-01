@@ -37,8 +37,8 @@
 #include "lib/util/util_net.h"
 #include "libcli/resolve/resolve.h"
 
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+
+
 
 #define TEST_MACHINENAME "lsatestmach"
 #define TRUSTPW "12345678"

@@ -18,10 +18,12 @@
  *  along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/gnutls/kosgnutls.h"
+
 /* For structures internal to the NTLMSSP implementation that should not be exposed */
 
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+
+
 
 struct auth_session_info;
 

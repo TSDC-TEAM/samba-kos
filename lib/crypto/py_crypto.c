@@ -22,8 +22,8 @@
 #include "includes.h"
 #include "python/py3compat.h"
 
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+
+
 #include "lib/crypto/gnutls_helpers.h"
 
 static PyObject *py_crypto_arcfour_crypt_blob(PyObject *module, PyObject *args)

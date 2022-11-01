@@ -1619,6 +1619,9 @@ static bool get_memberuids(TALLOC_CTX *mem_ctx, gid_t gid, uid_t **pp_uids, uint
 		goto done;
 	}
 
+#ifdef __KOS__
+    assert(0);
+#else
 	/* Primary group members */
 	setpwent();
 	while ((pwd = getpwent()) != NULL) {
@@ -1630,6 +1633,7 @@ static bool get_memberuids(TALLOC_CTX *mem_ctx, gid_t gid, uid_t **pp_uids, uint
 		}
 	}
 	endpwent();
+#endif
 
 	/* Secondary group members */
 	for (gr = grp->gr_mem; (*gr != NULL) && ((*gr)[0] != '\0'); gr += 1) {

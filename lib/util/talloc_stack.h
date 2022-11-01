@@ -35,6 +35,7 @@
 #define _TALLOC_STACK_H
 
 #include <talloc.h>
+#include <source3/smbd/kos/kos_thread.h>
 
 /*
  * Create a new talloc stack frame.
@@ -62,5 +63,9 @@ TALLOC_CTX *_talloc_tos(const char *location);
  */
 
 bool talloc_stackframe_exists(void);
+
+#ifdef KOS_NO_FORK
+void kos_unreg_ts();
+#endif
 
 #endif

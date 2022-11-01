@@ -25,6 +25,7 @@
 #include "auth.h"
 #include "libcli/security/security.h"
 #include "lib/util/tevent_ntstatus.h"
+#include <source3/smbd/kos/kos_thread.h>
 
 NTSTATUS auth3_generate_session_info(struct auth4_context *auth_context,
 				     TALLOC_CTX *mem_ctx,
@@ -252,7 +253,9 @@ struct tevent_req *auth3_check_password_send(
 			      server_info->unix_name,
 			      server_info->info3->base.logon_domain.string);
 
+#ifndef KOS_NO_FORK
 	lp_load_with_shares(get_dyn_CONFIGFILE());
+#endif
 
 	/* Clear out the session keys, and pass them to the caller.
 	 * They will not be used in this form again - instead the

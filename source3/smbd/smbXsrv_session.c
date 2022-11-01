@@ -331,6 +331,12 @@ static void smbXsrv_session_close_loop(struct tevent_req *subreq)
 					       close_info0->old_session_wire_id,
 					       now, &session);
 	if (NT_STATUS_EQUAL(status, NT_STATUS_USER_SESSION_DELETED)) {
+#ifdef KOS_NO_FORK
+        session = kos_get_smbXsrv_session(close_info0->old_session_wire_id);
+        if (session) {
+            status.v = 0;
+        }
+#else
 		DEBUG(4,("smbXsrv_session_close_loop: "
 			 "old_session_wire_id %llu not found\n",
 			 (unsigned long long)close_info0->old_session_wire_id));
@@ -338,6 +344,7 @@ static void smbXsrv_session_close_loop(struct tevent_req *subreq)
 			NDR_PRINT_DEBUG(smbXsrv_session_closeB, &close_blob);
 		}
 		goto next;
+#endif
 	}
 	if (!NT_STATUS_IS_OK(status) &&
 	    !NT_STATUS_EQUAL(status, NT_STATUS_MORE_PROCESSING_REQUIRED) &&
@@ -409,7 +416,7 @@ next:
 		exit_server_cleanly(r);
 		return;
 	}
-	tevent_req_set_callback(subreq, smbXsrv_session_close_loop, client);
+    tevent_req_set_callback(subreq, smbXsrv_session_close_loop, client);
 }
 
 static void smbXsrv_session_close_shutdown_done(struct tevent_req *subreq)
@@ -1358,6 +1365,8 @@ NTSTATUS smbXsrv_session_create(struct smbXsrv_connection *conn,
 	}
 
 	*_session = session;
+
+    kos_reg_smbXsrv_session(session);
 	return NT_STATUS_OK;
 }
 
@@ -1484,6 +1493,10 @@ NTSTATUS smbXsrv_session_find_channel(const struct smbXsrv_session *session,
 		*_c = c;
 		return NT_STATUS_OK;
 	}
+
+    if (0 == kos_smbXsrv_session_find_channel(session, conn, _c)) {
+        return NT_STATUS_OK;
+    }
 
 	return NT_STATUS_USER_SESSION_DELETED;
 }

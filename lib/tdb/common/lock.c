@@ -26,6 +26,7 @@
 */
 
 #include "tdb_private.h"
+#include <source3/smbd/kos/kos_thread.h>
 
 _PUBLIC_ void tdb_setalarm_sigptr(struct tdb_context *tdb, volatile sig_atomic_t *ptr)
 {
@@ -376,12 +377,12 @@ int tdb_nest_lock(struct tdb_context *tdb, uint32_t offset, int ltype,
 	if (tdb->num_lockrecs == tdb->lockrecs_array_length) {
 		new_lck = (struct tdb_lock_type *)realloc(
 			tdb->lockrecs,
-			sizeof(*tdb->lockrecs) * (tdb->num_lockrecs+1));
+			sizeof(*tdb->lockrecs) * (tdb->num_lockrecs+256));
 		if (new_lck == NULL) {
 			errno = ENOMEM;
 			return -1;
 		}
-		tdb->lockrecs_array_length = tdb->num_lockrecs+1;
+		tdb->lockrecs_array_length = tdb->num_lockrecs+256;
 		tdb->lockrecs = new_lck;
 	}
 

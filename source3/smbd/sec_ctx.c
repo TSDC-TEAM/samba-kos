@@ -365,7 +365,12 @@ static void set_sec_ctx_internal(uid_t uid, gid_t gid,
 	 * directory.
 	 * BUG: https://bugzilla.samba.org/show_bug.cgi?id=14682
 	 */
-	SAFE_FREE(LastDir);
+#ifdef KOS_NO_FORK
+    // @todo: free???
+    char *last_dir = kos_get_last_dir();
+	SAFE_FREE(last_dir);
+    kos_set_last_dir(NULL);
+#endif
 }
 
 void set_sec_ctx(uid_t uid, gid_t gid, int ngroups, gid_t *groups, const struct security_token *token)

@@ -33,10 +33,10 @@
 #include "libcli/auth/proto.h"
 #include <system/network.h>
 
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
-#include <gnutls/x509.h>
-#include <gnutls/abstract.h>
+
+
+
+
 
 enum test_wrong {
 	WRONG_MAGIC,

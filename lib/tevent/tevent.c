@@ -70,6 +70,10 @@
 #include <sys/eventfd.h>
 #endif
 
+#ifdef __KOS__
+#include <assert.h>
+#endif
+
 struct tevent_ops_list {
 	struct tevent_ops_list *next, *prev;
 	const char *name;
@@ -296,12 +300,16 @@ static void tevent_prep_atfork(void)
 {
 	int ret;
 
+#if 1 // __KOS__
+    fprintf(stderr, "KOS: skipping %s\n", __func__);
+#else
 	ret = pthread_atfork(tevent_atfork_prepare,
 			     tevent_atfork_parent,
 			     tevent_atfork_child);
 	if (ret != 0) {
 		abort();
 	}
+#endif
 }
 
 #endif

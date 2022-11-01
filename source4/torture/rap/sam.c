@@ -29,8 +29,8 @@
 #include "../libcli/auth/libcli_auth.h"
 #include "torture/rpc/torture_rpc.h"
 
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+
+
 
 #define TEST_RAP_USER "torture_rap_user"
 

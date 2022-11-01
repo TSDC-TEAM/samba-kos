@@ -845,7 +845,10 @@ _PUBLIC_ const char *cli_credentials_get_workstation(struct cli_credentials *cre
 		}
 	}
 
-	return cred->workstation;
+    // __KOS__
+    return "WORKSTATION";
+
+    // return cred->workstation;
 }
 
 _PUBLIC_ bool cli_credentials_set_workstation(struct cli_credentials *cred, 

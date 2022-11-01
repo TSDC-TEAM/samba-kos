@@ -31,8 +31,8 @@
 #endif
 
 #include "lib/crypto/gnutls_helpers.h"
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+#include "lib/gnutls/kosgnutls.h"
+
 
 bool netlogon_creds_is_random_challenge(const struct netr_Credential *challenge)
 {

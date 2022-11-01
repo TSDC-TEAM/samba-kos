@@ -30,8 +30,8 @@
 #include "../lib/util/bitmap.h"
 #include "passdb/lookup_sid.h"
 
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+
+
 
 static NTSTATUS create_acl_blob(const struct security_descriptor *psd,
 			DATA_BLOB *pblob,

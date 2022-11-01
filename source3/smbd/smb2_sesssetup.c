@@ -30,8 +30,8 @@
 #include "../lib/util/tevent_ntstatus.h"
 
 #include "lib/crypto/gnutls_helpers.h"
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+
+
 
 #undef DBGC_CLASS
 #define DBGC_CLASS DBGC_SMB2

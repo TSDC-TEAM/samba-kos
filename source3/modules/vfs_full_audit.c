@@ -580,9 +580,11 @@ static TALLOC_CTX *tmp_do_log_ctx;
  */
 static TALLOC_CTX *do_log_ctx(void)
 {
+#ifndef KOS_NO_FORK
         if (tmp_do_log_ctx == NULL) {
                 tmp_do_log_ctx = talloc_named_const(NULL, 0, "do_log_ctx");
         }
+#endif
         return tmp_do_log_ctx;
 }
 

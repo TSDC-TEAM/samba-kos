@@ -31,8 +31,8 @@
 #include "libcli/auth/libcli_auth.h"
 #include "param/param.h"
 
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+
+
 
 #define TEST_MACHINE_NAME "samlogontest"
 #define TEST_USER_NAME "samlogontestuser"

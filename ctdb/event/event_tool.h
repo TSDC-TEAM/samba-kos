@@ -20,7 +20,7 @@
 #ifndef __CTDB_EVENT_TOOL_H__
 #define __CTDB_EVENT_TOOL_H__
 
-#include <popt.h>
+
 #include <talloc.h>
 
 struct event_tool_context;

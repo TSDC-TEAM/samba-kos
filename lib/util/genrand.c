@@ -21,9 +21,10 @@
 
 #include "replace.h"
 #include "lib/util/genrand.h"
+#include "lib/gnutls/kosgnutls.h"
 
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+
+
 
 /*
  * Details about the GnuTLS CSPRNG:

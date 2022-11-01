@@ -71,7 +71,8 @@ void become_daemon(bool do_fork, bool no_session, bool log_stdout)
 	if (!no_session) {
 		int ret = setsid();
 		if (ret == -1) {
-			exit_daemon("Failed to create session", errno);
+            // KOS: @todo TMP
+            // exit_daemon("Failed to create session", errno);
 		}
 	}
 #elif defined(TIOCNOTTY)

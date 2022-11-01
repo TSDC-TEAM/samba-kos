@@ -1068,6 +1068,10 @@ int messaging_dgm_init(struct tevent_context *ev,
 
 	ret = bind(ctx->sock, (struct sockaddr *)(void *)&socket_address,
 		   sizeof(socket_address));
+#if 1 // __KOS__
+    fprintf(stderr, "KOS: skipping bind()\n");
+    ret = 0;
+#endif
 	if (ret == -1) {
 		ret = errno;
 		DBG_WARNING("bind failed: %s\n", strerror(ret));

@@ -129,9 +129,11 @@ void tevent_get_trace_callback(struct tevent_context *ev,
 void tevent_trace_point_callback(struct tevent_context *ev,
 				 enum tevent_trace_point tp)
 {
+#if 0 // __KOS__
 	if (ev->tracing.point.callback != NULL) {
 		ev->tracing.point.callback(tp, ev->tracing.point.private_data);
 	}
+#endif
 }
 
 void tevent_set_trace_fd_callback(struct tevent_context *ev,

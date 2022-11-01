@@ -28,6 +28,11 @@
 #include "tevent.h"
 #include "tevent_util.h"
 #include "tevent_internal.h"
+#include <source3/smbd/kos/kos_thread.h>
+
+#ifdef KOS_NO_FORK
+#include <source3/smbd/kos/kos_thread.h>
+#endif
 
 struct poll_event_context {
 	/* a pointer back to the generic event_context */
@@ -566,8 +571,15 @@ static int poll_event_loop_poll(struct tevent_context *ev,
 		flags &= fde->flags;
 		if (flags != 0) {
 			DLIST_DEMOTE(ev->fd_events, fde);
-			return tevent_common_invoke_fd_handler(fde, flags, NULL);
-		}
+#ifdef KOS_NO_FORK
+            kos_lock_poll_mtx();
+            int ret = tevent_common_invoke_fd_handler(fde, flags, NULL);
+            kos_unlock_poll_mtx();
+            return ret;
+#else
+            return tevent_common_invoke_fd_handler(fde, flags, NULL);
+#endif
+        }
 	}
 
 	for (i = 0; i < poll_ev->num_fds; i++) {

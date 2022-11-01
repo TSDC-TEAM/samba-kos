@@ -41,6 +41,7 @@
 #include "lib/util/time_basic.h"
 #include "lib/util/string_wrappers.h"
 #include "lib/cmdline/cmdline.h"
+#include "kos_client.h"
 
 #ifndef REGISTER
 #define REGISTER 0
@@ -654,6 +655,30 @@ static NTSTATUS display_finfo(struct cli_state *cli_state, struct file_info *fin
 		TALLOC_FREE(afname);
 	}
 	return status;
+}
+
+static kos_client_ls_stat_t *g_stat = NULL;
+
+static NTSTATUS kos_collect_finfo(struct cli_state *cli_state, struct file_info *finfo,
+                                  const char *dir)
+{
+    kos_client_ls_stat_t *cur = (kos_client_ls_stat_t *)malloc(sizeof(kos_client_ls_stat_t));
+    cur->size = finfo->size;
+    cur->name = strdup(finfo->name);
+    cur->is_dir = 0 != (finfo->attr & FILE_ATTRIBUTE_DIRECTORY);
+    cur->next = NULL;
+
+    if (g_stat == NULL) {
+        g_stat = cur;
+    } else {
+        kos_client_ls_stat_t *tail = g_stat;
+        while (tail->next != NULL) {
+            tail = tail->next;
+        }
+        tail->next = cur;
+    }
+
+    return NT_STATUS_OK;
 }
 
 /****************************************************************************
@@ -3315,6 +3340,36 @@ static int cmd_rmdir(void)
 	}
 
 	return 0;
+}
+
+static int kos_cmd_rmdir(const char *mask)
+{
+    TALLOC_CTX *ctx = talloc_tos();
+    char *buf = NULL;
+    char *targetname = NULL;
+    struct cli_state *targetcli;
+    struct cli_credentials *creds = samba_cmdline_get_creds();
+    NTSTATUS status;
+
+    if (mask == NULL) {
+        return 1;
+    }
+
+    status = cli_resolve_path(ctx, "",
+                              creds,
+                              cli, mask, &targetcli, &targetname);
+    if (!NT_STATUS_IS_OK(status)) {
+        d_printf("rmdir %s: %s\n", mask, nt_errstr(status));
+        return 1;
+    }
+
+    status = cli_rmdir(targetcli, targetname);
+    if (!NT_STATUS_IS_OK(status)) {
+        d_printf("%s removing remote directory file %s\n",
+                 nt_errstr(status), mask);
+    }
+
+    return 0;
 }
 
 /****************************************************************************
@@ -6269,8 +6324,34 @@ static int do_message_op(struct cli_credentials *creds)
   main program
 ****************************************************************************/
 
-int main(int argc,char *argv[])
+// @todo: use macro
+// int main(int argc,char *argv[])
+int real_main(int argc,char *argv[])
 {
+    int custom_argc = 8;
+    char **custom_argv = (char **)malloc(sizeof(char **) * custom_argc);
+
+    custom_argv[0] = strdup("./Smbclient");
+    custom_argv[1] = strdup("-s");
+#ifdef __KOS__
+    custom_argv[2] = strdup("/usr/local/samba/etc/smb.conf");
+#else
+    custom_argv[2] = strdup("./smb.conf");
+#endif
+    custom_argv[3] = strdup("-d=10");
+#ifdef __KOS__
+    custom_argv[4] = strdup("//10.0.2.2/tmp");
+#else
+    custom_argv[4] = strdup("//127.0.0.1/tmp");
+#endif
+    custom_argv[5] = strdup("--port=1490");
+    custom_argv[6] = strdup("-U=user%localntdc2pass");
+    custom_argv[7] = strdup("-c=ls");
+    custom_argv[custom_argc] = NULL;
+
+    argv = custom_argv;
+    argc = custom_argc;
+
 	const char **const_argv = discard_const_p(const char *, argv);
 	char *base_directory = NULL;
 	int opt;
@@ -6426,7 +6507,7 @@ int main(int argc,char *argv[])
 	lp_set_cmdline("log level", "1");
 
 	/* skip argv(0) */
-	pc = samba_popt_get_context(getprogname(),
+	pc = samba_popt_get_context("smbclient",
 				    argc,
 				    const_argv,
 				    long_options,
@@ -6631,5 +6712,127 @@ int main(int argc,char *argv[])
 	}
 
 	TALLOC_FREE(frame);
+
+    for (int i = 0; i < custom_argc; ++i) {
+        free(custom_argv[i]);
+    }
+    free(custom_argv);
+
 	return rc;
+}
+
+static const char *SMB_PREFIX = "\\";
+static const int ADDR_BUF_SIZE = 1024;
+
+static char *kos_client_add_prefix(const char *address) {
+    char *buffer = (char *)malloc(sizeof(char) * ADDR_BUF_SIZE);
+    snprintf(buffer, ADDR_BUF_SIZE, "%s%s", SMB_PREFIX, address);
+    return buffer;
+}
+
+int kos_client_connect(const char *address, int port, const char *user, const char *password) {
+    if (!cli) {
+        bool ok = lp_load_global("./smb.conf");
+        if (!ok) {
+            fprintf(stderr, "Can't load conf file\n");
+            exit(1);
+        }
+
+        TALLOC_CTX *frame = talloc_stackframe();
+        struct cli_credentials *creds = NULL;
+
+        if (!client_set_cur_dir("\\")) {
+            return 1;
+        }
+
+        smb_init_locale();
+
+        samba_cmdline_init(frame, SAMBA_CMDLINE_CONFIG_CLIENT, true /* require_smbconf */);
+
+        creds = samba_cmdline_get_creds();
+
+        cli_credentials_set_username(creds, user, CRED_SPECIFIED);
+        cli_credentials_set_password(creds, password, CRED_SPECIFIED);
+        // @todo: get it automatically
+        cli_credentials_set_domain(creds, "WORKGROUP", CRED_SPECIFIED);
+        // @todo: get it automatically
+        cli_credentials_set_workstation(creds, "WORKSTATION", CRED_SPECIFIED);
+
+        NTSTATUS status;
+
+        status = cli_cm_open(talloc_tos(), NULL,
+                             desthost,
+                             address,
+                             creds,
+                             have_ip ? &dest_ss : NULL, port,
+                             name_type,
+                             &cli);
+        if (!NT_STATUS_IS_OK(status)) {
+            return 1;
+        }
+
+        cli_set_timeout(cli, io_timeout * 1000);
+    }
+
+    return 0;
+}
+
+void kos_client_disconnect() {
+    if (cli) {
+        cli_shutdown(cli);
+        cli = NULL;
+    }
+}
+
+int kos_client_get_file(const char *remote_name, const char *local_name) {
+    char *buffer = kos_client_add_prefix(remote_name);
+    do_get(buffer, local_name, false);
+    free(buffer);
+    return 0;
+}
+
+int kos_client_put_file(const char *remote_name, const char *local_name) {
+    char *buffer = kos_client_add_prefix(remote_name);
+    do_put(buffer, local_name, false);
+    free(buffer);
+    return 0;
+}
+
+int kos_client_ls(const char *mask, kos_client_ls_stat_t **stat) {
+    uint32_t attribute = FILE_ATTRIBUTE_DIRECTORY | FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_HIDDEN;
+    char *buffer = kos_client_add_prefix(mask);
+    do_list(buffer, attribute, kos_collect_finfo, false, true);
+    *stat = g_stat;
+    g_stat = NULL;
+    free(buffer);
+    return 0;
+}
+
+void kos_client_ls_stat_free(kos_client_ls_stat_t *stat) {
+    while (stat != NULL) {
+        kos_client_ls_stat_t *tmp = stat->next;
+        free(stat->name);
+        free(stat);
+        stat = tmp;
+    }
+}
+
+int kos_client_mkdir(const char *remote_name) {
+    char *buffer = kos_client_add_prefix(remote_name);
+    do_mkdir(buffer);
+    free(buffer);
+    return 0;
+}
+
+int kos_client_rm(const char *mask) {
+    char *buffer = kos_client_add_prefix(mask);
+    uint32_t attribute = FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_HIDDEN;
+    do_list(buffer, attribute, do_del, false, false);
+    free(buffer);
+    return 0;
+}
+
+int kos_client_rmdir(const char *mask) {
+    kos_cmd_rmdir(mask);
+    return 0;
 }

@@ -57,6 +57,7 @@
 #include "g_lock.h"
 #include "smbd/fd_handle.h"
 #include "lib/global_contexts.h"
+#include <source3/smbd/kos/kos_thread.h>
 
 #undef DBGC_CLASS
 #define DBGC_CLASS DBGC_LOCKING
@@ -635,6 +636,13 @@ fail:
 static NTSTATUS share_mode_data_store(
 	struct share_mode_data *d, bool *have_share_entries)
 {
+#ifdef KOS_NO_FORK
+    if (!d) {
+        DBG_DEBUG("not modified\n");
+        return NT_STATUS_OK;
+    }
+#endif
+
 	TDB_DATA key = locking_key(&d->id);
 	struct locking_tdb_data *ltdb = NULL;
 	DATA_BLOB blob = { 0 };
@@ -733,6 +741,7 @@ fail:
 	return NULL;
 }
 
+#ifndef KOS_NO_FORK
 /*
  * Key that's locked with g_lock
  */
@@ -750,6 +759,7 @@ static size_t share_mode_lock_key_refcount = 0;
  */
 static struct share_mode_data *static_share_mode_data = NULL;
 static size_t static_share_mode_data_refcount = 0;
+#endif
 
 /*******************************************************************
  Either fetch a share mode from the database, or allocate a fresh
@@ -815,7 +825,7 @@ static void get_static_share_mode_data_fn(
 	}
 
 	d->id = state->id;
-	static_share_mode_data = d;
+    kos_reg_share_mode_data(d);
 }
 
 static NTSTATUS get_static_share_mode_data(
@@ -833,11 +843,11 @@ static NTSTATUS get_static_share_mode_data(
 	};
 	NTSTATUS status;
 
-	SMB_ASSERT(static_share_mode_data == NULL);
+	SMB_ASSERT(kos_get_share_mode_data() == NULL);
 
 	status = g_lock_dump(
 		lock_ctx,
-		share_mode_lock_key,
+		kos_get_share_mode_lock_key(),
 		get_static_share_mode_data_fn,
 		&state);
 	if (!NT_STATUS_IS_OK(status)) {
@@ -871,6 +881,8 @@ struct share_mode_lock *get_share_mode_lock(
 	struct share_mode_lock *lck = NULL;
 	NTSTATUS status;
 	int cmp;
+    int count;
+    int key_count;
 
 	lck = talloc(mem_ctx, struct share_mode_lock);
 	if (lck == NULL) {
@@ -878,14 +890,15 @@ struct share_mode_lock *get_share_mode_lock(
 		return NULL;
 	}
 
-	if (static_share_mode_data != NULL) {
-		if (!file_id_equal(&static_share_mode_data->id, &id)) {
+	if (kos_get_share_mode_data() != NULL) {
+        struct share_mode_data *p = kos_get_share_mode_data();
+		if (!file_id_equal(&p->id, &id)) {
 			struct file_id_buf existing;
 			struct file_id_buf requested;
 
 			DBG_ERR("Can not lock two share modes "
 				"simultaneously: existing %s requested %s\n",
-				file_id_str_buf(static_share_mode_data->id, &existing),
+				file_id_str_buf(p->id, &existing),
 				file_id_str_buf(id, &requested));
 
 			smb_panic(__location__);
@@ -894,7 +907,7 @@ struct share_mode_lock *get_share_mode_lock(
 		goto done;
 	}
 
-	if (share_mode_lock_key_refcount == 0) {
+	if (kos_get_share_mode_lock_key_refcount() == 0) {
 		status = g_lock_lock(
 			lock_ctx,
 			key,
@@ -905,20 +918,22 @@ struct share_mode_lock *get_share_mode_lock(
 				  nt_errstr(status));
 			goto fail;
 		}
-		memcpy(share_mode_lock_key_data, key.dptr, key.dsize);
+		memcpy(kos_get_share_mode_lock_key_data(), key.dptr, key.dsize);
 	}
 
-	cmp = tdb_data_cmp(share_mode_lock_key, key);
+	cmp = tdb_data_cmp(kos_get_share_mode_lock_key(), key);
 	if (cmp != 0) {
 		DBG_WARNING("Can not lock two share modes simultaneously\n");
 		smb_panic(__location__);
 		goto fail;
 	}
 
-	SMB_ASSERT(share_mode_lock_key_refcount < SIZE_MAX);
-	share_mode_lock_key_refcount += 1;
+    key_count = kos_get_share_mode_lock_key_refcount();
+	SMB_ASSERT(key_count < SIZE_MAX);
+    key_count += 1;
+    kos_set_share_mode_lock_key_refcount(key_count);
 
-	SMB_ASSERT(static_share_mode_data_refcount == 0);
+	SMB_ASSERT(kos_get_share_mode_data_refcount() == 0);
 
 	status = get_static_share_mode_data(
 		id,
@@ -928,29 +943,32 @@ struct share_mode_lock *get_share_mode_lock(
 	if (!NT_STATUS_IS_OK(status)) {
 		DBG_DEBUG("get_static_share_mode_data failed: %s\n",
 			  nt_errstr(status));
-		share_mode_lock_key_refcount -= 1;
+        key_count -= 1;
+        kos_set_share_mode_lock_key_refcount(key_count);
 		goto fail;
 	}
 done:
-	static_share_mode_data_refcount += 1;
-	lck->data = static_share_mode_data;
+    count = kos_get_share_mode_data_refcount();
+    count += 1;
+    kos_set_share_mode_data_refcount(count);
+	lck->data = kos_get_share_mode_data();
 
 	talloc_set_destructor(lck, share_mode_lock_destructor);
 
 	if (CHECK_DEBUGLVL(DBGLVL_DEBUG)) {
 		struct file_id_buf returned;
 
-		DBG_DEBUG("Returning %s (data_refcount=%zu key_refcount=%zu)\n",
+		DBG_DEBUG("Returning %s (data_refcount=%d key_refcount=%d)\n",
 			  file_id_str_buf(id, &returned),
-			  static_share_mode_data_refcount,
-			  share_mode_lock_key_refcount);
+              kos_get_share_mode_data_refcount(),
+              kos_get_share_mode_lock_key_refcount());
 	}
 
 	return lck;
 fail:
 	TALLOC_FREE(lck);
-	if (share_mode_lock_key_refcount == 0) {
-		status = g_lock_unlock(lock_ctx, share_mode_lock_key);
+	if (kos_get_share_mode_lock_key_refcount() == 0) {
+		status = g_lock_unlock(lock_ctx, kos_get_share_mode_lock_key());
 		if (!NT_STATUS_IS_OK(status)) {
 			DBG_ERR("g_lock_unlock failed: %s\n",
 				nt_errstr(status));
@@ -963,27 +981,34 @@ static int share_mode_lock_destructor(struct share_mode_lock *lck)
 {
 	bool have_share_entries = false;
 	NTSTATUS status;
+    int count;
+    int key_count;
 
-	SMB_ASSERT(static_share_mode_data_refcount > 0);
-	static_share_mode_data_refcount -= 1;
+    count = kos_get_share_mode_data_refcount();
+    key_count = kos_get_share_mode_lock_key_refcount();
+	SMB_ASSERT(count > 0);
+    count -= 1;
+    kos_set_share_mode_data_refcount(count);
 
-	if (static_share_mode_data_refcount > 0) {
+	if (kos_get_share_mode_data_refcount() > 0) {
 		return 0;
 	}
 
 	status = share_mode_data_store(
-		static_share_mode_data, &have_share_entries);
+		kos_get_share_mode_data(), &have_share_entries);
 	if (!NT_STATUS_IS_OK(status)) {
 		DBG_ERR("share_mode_data_store failed: %s\n",
 			nt_errstr(status));
+        return 0;
 		smb_panic("Could not store share mode data\n");
 	}
 
-	SMB_ASSERT(share_mode_lock_key_refcount > 0);
-	share_mode_lock_key_refcount -= 1;
+	SMB_ASSERT(key_count > 0);
+    key_count -= 1;
+    kos_set_share_mode_lock_key_refcount(key_count);
 
-	if (share_mode_lock_key_refcount == 0) {
-		status = g_lock_unlock(lock_ctx, share_mode_lock_key);
+	if (key_count == 0) {
+		status = g_lock_unlock(lock_ctx, kos_get_share_mode_lock_key());
 		if (!NT_STATUS_IS_OK(status)) {
 			DBG_ERR("g_lock_unlock failed: %s\n",
 				nt_errstr(status));
@@ -997,11 +1022,14 @@ static int share_mode_lock_destructor(struct share_mode_lock *lck)
 		 * share_mode_data_store above has left nothing in the
 		 * database.
 		 */
-		share_mode_memcache_store(static_share_mode_data);
-		static_share_mode_data = NULL;
+		share_mode_memcache_store(kos_get_share_mode_data());
+        kos_reg_share_mode_data(NULL);
 	}
 
-	TALLOC_FREE(static_share_mode_data);
+    struct share_mode_data *p = kos_get_share_mode_data();
+
+	TALLOC_FREE(p);
+    kos_reg_share_mode_data(NULL);
 	return 0;
 }
 
@@ -1058,8 +1086,9 @@ NTSTATUS share_mode_do_locked(
 		.key = key, .fn = fn, .private_data = private_data,
 	};
 	NTSTATUS status;
+    int key_count;
 
-	if (share_mode_lock_key_refcount == 0) {
+	if (kos_get_share_mode_lock_key_refcount() == 0) {
 		status = g_lock_lock(
 			lock_ctx,
 			key,
@@ -1070,14 +1099,16 @@ NTSTATUS share_mode_do_locked(
 				  nt_errstr(status));
 			return status;
 		}
-		memcpy(share_mode_lock_key_data, key.dptr, key.dsize);
+		memcpy(kos_get_share_mode_lock_key_data(), key.dptr, key.dsize);
 	}
 
-	SMB_ASSERT(share_mode_lock_key_refcount < SIZE_MAX);
-	share_mode_lock_key_refcount += 1;
+    key_count = kos_get_share_mode_lock_key_refcount();
+	SMB_ASSERT(key_count < SIZE_MAX);
+    key_count += 1;
+    kos_set_share_mode_lock_key_refcount(key_count);
 
-	key_refcount = share_mode_lock_key_refcount;
-	data_refcount = static_share_mode_data_refcount;
+	key_refcount = key_count;
+	data_refcount = kos_get_share_mode_data_refcount();
 
 	status = g_lock_dump(
 		lock_ctx, key, share_mode_do_locked_fn, &state);
@@ -1086,11 +1117,12 @@ NTSTATUS share_mode_do_locked(
 			  nt_errstr(status));
 	}
 
-	SMB_ASSERT(data_refcount == static_share_mode_data_refcount);
-	SMB_ASSERT(key_refcount == share_mode_lock_key_refcount);
-	share_mode_lock_key_refcount -= 1;
+	SMB_ASSERT(data_refcount == kos_get_share_mode_data_refcount());
+	SMB_ASSERT(key_refcount == key_count);
+    key_count -= 1;
+    kos_set_share_mode_lock_key_refcount(key_count);
 
-	if (share_mode_lock_key_refcount == 0) {
+	if (key_count == 0) {
 		status = g_lock_unlock(lock_ctx, key);
 		if (!NT_STATUS_IS_OK(status)) {
 			DBG_DEBUG("g_lock_unlock failed: %s\n",

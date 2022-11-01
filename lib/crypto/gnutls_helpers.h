@@ -18,7 +18,7 @@
 #ifndef _GNUTLS_HELPERS_H
 #define _GNUTLS_HELPERS_H
 
-#include <gnutls/gnutls.h>
+
 
 #include "libcli/util/ntstatus.h"
 #include "libcli/util/werror.h"

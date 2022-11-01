@@ -31,8 +31,8 @@
 #include "torture/rpc/torture_rpc.h"
 #include "param/param.h"
 
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+
+
 
 #undef strcasecmp
 

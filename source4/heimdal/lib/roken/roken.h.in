@@ -226,7 +226,7 @@ struct sockaddr_dl;
 #include <arpa/nameser.h>
 #endif
 #ifdef HAVE_RESOLV_H
-#include <resolv.h>
+#include <kos/samba/libs/resolv/kosresolv.h>
 #endif
 #ifdef HAVE_SYSLOG_H
 #include <syslog.h>
@@ -620,8 +620,8 @@ ROKEN_LIB_FUNCTION int ROKEN_LIB_CALL cgetstr(char *, const char *, char **);
 #endif
 
 #ifndef HAVE_INITGROUPS
-#define initgroups rk_initgroups
-ROKEN_LIB_FUNCTION int ROKEN_LIB_CALL initgroups(const char *, gid_t);
+//#define initgroups rk_initgroups
+//ROKEN_LIB_FUNCTION int ROKEN_LIB_CALL initgroups(const char *, gid_t);
 #endif
 
 #ifndef HAVE_FCHOWN

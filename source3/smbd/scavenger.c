@@ -440,7 +440,9 @@ void scavenger_schedule_disconnected(struct files_struct *fsp)
 		   fsp->op->global->durable_timeout_msec/1000.0));
 
 	SMB_ASSERT(server_id_is_disconnected(&fsp->op->global->server_id));
+#ifndef KOS_NO_FORK
 	SMB_ASSERT(!server_id_equal(&self, &smbd_scavenger_state->parent_id));
+#endif
 	SMB_ASSERT(!smbd_scavenger_state->am_scavenger);
 
 	msg_blob = data_blob_const(&msg, sizeof(msg));

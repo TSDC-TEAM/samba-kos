@@ -950,10 +950,15 @@ static int sys_bsd_setgroups(gid_t primary_gid, int setlen, const gid_t *gidset)
 
 int sys_getgroups(int setlen, gid_t *gidset)
 {
+#if 1 // __KOS__
+    // fprintf(stderr, "KOS: skipping %s\n", __func__);
+    return 0;
+#else
 #if defined(HAVE_BROKEN_GETGROUPS)
 	return sys_broken_getgroups(setlen, gidset);
 #else
 	return getgroups(setlen, gidset);
+#endif
 #endif
 }
 
@@ -1011,8 +1016,11 @@ char *sys_realpath(const char *path)
 {
 	char *result;
 
-#ifdef REALPATH_TAKES_NULL
+#if 1 // REALPATH_TAKES_NULL
 	result = realpath(path, NULL);
+    if (result && *result != '/') {
+        return NULL;
+    }
 #else
 	result = SMB_MALLOC_ARRAY(char, PATH_MAX + 1);
 	if (result) {

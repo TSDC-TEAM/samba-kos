@@ -24,8 +24,8 @@
 #include "libcli/smb2/smb2.h"
 #include "libcli/smb2/smb2_calls.h"
 
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+
+
 #include "lib/crypto/gnutls_helpers.h"
 
 /*

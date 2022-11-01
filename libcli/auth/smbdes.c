@@ -22,9 +22,8 @@
 
 #include "includes.h"
 #include "libcli/auth/libcli_auth.h"
+#include "lib/gnutls/kosgnutls.h"
 
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
 
 static void str_to_key(const uint8_t *str,uint8_t *key)
 {

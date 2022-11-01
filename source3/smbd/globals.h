@@ -98,12 +98,13 @@ extern int conn_ctx_stack_ndx;
 struct vfs_init_function_entry;
 extern struct vfs_init_function_entry *backends;
 extern char *sparse_buf;
+#ifndef KOS_NO_FORK
 extern char *LastDir;
+#endif
 
 struct smbd_parent_context;
 extern struct smbd_parent_context *am_parent;
 extern struct memcache *smbd_memcache_ctx;
-extern bool exit_firsttime;
 
 struct tstream_context;
 struct smbd_smb2_request;
@@ -941,8 +942,6 @@ struct smbd_server_connection {
 
 	struct smbXsrv_client *client;
 };
-
-extern struct smbXsrv_client *global_smbXsrv_client;
 
 void smbd_init_globals(void);
 

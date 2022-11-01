@@ -17,7 +17,7 @@
  *  along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <popt.h>
+
 
 void popt_common_callback(poptContext con,
 			 enum poptCallbackReason reason,

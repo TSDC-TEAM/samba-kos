@@ -21,7 +21,7 @@
 #define __CTDB_CONF_TOOL_H__
 
 #include <stdbool.h>
-#include <popt.h>
+
 #include <talloc.h>
 
 struct conf_tool_context;

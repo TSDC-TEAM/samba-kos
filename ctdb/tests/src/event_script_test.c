@@ -23,7 +23,7 @@
 
 #include "replace.h"
 
-#include <popt.h>
+
 #include <talloc.h>
 
 #include <assert.h>

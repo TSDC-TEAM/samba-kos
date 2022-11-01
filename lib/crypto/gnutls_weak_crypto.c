@@ -17,12 +17,13 @@
 
 #include "includes.h"
 #include "lib/crypto/gnutls_helpers.h"
+#include "lib/gnutls/kosgnutls.h"
 
-#include <gnutls/crypto.h>
-#include <gnutls/gnutls.h>
 
 bool samba_gnutls_weak_crypto_allowed(void)
 {
+    return true;
+
 	gnutls_cipher_hd_t cipher_hnd = NULL;
 	gnutls_datum_t key = {
 		.data = discard_const_p(unsigned char, "SystemLibraryDTC"),

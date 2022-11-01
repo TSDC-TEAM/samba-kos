@@ -52,7 +52,7 @@
 #include <stropts.h>
 #endif /* STREAMPTY */
 
-#include <popt.h>
+
 
 #ifdef HAVE_ERR_H
 #include <err.h>

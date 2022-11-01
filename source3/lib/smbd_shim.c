@@ -24,6 +24,7 @@
 
 #include "includes.h"
 #include "smbd_shim.h"
+#include <source3/smbd/kos/kos_thread.h>
 
 static struct smbd_shim shim;
 
@@ -42,6 +43,10 @@ void send_stat_cache_delete_message(struct messaging_context *msg_ctx,
 
 bool change_to_root_user(void)
 {
+#if 1 // __KOS__
+    return false;
+#endif
+
 	if (shim.change_to_root_user) {
 		return shim.change_to_root_user();
 	}
@@ -93,14 +98,20 @@ void contend_level2_oplocks_end(files_struct *fsp,
 
 void become_root(void)
 {
+#ifdef KOS_NO_FORK
+    return;
+#endif
 	if (shim.become_root) {
 		shim.become_root();
 	}
-        return;
+    return;
 }
 
 void unbecome_root(void)
 {
+#ifdef KOS_NO_FORK
+    return;
+#endif
 	if (shim.unbecome_root) {
 		shim.unbecome_root();
 	}

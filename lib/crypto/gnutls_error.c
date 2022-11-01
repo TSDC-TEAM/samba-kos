@@ -17,8 +17,8 @@
 
 #include "includes.h"
 #include "gnutls_helpers.h"
+#include "lib/gnutls/kosgnutls.h"
 
-#include <gnutls/gnutls.h>
 
 NTSTATUS _gnutls_error_to_ntstatus(int gnutls_rc,
 				   NTSTATUS blocked_status,

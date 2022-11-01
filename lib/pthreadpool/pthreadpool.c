@@ -360,8 +360,12 @@ static void pthreadpool_child(void)
 
 static void pthreadpool_prep_atfork(void)
 {
+#if 1 // __KOS__
+    fprintf(stderr, "KOS: skipping %s\n", __func__);
+#else
 	pthread_atfork(pthreadpool_prepare, pthreadpool_parent,
 		       pthreadpool_child);
+#endif
 }
 
 static int pthreadpool_free(struct pthreadpool *pool)
@@ -702,16 +706,20 @@ static int pthreadpool_create_thread(struct pthreadpool *pool)
 		return res;
 	}
 
+#if 0 // __KOS__
 	res = pthread_sigmask(SIG_BLOCK, &mask, &omask);
 	if (res != 0) {
 		pthread_attr_destroy(&thread_attr);
 		return res;
 	}
+#endif
 
 	res = pthread_create(&thread_id, &thread_attr, pthreadpool_server,
 			     (void *)pool);
 
+#if 0 // __KOS__
 	assert(pthread_sigmask(SIG_SETMASK, &omask, NULL) == 0);
+#endif
 
 	pthread_attr_destroy(&thread_attr);
 

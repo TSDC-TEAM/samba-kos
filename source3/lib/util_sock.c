@@ -973,7 +973,12 @@ int create_pipe_sock(const char *socket_dir,
 		goto out_close;
 	}
 
-	if (bind(sock, (struct sockaddr *)&sunaddr, sizeof(sunaddr)) == -1) {
+    int bind_res = bind(sock, (struct sockaddr *)&sunaddr, sizeof(sunaddr));
+#if 0 // _KOS
+	if (bind_res == -1) {
+#else
+    if (0) {
+#endif
 		DEBUG(0, ("bind failed on pipe socket %s: %s\n", path,
 			strerror(errno)));
 		goto out_close;

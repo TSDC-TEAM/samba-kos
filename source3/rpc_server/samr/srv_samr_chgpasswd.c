@@ -56,8 +56,8 @@
 #include "lib/util/sys_rw.h"
 
 #include "lib/crypto/gnutls_helpers.h"
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+
+
 
 #ifndef ALLOW_CHANGE_PASSWORD
 #if (defined(HAVE_TERMIOS_H) && defined(HAVE_DUP2) && defined(HAVE_SETSID))

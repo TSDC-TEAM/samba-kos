@@ -24,6 +24,7 @@
 #include "secrets.h"
 #include "auth.h"
 #include "lib/util/string_wrappers.h"
+#include <source3/smbd/kos/kos_thread.h>
 
 /* Max DNS name is 253 + '\0' */
 #define MACHINE_NAME_SIZE 254
@@ -110,7 +111,11 @@ const char *get_remote_machine_name(void)
 }
 
 static char sub_peeraddr[INET6_ADDRSTRLEN];
+#ifdef KOS_NO_FORK
+static const char sub_peername[1];
+#else
 static const char *sub_peername = NULL;
+#endif
 static char sub_sockaddr[INET6_ADDRSTRLEN];
 
 void sub_set_socket_ids(const char *peeraddr, const char *peername,
@@ -123,6 +128,7 @@ void sub_set_socket_ids(const char *peeraddr, const char *peername,
 	}
 	strlcpy(sub_peeraddr, addr, sizeof(sub_peeraddr));
 
+#ifndef KOS_NO_FORK
 	if (sub_peername != NULL &&
 			sub_peername != sub_peeraddr) {
 		talloc_free(discard_const_p(char,sub_peername));
@@ -132,6 +138,7 @@ void sub_set_socket_ids(const char *peeraddr, const char *peername,
 	if (sub_peername == NULL) {
 		sub_peername = sub_peeraddr;
 	}
+#endif
 
 	/*
 	 * Shouldn't we do the ::ffff: cancellation here as well? The

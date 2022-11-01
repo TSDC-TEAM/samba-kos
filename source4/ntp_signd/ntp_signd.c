@@ -41,8 +41,8 @@
 #include "system/passwd.h"
 
 #include "lib/crypto/gnutls_helpers.h"
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+
+
 
 NTSTATUS server_service_ntp_signd_init(TALLOC_CTX *);
 

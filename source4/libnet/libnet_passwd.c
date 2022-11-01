@@ -25,8 +25,8 @@
 #include "source4/librpc/rpc/dcerpc.h"
 
 #include "lib/crypto/gnutls_helpers.h"
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+
+
 
 /*
  * do a password change using DCERPC/SAMR calls

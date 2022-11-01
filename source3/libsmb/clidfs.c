@@ -214,6 +214,8 @@ static NTSTATUS do_connect(TALLOC_CTX *ctx,
 
 	status = cli_session_setup_creds(c, creds);
 	if (!NT_STATUS_IS_OK(status)) {
+        // @todo: revert
+        exit(1);
 		/* If a password was not supplied then
 		 * try again with a null username. */
 		if (encryption_state == SMB_ENCRYPTION_REQUIRED ||

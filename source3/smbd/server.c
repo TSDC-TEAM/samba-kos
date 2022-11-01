@@ -65,6 +65,8 @@
 #include "ctdb_protocol.h"
 #endif
 
+#include <source3/smbd/kos/kos_thread.h>
+
 struct smbd_open_socket;
 struct smbd_child_pid;
 
@@ -961,12 +963,19 @@ static void smbd_accept_connection(struct tevent_context *ev,
 		return;
 
 	if (fd == -1) {
-		DEBUG(0,("accept: %s\n",
-			 strerror(errno)));
+		DEBUG(0,("accept: %s\n", strerror(errno)));
 		return;
 	}
+
 	smb_set_close_on_exec(fd);
 
+#ifdef KOS_NO_FORK
+    struct kos_conn_data data = {0};
+    data.fd = fd;
+    data.dce_ctx = dce_ctx;
+    int res = kos_run_conn(data);
+    assert(0 == res);
+#else
 	if (s->parent->interactive) {
 		reinit_after_fork(msg_ctx, ev, true, NULL);
 		smbd_process(ev, msg_ctx, dce_ctx, fd, true);
@@ -1059,6 +1068,7 @@ static void smbd_accept_connection(struct tevent_context *ev,
 	 * (ca. 100kb).
 	 * */
 	force_check_log_size();
+#endif
 }
 
 static bool smbd_open_one_socket(struct smbd_parent_context *parent,
@@ -1535,49 +1545,48 @@ static NTSTATUS smbd_claim_version(struct messaging_context *msg,
 
 extern void build_options(bool screen);
 
+static void resetCfg(struct samba_cmdline_daemon_cfg *cmdline_daemon_cfg, bool interactive) {
+    cmdline_daemon_cfg->interactive = interactive ? true : false;
+    cmdline_daemon_cfg->daemon = interactive ? false : true;
+    cmdline_daemon_cfg->fork = false;
+    cmdline_daemon_cfg->no_process_group = false;
+}
+
+#ifdef __KOS__
+#include <kos_net.h>
+#endif
+
+int kos_net_init(void) {
+    fprintf(stderr, "Start setup network\n");
+
+#ifdef __KOS__
+    if (!configure_net_iface(DEFAULT_INTERFACE, DEFAULT_ADDR, DEFAULT_MASK, DEFAULT_GATEWAY, DEFAULT_MTU)) {
+        perror("Fail to setup network interface\n");
+        return -1;
+    }
+
+    if (!list_network_ifaces()) {
+        perror("Fail to list network interfaces\n");
+        return -1;
+    }
+#endif
+
+    fprintf(stderr, "Setup network done\n");
+
+    return 0;
+}
+
  int main(int argc,const char *argv[])
 {
 	/* shall I run as a daemon */
-	struct samba_cmdline_daemon_cfg *cmdline_daemon_cfg = NULL;
+    struct samba_cmdline_daemon_cfg *cmdline_daemon_cfg = malloc(sizeof(struct samba_cmdline_daemon_cfg));
 	bool log_stdout = false;
 	char *ports = NULL;
 	char *profile_level = NULL;
 	int opt;
-	poptContext pc;
 	bool print_build_options = False;
 	bool serving_printers = false;
 	struct server_id main_server_id = {0};
-	struct poptOption long_options[] = {
-		POPT_AUTOHELP
-		{
-			.longName   = "build-options",
-			.shortName  = 'b',
-			.argInfo    = POPT_ARG_NONE,
-			.arg        = NULL,
-			.val        = 'b',
-			.descrip    = "Print build options" ,
-		},
-		{
-			.longName   = "port",
-			.shortName  = 'p',
-			.argInfo    = POPT_ARG_STRING,
-			.arg        = &ports,
-			.val        = 0,
-			.descrip    = "Listen on the specified ports",
-		},
-		{
-			.longName   = "profiling-level",
-			.shortName  = 'P',
-			.argInfo    = POPT_ARG_STRING,
-			.arg        = &profile_level,
-			.val        = 0,
-			.descrip    = "Set profiling level","PROFILE_LEVEL",
-		},
-		POPT_COMMON_SAMBA
-		POPT_COMMON_DAEMON
-		POPT_COMMON_VERSION
-		POPT_TABLEEND
-	};
 	struct smbd_parent_context *parent = NULL;
 	TALLOC_CTX *frame;
 	NTSTATUS status;
@@ -1611,8 +1620,12 @@ extern void build_options(bool screen);
 	/*
 	 * Do this before any other talloc operation
 	 */
+#ifndef KOS_NO_FORK
 	talloc_enable_null_tracking();
-	frame = talloc_stackframe();
+#else
+    talloc_disable_null_tracking();
+#endif
+    frame = talloc_stackframe();
 
 	smb_init_locale();
 
@@ -1626,45 +1639,26 @@ extern void build_options(bool screen);
 	set_auth_parameters(argc,argv);
 #endif
 
-	ok = samba_cmdline_init(frame,
-				SAMBA_CMDLINE_CONFIG_SERVER,
-				true /* require_smbconf */);
-	if (!ok) {
-		DBG_ERR("Failed to setup cmdline parser!\n");
-		exit(ENOMEM);
-	}
+    bool interactive = false;
+    resetCfg(cmdline_daemon_cfg, interactive);
 
-	cmdline_daemon_cfg = samba_cmdline_get_daemon_cfg();
-
-	pc = samba_popt_get_context(getprogname(),
-				    argc,
-				    argv,
-				    long_options,
-				    0);
-	if (pc == NULL) {
-		DBG_ERR("Failed to get popt context!\n");
-		exit(ENOMEM);
-	}
-
-	while((opt = poptGetNextOpt(pc)) != -1) {
-		switch (opt)  {
-		case 'b':
-			print_build_options = True;
-			break;
-		default:
-			d_fprintf(stderr, "\nInvalid option %s: %s\n\n",
-				  poptBadOption(pc, 0), poptStrerror(opt));
-			poptPrintUsage(pc, stderr, 0);
-			exit(1);
-		}
-	}
-	poptFreeContext(pc);
+#ifdef __KOS__
+    // see also defile CONFIGFILE `kos/libs_kos/samba-util/CMakeLists.txt`
+    ok = lp_load_global("/usr/local/samba/etc/smb.conf");
+#else
+    ok = lp_load_global("./smb.conf");
+#endif
+    if (!ok) {
+        fprintf(stderr, "Can't load conf file\n");
+        exit(1);
+    }
 
 	log_stdout = (debug_get_log_type() == DEBUG_STDOUT);
 
-        if (cmdline_daemon_cfg->interactive) {
+    if (cmdline_daemon_cfg->interactive) {
 		log_stdout = True;
 	}
+    log_stdout = true;
 
 	if (print_build_options) {
 		build_options(True); /* Display output to screen as well as debug */
@@ -1678,9 +1672,11 @@ extern void build_options(bool screen);
 
 	set_remote_machine_name("smbd", False);
 
+#ifndef KOS_NO_FORK
 	if (cmdline_daemon_cfg->interactive && (DEBUGLEVEL >= 9)) {
 		talloc_enable_leak_report();
 	}
+#endif
 
 	if (log_stdout && cmdline_daemon_cfg->fork) {
 		DEBUG(0,("ERROR: Can't log to stdout (-S) unless daemon is in foreground (-F) or interactive (-i)\n"));
@@ -1972,14 +1968,22 @@ extern void build_options(bool screen);
 
 	if (!smbd_notifyd_init(
 		    msg_ctx,
-		    cmdline_daemon_cfg->interactive,
+#if 0 // __KOS__
+            cmdline_daemon_cfg->interactive,
+#else
+            true,
+#endif
 		    &parent->notifyd)) {
 		exit_daemon("Samba cannot init notification", EACCES);
 	}
 
 	if (!cleanupd_init(
 		    msg_ctx,
-		    cmdline_daemon_cfg->interactive,
+#if 0 // __KOS__
+            cmdline_daemon_cfg->interactive,
+#else
+		    true,
+#endif
 		    &parent->cleanupd)) {
 		exit_daemon("Samba cannot init the cleanupd", EACCES);
 	}
@@ -2055,11 +2059,15 @@ extern void build_options(bool screen);
 		return -1;
 	}
 
-	status = dcesrv_init(ev_ctx, ev_ctx, msg_ctx, dce_ctx);
+#if 0 // __KOS__
+    fprintf(stderr, "KOS: skipping dcesrv_init()\n");
+#else
+    status = dcesrv_init(ev_ctx, ev_ctx, msg_ctx, dce_ctx);
 	if (!NT_STATUS_IS_OK(status)) {
 		DBG_ERR("Failed to setup RPC server: %s\n", nt_errstr(status));
 		exit_daemon("Samba cannot setup ep pipe", EACCES);
 	}
+#endif
 
 	if (!cmdline_daemon_cfg->interactive) {
 		daemon_ready("smbd");
@@ -2067,10 +2075,12 @@ extern void build_options(bool screen);
 
 	serving_printers = (!lp__disable_spoolss() &&
 			    (rpc_spoolss_daemon() != RPC_DAEMON_DISABLED));
+     serving_printers = false;
+     resetCfg(cmdline_daemon_cfg, interactive);
 
-	/* only start other daemons if we are running as a daemon
-	 * -- bad things will happen if smbd is launched via inetd
-	 *  and we fork a copy of ourselves here */
+     /* only start other daemons if we are running as a daemon
+      * -- bad things will happen if smbd is launched via inetd
+      *  and we fork a copy of ourselves here */
 	if (cmdline_daemon_cfg->daemon && !cmdline_daemon_cfg->interactive) {
 
 		if (rpc_epmapper_daemon() == RPC_DAEMON_FORK) {
@@ -2114,6 +2124,7 @@ extern void build_options(bool screen);
 		}
 	}
 
+    cmdline_daemon_cfg->daemon = true;
 	if (!cmdline_daemon_cfg->daemon) {
 		int ret, sock;
 
@@ -2158,10 +2169,12 @@ extern void build_options(bool screen);
 
 	/* do a printer update now that all messaging has been set up,
 	 * before we allow clients to start connecting */
+#if 0 // __KOS__
 	if (!lp__disable_spoolss() &&
 	    (rpc_spoolss_daemon() != RPC_DAEMON_DISABLED)) {
 		printing_subsystem_update(ev_ctx, msg_ctx, false);
 	}
+#endif
 
 	TALLOC_FREE(frame);
 	/* make sure we always have a valid stackframe */
@@ -2191,5 +2204,6 @@ extern void build_options(bool screen);
 
 	exit_server_cleanly(NULL);
 	TALLOC_FREE(frame);
+    free(cmdline_daemon_cfg);
 	return(0);
 }

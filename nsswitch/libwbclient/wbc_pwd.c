@@ -45,8 +45,10 @@ static void wbcPasswdDestructor(void *ptr)
 {
 	struct passwd *pw = (struct passwd *)ptr;
 	free(pw->pw_name);
+#ifndef __KOS__
 	free(pw->pw_passwd);
 	free(pw->pw_gecos);
+#endif
 	free(pw->pw_shell);
 	free(pw->pw_dir);
 }
@@ -64,6 +66,7 @@ static struct passwd *copy_passwd_entry(struct winbindd_pw *p)
 	if (pw->pw_name == NULL) {
 		goto fail;
 	}
+#ifndef __KOS__
 	pw->pw_passwd = strdup(p->pw_passwd);
 	if (pw->pw_passwd == NULL) {
 		goto fail;
@@ -72,6 +75,7 @@ static struct passwd *copy_passwd_entry(struct winbindd_pw *p)
 	if (pw->pw_gecos == NULL) {
 		goto fail;
 	}
+#endif
 	pw->pw_shell = strdup(p->pw_shell);
 	if (pw->pw_shell == NULL) {
 		goto fail;
@@ -99,7 +103,9 @@ static void wbcGroupDestructor(void *ptr)
 	int i;
 
 	free(gr->gr_name);
+#ifndef __KOS__
 	free(gr->gr_passwd);
+#endif
 
 	/* if the array was partly created this can be NULL */
 	if (gr->gr_mem == NULL) {
@@ -129,10 +135,12 @@ static struct group *copy_group_entry(struct winbindd_gr *g,
 	if (gr->gr_name == NULL) {
 		goto fail;
 	}
+#ifndef __KOS__
 	gr->gr_passwd = strdup(g->gr_passwd);
 	if (gr->gr_passwd == NULL) {
 		goto fail;
 	}
+#endif
 	gr->gr_gid = g->gr_gid;
 
 	gr->gr_mem = (char **)calloc(g->num_gr_mem+1, sizeof(char *));

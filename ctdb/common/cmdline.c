@@ -19,7 +19,7 @@
 
 #include "replace.h"
 
-#include <popt.h>
+
 #include <talloc.h>
 #include <tevent.h>
 

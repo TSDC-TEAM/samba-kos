@@ -646,7 +646,7 @@ static NTSTATUS ntstatus_keeperror(NTSTATUS s1, NTSTATUS s2)
 static void assert_no_pending_aio(struct files_struct *fsp,
 				  enum file_close_type close_type)
 {
-	struct smbXsrv_client *client = global_smbXsrv_client;
+	struct smbXsrv_client *client = kos_get_global_smbXsrv_client();
 	size_t num_connections_alive;
 	unsigned num_requests = fsp->num_aio_requests;
 
@@ -726,7 +726,7 @@ static NTSTATUS close_normal_file(struct smb_request *req, files_struct *fsp,
 	 * error here, we must remember this.
 	 */
 
-	if (NT_STATUS_IS_OK(status) && fsp->op != NULL) {
+	if (NT_STATUS_IS_OK(status) && fsp->op != NULL && fsp->op->global != NULL) {
 		is_durable = fsp->op->global->durable;
 	}
 
@@ -788,7 +788,7 @@ static NTSTATUS close_normal_file(struct smb_request *req, files_struct *fsp,
 		return NT_STATUS_OK;
 	}
 
-	if (fsp->op != NULL) {
+	if (fsp->op != NULL && fsp->op->global != NULL) {
 		/*
 		 * Make sure the handle is not marked as durable anymore
 		 */

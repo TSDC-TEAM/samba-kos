@@ -22,8 +22,8 @@
 #include "rpc_client/init_samr.h"
 
 #include "lib/crypto/gnutls_helpers.h"
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+
+
 
 /*************************************************************************
  inits a samr_CryptPasswordEx structure

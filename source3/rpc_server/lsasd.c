@@ -607,6 +607,10 @@ void start_lsasd(struct tevent_context *ev_ctx,
 		 struct messaging_context *msg_ctx,
 		 struct dcesrv_context *dce_ctx)
 {
+#ifdef KOS_NO_FORK
+    fprintf(stderr, "KOS: skipping %s\n", __func__);
+    return;
+#endif
 	NTSTATUS status;
 	struct pf_listen_fd *listen_fd = NULL;
 	size_t listen_fd_size = 0;

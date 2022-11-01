@@ -38,6 +38,9 @@
  */
 
 #include "includes.h"
+#include <lib/klib//kvec.h>
+#include <source3/smbd/kos/kos_thread.h>
+#include <pthread.h>
 
 struct talloc_stackframe {
 	int talloc_stacksize;
@@ -58,14 +61,103 @@ static void *global_ts;
 /* Variable to ensure TLS value is only initialized once. */
 static smb_thread_once_t ts_initialized = SMB_THREAD_ONCE_INIT;
 
+#ifdef KOS_NO_FORK
+struct talloc_stackframe *talloc_stackframe_create(void);
+
+struct kos_ts {
+    pid_t tid;
+    void *ts;
+};
+
+typedef kvec_t(struct kos_ts *) kos_ts_vec_t;
+kos_ts_vec_t g_kos_ts_vec;
+pthread_mutex_t g_kos_ts_vec_mutex;
+
+static void *kos_get_tls(void *pkey, const char *location) {
+    pid_t tid = gettid();
+    void *ret = NULL;
+
+    pthread_mutex_lock(&g_kos_ts_vec_mutex);
+
+    for (size_t i = 0; i < kv_size(g_kos_ts_vec); ++i) {
+        const struct kos_ts *rule = (struct kos_ts *)kv_A(g_kos_ts_vec, i);
+        if (rule->tid == tid) {
+            ret = rule->ts;
+            break;
+        }
+    }
+
+    pthread_mutex_unlock(&g_kos_ts_vec_mutex);
+
+    return ret ? ret : talloc_stackframe_create();
+}
+
+static int kos_set_tls(void *pkey, const void *pval, const char *location) {
+    pid_t tid = gettid();
+
+    struct kos_ts *cur = (struct kos_ts *)malloc(sizeof(struct kos_ts));
+    cur->ts = pval;
+    cur->tid = tid;
+
+    pthread_mutex_lock(&g_kos_ts_vec_mutex);
+    kv_push(struct kos_ts *, g_kos_ts_vec, cur);
+    pthread_mutex_unlock(&g_kos_ts_vec_mutex);
+
+    // @todo: free on server_exit()
+
+    return 0;
+}
+
+void kos_unreg_ts() {
+    pid_t tid = gettid();
+    kos_ts_vec_t kos_ts_vec;
+    kv_init(kos_ts_vec);
+
+    pthread_mutex_lock(&g_kos_ts_vec_mutex);
+
+    for (size_t i = 0; i < kv_size(g_kos_ts_vec); ++i) {
+        struct kos_ts *rule = (struct kos_ts *)kv_A(g_kos_ts_vec, i);
+        if (rule->tid == tid) {
+            free(rule);
+            continue;
+        }
+        kv_push(struct kos_ts *, kos_ts_vec, rule);
+    }
+
+    kv_destroy(g_kos_ts_vec);
+    g_kos_ts_vec = kos_ts_vec;
+
+    pthread_mutex_unlock(&g_kos_ts_vec_mutex);
+}
+#endif
+
 static void talloc_stackframe_init(void * unused)
 {
+#ifdef KOS_NO_FORK
+    static int first_run = 1;
+    if (first_run) {
+        pthread_mutexattr_t attr;
+        pthread_mutexattr_init(&attr);
+        pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+        pthread_mutex_init(&g_kos_ts_vec_mutex, &attr);
+
+        static struct smb_thread_functions kos_tf;
+        kos_tf.get_tls = kos_get_tls;
+        kos_tf.set_tls = kos_set_tls;
+        global_tfp = &kos_tf;
+
+        kv_init(g_kos_ts_vec);
+
+        first_run = 0;
+    }
+#else
 	if (SMB_THREAD_CREATE_TLS("talloc_stackframe", global_ts)) {
 		smb_panic("talloc_stackframe_init create_tls failed");
 	}
+#endif
 }
 
-static struct talloc_stackframe *talloc_stackframe_create(void)
+struct talloc_stackframe *talloc_stackframe_create(void)
 {
 #if defined(PARANOID_MALLOC_CHECKER)
 #ifdef calloc
@@ -225,8 +317,10 @@ TALLOC_CTX *_talloc_tos(const char *location)
 	if (ts == NULL || ts->talloc_stacksize == 0) {
 		_talloc_stackframe(location);
 		ts = (struct talloc_stackframe *)SMB_THREAD_GET_TLS(global_ts);
-		DEBUG(0, ("no talloc stackframe at %s, leaking memory\n",
-			  location));
+        // KOS: actually for each thread we create a new TS
+        // so here isn't the leaking memory
+		// DEBUG(0, ("no talloc stackframe at %s, leaking memory\n",
+		//	  location));
 #ifdef DEVELOPER
 		smb_panic("No talloc stackframe");
 #endif

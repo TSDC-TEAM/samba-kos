@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include <popt.h>
+
 #include "libsmbclient.h"
 #include "get_auth_data_fn.h"
 

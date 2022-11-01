@@ -35,7 +35,7 @@
 #include "gen_ndr/ndr_dnsp.h"
 #include "gen_ndr/server_id.h"
 #include "messaging/messaging.h"
-#include <popt.h>
+
 #include "lib/util/dlinklist.h"
 #include "dlz_minimal.h"
 #include "dnsserver_common.h"

@@ -494,6 +494,9 @@ static NTSTATUS messaging_init_internal(TALLOC_CTX *mem_ctx,
 	ok = directory_create_or_exist_strict(lck_path,
 					      sec_initial_uid(),
 					      0755);
+#if 1 // __KOS__
+    ok = true;
+#endif
 	if (!ok) {
 		DBG_DEBUG("Could not create lock directory: %s\n",
 			  strerror(errno));

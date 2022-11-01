@@ -46,8 +46,9 @@
 #endif
 
 #include "lib/crypto/gnutls_helpers.h"
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+#include <source3/smbd/kos/kos_thread.h>
+#include <pthread.h>
+
 
 #undef DBGC_CLASS
 #define DBGC_CLASS DBGC_SMB2
@@ -1243,6 +1244,11 @@ static NTSTATUS smbXsrv_connection_get_acked_bytes(struct smbXsrv_connection *xc
 		ret = ioctl(xconn->transport.sock,
 			    __IOCTL_SEND_QUEUE_SIZE_OPCODE,
 			    &value);
+#ifdef __KOS__
+        ret = 0;
+        value = 0;
+        usleep(100);
+#endif
 		if (ret != 0) {
 			int saved_errno = errno;
 			NTSTATUS status = map_nt_error_from_unix(saved_errno);
@@ -1480,7 +1486,9 @@ void smbXsrv_connection_disconnect_transport(struct smbXsrv_connection *xconn,
 	}
 
 	xconn->transport.status = status;
+#if 0 // __KOS__
 	TALLOC_FREE(xconn->transport.fde);
+#endif
 	if (xconn->transport.sock != -1) {
 		xconn->transport.sock = -1;
 	}
@@ -4731,11 +4739,33 @@ static NTSTATUS smbd_smb2_flush_send_queue(struct smbXsrv_connection *xconn)
 			.msg_iovlen = e->count,
 		};
 
-		ret = sendmsg(xconn->transport.sock, &msg, 0);
+#if 0 // __KOS__
+        ret = sendmsg(xconn->transport.sock, &msg, 0);
 		if (ret == 0) {
 			/* propagate end of file */
 			return NT_STATUS_INTERNAL_ERROR;
 		}
+#else
+        ret = 0;
+        for (int i = 0; i < msg.msg_iovlen; ++i) {
+            if (msg.msg_iov[i].iov_len == 0) {
+                continue;
+            }
+            errno = 0;
+            int res_write = write(xconn->transport.sock, msg.msg_iov[i].iov_base, msg.msg_iov[i].iov_len);
+            if (0 > res_write) {
+                if (errno == EAGAIN) {
+                    fprintf(stderr, "KOS: retrying: %s, i = %d\n", strerror(errno), i);
+                    i -= 1;
+                    usleep(100);
+                    continue;
+                }
+                fprintf(stderr, "KOS: error while sending, errno: %d\n", errno);
+                break;
+            }
+            ret += res_write;
+        }
+#endif
 		err = socket_error_from_errno(ret, errno, &retry);
 		if (retry) {
 			/* retry later */
@@ -4839,7 +4869,12 @@ again:
 		.msg_iovlen = 1,
 	};
 
+#if 0 // __KOS__
 	ret = recvmsg(xconn->transport.sock, &msg, 0);
+#else
+    errno = 0;
+    ret = read(xconn->transport.sock, state->vector.iov_base, state->vector.iov_len);
+#endif
 	if (ret == 0) {
 		/* propagate end of file */
 		status = NT_STATUS_END_OF_FILE;
@@ -5028,6 +5063,8 @@ got_full:
 	return NT_STATUS_OK;
 }
 
+#include <tevent_internal.h>
+
 static void smbd_smb2_connection_handler(struct tevent_context *ev,
 					 struct tevent_fd *fde,
 					 uint16_t flags,
@@ -5040,7 +5077,9 @@ static void smbd_smb2_connection_handler(struct tevent_context *ev,
 
 	status = smbd_smb2_io_handler(xconn, flags);
 	if (!NT_STATUS_IS_OK(status)) {
+#if 1 // __KOS__
 		smbd_server_connection_terminate(xconn, nt_errstr(status));
-		return;
-	}
+#endif
+        return;
+    }
 }

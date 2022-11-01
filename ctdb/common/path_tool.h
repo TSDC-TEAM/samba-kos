@@ -21,7 +21,7 @@
 #define __CTDB_PATH_TOOL__
 
 #include <talloc.h>
-#include <popt.h>
+
 
 struct path_tool_context;
 

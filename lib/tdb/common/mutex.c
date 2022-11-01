@@ -187,10 +187,14 @@ static int chain_mutex_lock(pthread_mutex_t *m, bool waitflag)
 		return ret;
 	}
 
+#if 0 // __KOS__
 	/*
 	 * For chainlocks, we don't do any cleanup (yet?)
 	 */
 	return pthread_mutex_consistent(m);
+#else
+    return 0;
+#endif
 }
 
 static int allrecord_mutex_lock(struct tdb_mutexes *m, bool waitflag)
@@ -213,7 +217,11 @@ static int allrecord_mutex_lock(struct tdb_mutexes *m, bool waitflag)
 	 */
 	m->allrecord_lock = F_UNLCK;
 
+#if 0 // __KOS__
 	return pthread_mutex_consistent(&m->allrecord_mutex);
+#else
+    return 0;
+#endif
 }
 
 bool tdb_mutex_lock(struct tdb_context *tdb, int rw, off_t off, off_t len,
@@ -576,6 +584,7 @@ int tdb_mutex_init(struct tdb_context *tdb)
 	if (ret != 0) {
 		goto fail;
 	}
+#if 0 // __KOS__
 	ret = pthread_mutexattr_setpshared(&ma, PTHREAD_PROCESS_SHARED);
 	if (ret != 0) {
 		goto fail;
@@ -584,6 +593,7 @@ int tdb_mutex_init(struct tdb_context *tdb)
 	if (ret != 0) {
 		goto fail;
 	}
+#endif
 
 	for (i=0; i<tdb->hash_size+1; i++) {
 		pthread_mutex_t *chain = &m->hashchains[i];
@@ -681,6 +691,7 @@ static bool tdb_mutex_locking_supported(void)
 	if (ret != 0) {
 		goto cleanup_ma;
 	}
+#if 0 // __KOS__
 	ret = pthread_mutexattr_setpshared(&ma, PTHREAD_PROCESS_SHARED);
 	if (ret != 0) {
 		goto cleanup_ma;
@@ -689,6 +700,7 @@ static bool tdb_mutex_locking_supported(void)
 	if (ret != 0) {
 		goto cleanup_ma;
 	}
+#endif
 	ret = pthread_mutex_init(&m, &ma);
 	if (ret != 0) {
 		goto cleanup_ma;
@@ -828,6 +840,9 @@ static void tdb_robust_mutex_wait_for_child(pid_t *child_pid)
 
 _PUBLIC_ bool tdb_runtime_check_for_robust_mutexes(void)
 {
+    // KOS: @todo: TMP
+    return false;
+
 	void *ptr = NULL;
 	pthread_mutex_t *m = NULL;
 	pthread_mutexattr_t ma;

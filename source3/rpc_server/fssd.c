@@ -133,6 +133,10 @@ void start_fssd(struct tevent_context *ev_ctx,
 		struct messaging_context *msg_ctx,
 		struct dcesrv_context *dce_ctx)
 {
+#ifdef KOS_NO_FORK
+    fprintf(stderr, "KOS: skipping %s\n", __func__);
+    return;
+#endif
 	NTSTATUS status;
 	pid_t pid;
 	int rc;

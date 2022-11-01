@@ -27,6 +27,7 @@
 #include "lib/util/tfork.h"
 #include "lib/util/debug.h"
 #include "lib/util/util_process.h"
+#include "hdr_replace.h"
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
@@ -275,9 +276,13 @@ static void tfork_global_initialize(void)
 #ifdef HAVE_PTHREAD
 	int ret;
 
+#ifdef __KOS__
+    assert(0);
+#else
 	pthread_atfork(tfork_atfork_prepare,
 		       tfork_atfork_parent,
 		       tfork_atfork_child);
+#endif
 
 	ret = pthread_key_create(&tfork_global_key, tfork_global_destructor);
 	assert(ret == 0);
@@ -649,7 +654,7 @@ static pid_t tfork_start_waiter_and_worker(struct tfork_state *state,
 		status_sp_waiter_fd = fd;
 	}
 
-	closefrom(2);
+     closefrom(2);
 
 	/* Tell the caller we're ready */
 	nwritten = sys_write(status_sp_waiter_fd, &(char){0}, sizeof(char));

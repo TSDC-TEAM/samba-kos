@@ -39,8 +39,8 @@
 #include "dsdb/samdb/samdb.h"
 #include "dsdb/samdb/ldb_modules/util.h"
 
-#include <gnutls/gnutls.h>
-#include <gnutls/crypto.h>
+
+
 
 static const char * const secret_attributes[] = {DSDB_SECRET_ATTRIBUTES};
 static const size_t num_secret_attributes = ARRAY_SIZE(secret_attributes);
