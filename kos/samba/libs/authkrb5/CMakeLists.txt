@@ -1,0 +1,193 @@
+set(TARGET_NAME authkrb5)
+
+set(TARGET_SRC
+        ${SMB_SRC_ROOT}/source4/auth/kerberos/kerberos_pac.c
+        ${SMB_SRC_ROOT}/auth/kerberos/gssapi_pac.c
+        ${SMB_SRC_ROOT}/auth/kerberos/kerberos_pac.c
+        ${SMB_SRC_ROOT}/auth/kerberos/gssapi_helper.c
+        ${SMB_SRC_ROOT}/source4/lib/stream/packet.c
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal_build/gssapi_krb5.empty.c
+        ${SMB_SRC_ROOT}/source4/auth/kerberos/krb5_init_context.c
+        ${SMB_SRC_ROOT}/source4/lib/tls/tlscert.c
+        ${SMB_SRC_ROOT}/source4/lib/tls/tls_tstream.c
+        )
+
+add_library(
+        ${TARGET_NAME}
+        STATIC
+        ${TARGET_SRC}
+)
+
+target_include_directories(
+        ${TARGET_NAME}
+        PRIVATE
+        ${SMB_SRC_ROOT}/source4/auth/kerberos
+        ${SMB_SRC_ROOT}/bin/default/source4/auth/kerberos
+        ${SMB_SRC_ROOT}/include/public
+        ${SMB_SRC_ROOT}/bin/default/include/public
+        ${SMB_SRC_ROOT}/source4
+        ${SMB_SRC_ROOT}/bin/default/source4
+        ${SMB_SRC_ROOT}/lib
+        ${SMB_SRC_ROOT}/bin/default/lib
+        ${SMB_SRC_ROOT}/source4/lib
+        ${SMB_SRC_ROOT}/bin/default/source4/lib
+        ${SMB_SRC_ROOT}/source4/include
+        ${SMB_SRC_ROOT}/bin/default/source4/include
+        ${SMB_SRC_ROOT}/include
+        ${SMB_SRC_ROOT}/bin/default/include
+        ${SMB_SRC_ROOT}/lib/replace
+        ${SMB_SRC_ROOT}/bin/default/lib/replace
+        ${SMB_SRC_ROOT}/.
+        ${SMB_SRC_ROOT}/bin/default/
+        ${SMB_SRC_ROOT}/librpc
+        ${SMB_SRC_ROOT}/bin/default/librpc
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/asn1
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/asn1
+        ${SMB_SRC_ROOT}/source4/heimdal_build
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal_build
+        ${SMB_SRC_ROOT}/lib/messaging
+        ${SMB_SRC_ROOT}/bin/default/lib/messaging
+        ${SMB_SRC_ROOT}/lib/dbwrap
+        ${SMB_SRC_ROOT}/bin/default/lib/dbwrap
+        ${SMB_SRC_ROOT}/libcli/security
+        ${SMB_SRC_ROOT}/bin/default/libcli/security
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/wind
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/wind
+        ${SMB_SRC_ROOT}/lib/pthreadpool
+        ${SMB_SRC_ROOT}/bin/default/lib/pthreadpool
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/roken
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/roken
+        ${SMB_SRC_ROOT}/source4/heimdal/include
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/include
+        ${SMB_SRC_ROOT}/source4/heimdal_build/include
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal_build/include
+        ${SMB_SRC_ROOT}/dynconfig
+        ${SMB_SRC_ROOT}/bin/default/dynconfig
+        ${SMB_SRC_ROOT}/lib/param
+        ${SMB_SRC_ROOT}/bin/default/lib/param
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hx509
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/hx509
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hcrypto
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/hcrypto
+        ${SMB_SRC_ROOT}/source4/heimdal/lib
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/krb5
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/krb5
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/com_err
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/com_err
+        ${SMB_SRC_ROOT}/source4/lib/socket
+        ${SMB_SRC_ROOT}/bin/default/source4/lib/socket
+        ${SMB_SRC_ROOT}/libcli/util
+        ${SMB_SRC_ROOT}/bin/default/libcli/util
+        ${SMB_SRC_ROOT}/source4/lib/messaging
+        ${SMB_SRC_ROOT}/bin/default/source4/lib/messaging
+        ${SMB_SRC_ROOT}/lib/socket
+        ${SMB_SRC_ROOT}/bin/default/lib/socket
+        ${SMB_SRC_ROOT}/lib/crypto
+        ${SMB_SRC_ROOT}/bin/default/lib/crypto
+        ${SMB_SRC_ROOT}/source4/lib/tls
+        ${SMB_SRC_ROOT}/bin/default/source4/lib/tls
+        ${SMB_SRC_ROOT}/lib/tdb/include
+        ${SMB_SRC_ROOT}/bin/default/lib/tdb/include
+        ${SMB_SRC_ROOT}/lib/tdb
+        ${SMB_SRC_ROOT}/bin/default/lib/tdb
+        ${SMB_SRC_ROOT}/source4/libcli
+        ${SMB_SRC_ROOT}/bin/default/source4/libcli
+        ${SMB_SRC_ROOT}/source3
+        ${SMB_SRC_ROOT}/bin/default/source3
+        ${SMB_SRC_ROOT}/source3/include
+        ${SMB_SRC_ROOT}/bin/default/source3/include
+        ${SMB_SRC_ROOT}/source3/lib
+        ${SMB_SRC_ROOT}/bin/default/source3/lib
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/gssapi
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/gssapi
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/gssapi/gssapi
+        ${SMB_SRC_ROOT}/lib/tevent
+        ${SMB_SRC_ROOT}/bin/default/lib/tevent
+        ${SMB_SRC_ROOT}/lib/talloc
+        ${SMB_SRC_ROOT}/bin/default/lib/talloc
+        ${SMB_SRC_ROOT}/lib/popt
+        ${SMB_SRC_ROOT}/bin/default/lib/popt
+        ${SMB_SRC_ROOT}/source3/librpc
+        ${SMB_SRC_ROOT}/bin/default/source3/librpc
+        ${SMB_SRC_ROOT}/lib/krb5_wrap
+        ${SMB_SRC_ROOT}/bin/default/lib/krb5_wrap
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/spnego
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/gssapi/spnego
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/krb5
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/gssapi/krb5
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/gssapi/mech
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/gssapi/mech
+        ${SMB_SRC_ROOT}/source4/lib/events
+        ${SMB_SRC_ROOT}/bin/default/source4/lib/events
+        ${SMB_SRC_ROOT}/lib/ldb/include
+        ${SMB_SRC_ROOT}/bin/default/lib/ldb/include
+        ${SMB_SRC_ROOT}/lib/ldb
+        ${SMB_SRC_ROOT}/bin/default/lib/ldb
+        ${SMB_SRC_ROOT}/auth
+        ${SMB_SRC_ROOT}/bin/default/auth
+        ${SMB_SRC_ROOT}/lib/util/charset
+        ${SMB_SRC_ROOT}/bin/default/lib/util/charset
+        ${SMB_SRC_ROOT}/source4/cluster
+        ${SMB_SRC_ROOT}/bin/default/source4/cluster
+        ${SMB_SRC_ROOT}/auth/kerberos
+        ${SMB_SRC_ROOT}/bin/default/auth/kerberos
+        ${SMB_SRC_ROOT}/source4/heimdal/base
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/base
+        ${SMB_SRC_ROOT}/source4/lib/stream
+        ${SMB_SRC_ROOT}/bin/default/source4/lib/stream
+        ${SMB_SRC_ROOT}/lib/tsocket
+        ${SMB_SRC_ROOT}/bin/default/lib/tsocket
+        ${SMB_SRC_ROOT}/libcli/nbt
+        ${SMB_SRC_ROOT}/bin/default/libcli/nbt
+        ${SMB_SRC_ROOT}/lib/audit_logging
+        ${SMB_SRC_ROOT}/bin/default/lib/audit_logging
+        ${SMB_SRC_ROOT}/lib/compression
+        ${SMB_SRC_ROOT}/bin/default/lib/compression
+        ${SMB_SRC_ROOT}/source4/heimdal/lib/hcrypto/libtommath
+        ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/hcrypto/libtommath
+)
+
+target_compile_definitions(
+        ${TARGET_NAME}
+        PRIVATE
+        _SAMBA_BUILD_=4
+        HAVE_CONFIG_H=1
+        _GNU_SOURCE=1
+        _XOPEN_SOURCE_EXTENDED=1
+        __STDC_WANT_LIB_EXT1__=1
+        _REENTRANT
+        _POSIX_PTHREAD_SEMANTICS
+        STATIC_authkrb5_MODULES=NULL
+        "STATIC_authkrb5_MODULES_PROTO=extern void __authkrb5_dummy_module_proto(void)"
+        STATIC_KRB5_PAC_MODULES=NULL
+        "STATIC_KRB5_PAC_MODULES_PROTO=extern void __KRB5_PAC_dummy_module_proto(void)"
+        STATIC_LIBPACKET_MODULES=NULL
+        "STATIC_LIBPACKET_MODULES_PROTO=extern void __LIBPACKET_dummy_module_proto(void)"
+        STATIC_gssapi_krb5_MODULES=NULL
+        "STATIC_gssapi_krb5_MODULES_PROTO=extern void __gssapi_krb5_dummy_module_proto(void)"
+        STATIC_KRB_INIT_CTX_MODULES=NULL
+        "STATIC_KRB_INIT_CTX_MODULES_PROTO=extern void __KRB_INIT_CTX_dummy_module_proto(void)"
+        STATIC_LIBTLS_MODULES=NULL
+        "STATIC_LIBTLS_MODULES_PROTO=extern void __LIBTLS_dummy_module_proto(void)"
+)
+
+target_compile_options(
+        ${TARGET_NAME}
+        PRIVATE
+        -MMD
+        -fPIC
+        -fstack-protector-strong
+        ${GCCDEFS}
+        -Wno-error=discarded-qualifiers
+        -Wno-error=cast-qual
+        -Wno-error=missing-field-initializers
+        -Wno-error=shadow
+        -Wno-error=implicit-fallthrough
+        -Wno-error=enum-compare
+        -Wno-error=unused-but-set-variable
+        -Wno-error=unused-const-variable
+        -Wno-error=unused-variable
+        -Wno-error=unused-result
+)

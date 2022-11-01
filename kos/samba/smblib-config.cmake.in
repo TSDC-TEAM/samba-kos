@@ -1,0 +1,22 @@
+set(KOSSMB_VERSION 1.0.0)
+
+get_filename_component(_IMPORT_PREFIX "${CMAKE_CURRENT_LIST_FILE}" PATH)
+get_filename_component(_IMPORT_PREFIX "${_IMPORT_PREFIX}" PATH)
+get_filename_component(_IMPORT_PREFIX "${_IMPORT_PREFIX}" PATH)
+get_filename_component(_IMPORT_PREFIX "${_IMPORT_PREFIX}" PATH)
+if(_IMPORT_PREFIX STREQUAL "/")
+    set(_IMPORT_PREFIX "")
+endif()
+
+add_library(kossmb STATIC IMPORTED)
+
+set_property(TARGET kossmb APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+set_target_properties(kossmb PROPERTIES
+    IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "C"
+    IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/lib/samba/libkossmb.a"
+)
+
+list(APPEND _IMPORT_CHECK_TARGETS kossmb)
+list(APPEND _IMPORT_CHECK_FILES_FOR_kossmb "${_IMPORT_PREFIX}/lib/samba/libkossmb.a")
+
+set(KOSSMB_VERSION)
