@@ -105,7 +105,6 @@ target_include_directories(
         ${SMB_SRC_ROOT}/bin/default/source4/lib/events
         ${SMB_SRC_ROOT}/source4/heimdal/lib/hcrypto/libtommath
         ${SMB_SRC_ROOT}/bin/default/source4/heimdal/lib/hcrypto/libtommath
-        /usr/include/p11-kit-1
 )
 
 target_compile_definitions(

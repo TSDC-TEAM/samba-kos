@@ -100,7 +100,6 @@ target_include_directories(
         ${SMB_SRC_ROOT}/bin/default/lib/crypto
         ${SMB_SRC_ROOT}/lib/tevent
         ${SMB_SRC_ROOT}/bin/default/lib/tevent
-        /usr/include/p11-kit-1
 )
 
 if (KOS)

@@ -106,7 +106,6 @@ target_include_directories(
         ${SMB_SRC_ROOT}/bin/default/libcli/nbt
         ${SMB_SRC_ROOT}/source4/lib/events
         ${SMB_SRC_ROOT}/bin/default/source4/lib/events
-        /usr/include/p11-kit-1
         ${SMB_SRC_ROOT}/auth
         ${SMB_SRC_ROOT}/bin/default/auth
         ${SMB_SRC_ROOT}/source3/librpc

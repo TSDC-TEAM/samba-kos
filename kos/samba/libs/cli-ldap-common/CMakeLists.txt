@@ -56,7 +56,6 @@ target_include_directories(
         ${SMB_SRC_ROOT}/bin/default/lib/ldb/include
         ${SMB_SRC_ROOT}/lib/ldb
         ${SMB_SRC_ROOT}/bin/default/lib/ldb
-        /usr/include/p11-kit-1
 )
 
 target_compile_definitions(

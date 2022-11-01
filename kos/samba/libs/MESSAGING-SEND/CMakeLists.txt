@@ -78,7 +78,6 @@ target_include_directories(
         ${SMB_SRC_ROOT}/source4/heimdal/lib/asn1
         ${SMB_SRC_ROOT}/lib/popt
         ${SMB_SRC_ROOT}/bin/default/lib/popt
-        /usr/include/p11-kit-1
 )
 
 target_compile_definitions(

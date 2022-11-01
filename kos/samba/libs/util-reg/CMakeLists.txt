@@ -45,7 +45,6 @@ target_include_directories(
         ${SMB_SRC_ROOT}/bin/default/dynconfig
         ${SMB_SRC_ROOT}/libcli/util
         ${SMB_SRC_ROOT}/bin/default/libcli/util
-        /usr/include/p11-kit-1
 )
 
 target_compile_definitions(

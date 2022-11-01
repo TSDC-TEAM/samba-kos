@@ -185,7 +185,6 @@ target_include_directories(
         ${SMB_SRC_ROOT}/bin/default/lib/async_req
         ${SMB_SRC_ROOT}/lib/smbconf
         ${SMB_SRC_ROOT}/bin/default/lib/smbconf
-        /usr/include/p11-kit-1
 )
 
 target_compile_definitions(

@@ -97,7 +97,6 @@ target_include_directories(
         ${SMB_SRC_ROOT}/bin/default/source3/librpc
         ${SMB_SRC_ROOT}/lib/compression
         ${SMB_SRC_ROOT}/bin/default/lib/compression
-        /usr/include/p11-kit-1
         ${SMB_SRC_ROOT}/source4/param
         ${SMB_SRC_ROOT}/bin/default/source4/param
         ${SMB_SRC_ROOT}/lib/tdb

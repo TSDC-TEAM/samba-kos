@@ -83,7 +83,6 @@ target_include_directories(
         ${SMB_SRC_ROOT}/bin/default/lib/talloc
         ${SMB_SRC_ROOT}/libcli/nbt
         ${SMB_SRC_ROOT}/bin/default/libcli/nbt
-        /usr/include/p11-kit-1
         ${SMB_SRC_ROOT}/lib/compression
         ${SMB_SRC_ROOT}/bin/default/lib/compression
         ${SMB_SRC_ROOT}/source3
