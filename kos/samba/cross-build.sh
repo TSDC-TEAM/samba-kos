@@ -6,15 +6,15 @@ BUILD=$(pwd)/build
 mkdir -p $BUILD && cd $BUILD
 
 export LANG=C
-export TARGET="aarch64-kos"
+export TARGET=${TARGET:-"aarch64-kos"}
 export PKG_CONFIG=""
-export SDK_PREFIX="/opt/KasperskyOS-Community-Edition-1.1.0.24"
+export SDK_PREFIX=${SDK_PREFIX:-"/opt/KasperskyOS-Community-Edition-1.1.0.24"}
 export INSTALL_PREFIX=$SDK_PREFIX/sysroot-$TARGET
 BUILD_SIM_TARGET="y"
 export PATH="$SDK_PREFIX/toolchain/bin:$PATH"
 
-export BUILD_WITH_CLANG=
-export BUILD_WITH_GCC=
+export BUILD_WITH_CLANG=${BUILD_WITH_CLANG:-}
+export BUILD_WITH_GCC=${BUILD_WITH_GCC:-}
 
 TOOLCHAIN_SUFFIX=""
 
