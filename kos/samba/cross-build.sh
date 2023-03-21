@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ -z $SDK_PREFIX ]; then
+    echo "Error: SDK_PREFIX is empty."
+    exit 1
+fi
+
 SCRIPT_DIR=$(cd "$(dirname ${0})"; pwd)
 
 BUILD=$(pwd)/build
@@ -8,7 +13,6 @@ mkdir -p $BUILD && cd $BUILD
 export LANG=C
 export TARGET="aarch64-kos"
 export PKG_CONFIG=""
-export SDK_PREFIX="/opt/KasperskyOS-Community-Edition-1.1.0.24"
 export INSTALL_PREFIX=$SDK_PREFIX/sysroot-$TARGET
 BUILD_SIM_TARGET="y"
 export PATH="$SDK_PREFIX/toolchain/bin:$PATH"
@@ -31,4 +35,4 @@ $SDK_PREFIX/toolchain/bin/cmake -G "Unix Makefiles" \
       -D CMAKE_INSTALL_PREFIX:STRING=$INSTALL_PREFIX \
       -D CMAKE_FIND_ROOT_PATH="$SDK_PREFIX/sysroot-$TARGET" \
       -D CMAKE_TOOLCHAIN_FILE=$SDK_PREFIX/toolchain/share/toolchain-$TARGET$TOOLCHAIN_SUFFIX.cmake \
-      $SCRIPT_DIR/ && $SDK_PREFIX/toolchain/bin/cmake --build . --parallel 8
+      $SCRIPT_DIR/ && $SDK_PREFIX/toolchain/bin/cmake --build .
