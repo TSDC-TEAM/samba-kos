@@ -1,195 +1,261 @@
-# Samba Server for Kaspersky OS
+# Samba for KasperskyOS
 
-Version of the Samba Server adapted for use on Kaspersky OS.
+>This version of the Samba is adapted for use on KasperskyOS.
 
-For a default build and use, you need to install the Kaspersky OS SDK on your system.
-The latest version of the SDK can be downloaded from this [link](https://os.kaspersky.com/development/).
+## What is a Samba for KasperskyOS?
 
-All files required to build a server with Kaspersky OS and an examples of connecting it to your solution are located in the folder:
+The Samba for KasperskyOS is based on the original version of Samba [4.15](https://github.com/samba-team/samba/tree/v4-15-stable). Please refer to [README.md](https://github.com/samba-team/samba/blob/master/README.md) for more information about the original Samba that are not related to this project.
 
-    ./kos
+Currently, subprocess creation isn't available in KasperskyOS Community Edition. Therefore, separate threads are created to execute client requests. A thread executes a client request and then terminates. Other limitations and known issues are described in the [KasperskyOS Community Edition Online Help](https://support.kaspersky.com/help/KCE/1.1/en-US/limitations_and_known_problems.htm).
 
-## Building
+## Table of contents
 
-For build you need to run the script:
+- [Samba for KasperskyOS](#samba-for-kasperskyos)
+  - [What is a Samba for KasperskyOS?](#what-is-a-samba-for-kasperskyos)
+  - [Table of contents](#table-of-contents)
+  - [Getting started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Building the Samba for KasperskyOS](#building-the-samba-for-kasperskyos)
+    - [Installing and removing the Samba for KasperskyOS](#installing-and-removing-the-samba-for-kasperskyos)
+  - [Usage](#usage)
+    - [Examples](#examples)
+  - [API](#api)
+    - [_kos\_client\_connect_](#kos_client_connect)
+      - [Definition](#definition)
+      - [Parameters](#parameters)
+      - [Return value](#return-value)
+    - [_kos\_client\_disconnect_](#kos_client_disconnect)
+      - [Definition](#definition-1)
+    - [_kos\_client\_get\_file_](#kos_client_get_file)
+      - [Definition](#definition-2)
+      - [Parameters](#parameters-1)
+      - [Return value](#return-value-1)
+    - [_kos\_client\_put\_file_](#kos_client_put_file)
+      - [Definition](#definition-3)
+      - [Parameters](#parameters-2)
+      - [Return value](#return-value-2)
+    - [_kos\_client\_rm_](#kos_client_rm)
+      - [Definition](#definition-4)
+      - [Parameters](#parameters-3)
+      - [Return value](#return-value-3)
+    - [_kos\_client\_mkdir_](#kos_client_mkdir)
+      - [Definition](#definition-5)
+      - [Parameters](#parameters-4)
+      - [Return value](#return-value-4)
+    - [_kos\_client\_rmdir_](#kos_client_rmdir)
+      - [Definition](#definition-6)
+      - [Parameters](#parameters-5)
+      - [Return value](#return-value-5)
+    - [_kos\_client\_ls_](#kos_client_ls)
+      - [Definition](#definition-7)
+      - [Parameters](#parameters-6)
+      - [Return value](#return-value-6)
+  - [Contributing](#contributing)
+  - [License](#license)
 
-    ./kos/samba/cross-build.sh
+## Getting started
 
-## Installation
+### Prerequisites
 
-To easily the Samba Server in your own solutions on Kaspersky OS, it is recommended to incorporate it in the SDK.
-To do this, after the build you will need to run installation script with root permissions:
+1. [Install](https://support.kaspersky.com/help/KCE/1.1/en-US/sdk_install_and_remove.htm) the KasperskyOS Community Edition SDK. You can download the latest version of KasperskyOS Community Edition for free from [os.kaspersky.com](https://os.kaspersky.com/development/). Minimum required version of the KasperskyOS Community Edition SDK is 1.1.0.24. For more information, see [System requirements](https://support.kaspersky.com/help/KCE/1.1/en-US/system_requirements.htm).
+1. Copy project sources files to your home directory. All files that are required to build the Samba for KasperskyOS and examples of KasperskyOS-based solutions are located in the following directory:
+   ```
+   ./kos
+   ```
+1. Set the environment variable `SDK_PREFIX` to `/opt/KasperskyOS-Community-Edition-<version>`, where `version` is the version of the KasperskyOS Community Edition SDK that you installed. To do this, run the following command:
+   ```
+   $ export SDK_PREFIX=/opt/KasperskyOS-Community-Edition-<version>
+   ```
 
-    ./kos/samba/install.sh
+### Building the Samba for KasperskyOS
 
-## Deinstallation
+Run the following script to build the Samba for KasperskyOS:
+```
+./kos/nginx/cross-build.sh
+```
+The Samba for KasperskyOS is built using the CMake build system, which is provided in the KasperskyOS Community Edition SDK.
 
-To remove all files related to Samba from Kaspersky OS SDK, just run the following script with root permissions:
+### Installing and removing the Samba for KasperskyOS
 
-    ./kos/samba/uinstall.sh
+To install the Samba for KasperskyOS to the KasperskyOS Community Edition SDK, run the following script with root privileges:
+```
+./kos/nginx/install.sh
+```
 
-## Using in your own solutions on Kaspersky OS
+To remove the Samba for KasperskyOS from the KasperskyOS Community Edition SDK, run the following script with root privileges:
+```
+./kos/nginx/uninstall.sh
+```
 
-To connect Samba to your solution, you need to add the smbd package in the cmake build script:
+[⬆ Back to Top](#Table-of-contents)
 
-    find_package (smbd REQUIRED)
+## Usage
 
-Next, you need to add the Smbd entity to the list of project entities and give it the required permissions to work with disk, network, etc.
+When you develop a KasperskyOS-based solution, use the [recommended structure of project directories](https://support.kaspersky.com/help/KCE/1.1/en-US/cmake_using_sdk_cmake.htm) to simplify usage of CMake scripts.
 
-After that, in the folder from which the image of the connected disk will be built, you need to add the Samba configuration files.
+To include the Samba server in your KasperskyOS-based solution, follow these steps:
 
-For further information on how to add Samba to your solution, see the examples in the folder:
+1. Add the `find_package()` command to the `./CMakeLists.txt` root file to find and load the `smbd` package.
+   ```
+   find_package (smbd REQUIRED)
+   ```
+   For more information about the `./CMakeLists.txt` root file, see the [KasperskyOS Community Edition Online Help](https://support.kaspersky.com/help/KCE/1.1/en-US/cmake_lists_root.htm).
+1. Add the `Smbd` program to a list of program executable files defined in the `./einit/CMakeLists.txt` file as follows:
+   ```
+   set (ENTITIES
+        Smbd
+        ...)
+   ```
+   For more information about the `./einit/CMakeLists.txt` file for building the `Einit` initializing program, see the [KasperskyOS Community Edition Online Help](https://support.kaspersky.com/help/KCE/1.1/en-US/cmake_lists_einit.htm).
+1. Specify a list of IPC channels that connect the  `Smbd` program to `VfsNet` and `VfsRamFs` programs in the `./einit/src/init.yaml.in` template file. For more information about the `init.yaml.in` template file, see the [KasperskyOS Community Edition Online Help](https://support.kaspersky.com/help/KCE/1.1/en-US/cmake_yaml_templates.htm).
+1. Create a solution security policy description in the `./einit/src/security.psl.in` template file. For more information about the `security.psl.in` template file, see the [KasperskyOS Community Edition Online Help](https://support.kaspersky.com/help/KCE/1.1/en-US/cmake_psl_templates.htm).
+1. Add Samba configuration files to the directory `./resources`.
 
-    ./kos/exmaples
+The Samba client can be included in your KasperskyOS-based solution in a similar way.
 
-## Examples
+### Examples
 
-### smbd
+* [`./kos/examples/smbclient`](kos/examples/smbclient)—Example of developing a solution using a Samba client in KasperskyOS.
+* [`./kos/examples/smbd`](kos/examples/smbd)—Example of developing a solution using a Samba server in KasperskyOS.
 
-The example demonstrates initialization of a Samba server based on Kaspersky OS, on which a test account is created for the test user (login/password: user/1234).
-After building and running the example, you can connect to the server using any Samba client available to you.
+[⬆ Back to Top](#Table-of-contents)
 
-    smbclient //localhost/tmp --user=user --port=1490
+## API
 
-### smbclient
+API is defined in the header file `./source3/client/kos_client.h`. API is designed for server-client interactions.
 
-The example demonstrates initialization of a custom Samba client based on Kaspersky OS using the provided API.
+### _kos_client_connect_
 
-To test the example, you must first configure the Samba server and create an account for a new user.
+Connect to a Samba server.
 
-A guide to setting up a local Samba server is available at this [link](https://wiki.samba.org/index.php/Setting_up_Samba_as_a_Standalone_Server).
-
-The following API functions are available to the client:
-
-#### _kos_client_connect_
-
-Establishing a connection to the Samba server.
-
-##### Definition
+#### Definition
 
 `int kos_client_connect(const char *address, int port, const char *user, const char *password)`
 
-##### Parameters
+#### Parameters
 
-- **address** - IP-address of Samba server
-- **port** - port of Samba server
-- **user** - user login
-- **password** - user password
+- **address**—IP-address of the Samba server
+- **port**—Port of the Samba server
+- **user**—User name
+- **password**—User password
 
-##### Return value
+#### Return value
 
-- **0** - successful connection
-- **other** - error code
+0 if successful; an error code otherwise.
 
-#### _kos_client_disconnect_
+### _kos_client_disconnect_
 
 Disconnect from the Samba server.
 
-##### Definition
+#### Definition
 
 `void kos_client_disconnect()`
 
-#### _kos_client_get_file_
+### _kos_client_get_file_
 
-Copying a file from a Samba server to a local machine.
+Copy a file from the Samba server to a local machine.
 
-##### Definition
+#### Definition
 
 `int kos_client_get_file(const char *remote_name, const char *local_name)`
 
-##### Parameters
+#### Parameters
 
-- **remote_name** - path to the file on Samba server
-- **local_name** - path to the file on local machine
+- **remote_name**—Path to the file on the Samba server
+- **local_name**—Path to the file on a local machine
 
-##### Return value
+#### Return value
+0 if successful; an error code otherwise.
 
-- **0** - success
-- **other** - error code
+### _kos_client_put_file_
 
-#### _kos_client_put_file_
+Copy a file from a local machine to the Samba server.
 
-Copying a file from the local machine to the Samba server.
-
-##### Definition
+#### Definition
 
 `int kos_client_put_file(const char *remote_name, const char *local_name)`
 
-##### Parameters
+#### Parameters
 
-- **remote_name** - path to the file on Samba server
-- **local_name** - path to the file on local machine
+- **remote_name**—Path to the file on the Samba server
+- **local_name**—Path to the file on a local machine
 
-##### Return value
+#### Return value
+0 if successful; an error code otherwise.
 
-- **0** - success
-- **other** - error code
+### _kos_client_rm_
 
-#### _kos_client_rm_
+Delete files on the Samba server.
 
-Deleting a file on the Samba server.
-
-##### Definition
+#### Definition
 
 `int kos_client_rm(const char *mask)`
 
-##### Parameters
+#### Parameters
 
-- **mask** - mask used to delete files on Samba server
+- **mask**—Mask used to delete files on the Samba server
 
-##### Return value
+#### Return value
 
-- **0** - success
-- **other** - error code
+0 if successful; an error code otherwise.
 
-#### _kos_client_mkdir_
+### _kos_client_mkdir_
 
-Create a new folder on the Samba server.
+Create a directory on the Samba server.
 
-##### Definition
+#### Definition
 
 `int kos_client_mkdir(const char *remote_name)`
 
-##### Parameters
+#### Parameters
 
-- **remote_name** - path to the folder on Samba server
+- **remote_name**—Path to the directory on the Samba server
 
-##### Return value
+#### Return value
 
-- **0** - success
-- **other** - error code
+0 if successful; an error code otherwise.
 
-#### _kos_client_rmdir_
+### _kos_client_rmdir_
 
-Deleting a folder on the Samba server.
+Delete directories on the Samba server.
 
-##### Definition
+#### Definition
 
 `int kos_client_rmdir(const char *mask)`
 
-##### Parameters
+#### Parameters
 
-- **mask** - mask used to delete folders on Samba server
+- **mask**—Mask used to delete directories on the Samba server
 
-##### Return value
+#### Return value
 
-- **0** - success
-- **other** - error code
+0 if successful; an error code otherwise.
 
-#### _kos_client_ls_
+### _kos_client_ls_
 
-Getting the contents of a folder on a Samba server.
+Get contents of a directory on the Samba server.
 
-##### Definition
+#### Definition
 
 `int kos_client_ls(const char *mask, kos_client_ls_stat_t **stat)`
 
-##### Parameters
+#### Parameters
 
-- **mask** - mask used to listing content of the folder on Samba server
-- **stat** - pointer to a structure that will store information about the contents of the folder
+- **mask**—Mask used to get the contents of the directory on the Samba server
+- **stat**—Pointer to a structure that will store information about the contents of the directory
 
-##### Return value
+#### Return value
 
-- **0** - success
-- **other** - error code
+0 if successful; an error code otherwise.
+
+[⬆ Back to Top](#Table-of-contents)
+
+## Contributing
+
+Only KasperskyOS-specific changes can be approved. See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed instructions on code contribution.
+
+## License
+
+This project is distributable for free under the GNU public license. See [COPYING](COPYING) for more information.
+
+[⬆ Back to Top](#Table-of-contents)
