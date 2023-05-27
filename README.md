@@ -71,7 +71,7 @@ Currently, subprocess creation isn't available in KasperskyOS Community Edition.
 
 Run the following script to build the Samba for KasperskyOS:
 ```
-./kos/nginx/cross-build.sh
+./kos/samba/cross-build.sh
 ```
 The Samba for KasperskyOS is built using the CMake build system, which is provided in the KasperskyOS Community Edition SDK.
 
@@ -79,12 +79,12 @@ The Samba for KasperskyOS is built using the CMake build system, which is provid
 
 To install the Samba for KasperskyOS to the KasperskyOS Community Edition SDK, run the following script with root privileges:
 ```
-./kos/nginx/install.sh
+./kos/samba/install.sh
 ```
 
 To remove the Samba for KasperskyOS from the KasperskyOS Community Edition SDK, run the following script with root privileges:
 ```
-./kos/nginx/uninstall.sh
+./kos/samba/uninstall.sh
 ```
 
 [⬆ Back to Top](#Table-of-contents)
@@ -115,8 +115,8 @@ The Samba client can be included in your KasperskyOS-based solution in a similar
 
 ### Examples
 
-* [`./kos/examples/smbclient`](kos/examples/smbclient)—Example of developing a solution using a Samba client in KasperskyOS.
-* [`./kos/examples/smbd`](kos/examples/smbd)—Example of developing a solution using a Samba server in KasperskyOS.
+* [`./kos/example/smbclient`](kos/example/smbclient)—Example of developing a solution using a Samba client in KasperskyOS.
+* [`./kos/example/smbd`](kos/example/smbd)—Example of developing a solution using a Samba server in KasperskyOS.
 
 [⬆ Back to Top](#Table-of-contents)
 
@@ -253,6 +253,8 @@ Get contents of a directory on the Samba server.
 ## Contributing
 
 Only KasperskyOS-specific changes can be approved. See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed instructions on code contribution.
+
+[⬆ Back to Top](#Table-of-contents)
 
 ## License
 

@@ -58,13 +58,13 @@ Statically created IPC channels:
 * `kl.rump.Dhcpcd` → `kl.VfsNet`
 * `kl.VfsRamFs` → `kl.drivers.RAMDisk`
 
-The [`./kos/examples/smbclient/einit/src/init.yaml.in`](kos/examples/smbclient/einit/src/init.yaml.in) template is used to automatically generate a part of the solution initialization description file `init.yaml`. For more information about the `init.yaml.in` template file, see the [KasperskyOS Community Edition Online Help](https://support.kaspersky.com/help/KCE/1.1/en-US/cmake_yaml_templates.htm).
+The [`./einit/src/init.yaml.in`](einit/src/init.yaml.in) template is used to automatically generate a part of the solution initialization description file `init.yaml`. For more information about the `init.yaml.in` template file, see the [KasperskyOS Community Edition Online Help](https://support.kaspersky.com/help/KCE/1.1/en-US/cmake_yaml_templates.htm).
 
 [⬆ Back to Top](#Table-of-contents)
 
 ### Security policy description
 
-The [`./kos/examples/smbclient/einit/src/security.psl`](kos/examples/smbclient/einit/src/security.psl) file contains a solution security policy description. For more information about the `security.psl` file, see [Describing a security policy for a KasperskyOS-based solution](https://support.kaspersky.com/help/KCE/1.1/en-US/ssp_descr.htm).
+The [`./einit/src/security.psl`](einit/src/security.psl) file contains a solution security policy description. For more information about the `security.psl` file, see [Describing a security policy for a KasperskyOS-based solution](https://support.kaspersky.com/help/KCE/1.1/en-US/ssp_descr.htm).
 
 [⬆ Back to Top](#Table-of-contents)
 
@@ -90,11 +90,11 @@ $ ./cross-build.sh
 ```
 Running `cross-build.sh` creates a KasperskyOS-based solution image that includes the example. The `kos-qemu-image` solution image is located in the `./build/einit` directory.
 
-[./kos/examples/smbclient/testclient/CMakeLists.txt](kos/examples/testclient/netinit/CMakeLists.txt)—CMake commands for building the `TestClient` program.
+[./testclient/CMakeLists.txt](testclient/netinit/CMakeLists.txt)—CMake commands for building the `TestClient` program.
 
-[./kos/examples/smbclient/einit/CMakeLists.txt](kos/examples/smbclient/einit/CMakeLists.txt)—CMake commands for building the `Einit` program and the solution image.
+[./einit/CMakeLists.txt](einit/CMakeLists.txt)—CMake commands for building the `Einit` program and the solution image.
 
-[./kos/examples/smbclient/CMakeLists.txt](kos/examples/smbclient/CMakeLists.txt)—CMake commands for building the solution.
+[./CMakeLists.txt](CMakeLists.txt)—CMake commands for building the solution.
 
 [⬆ Back to Top](#Table-of-contents)
 
@@ -107,9 +107,9 @@ Running `cross-build.sh` creates a KasperskyOS-based solution image that include
       path = /home/share
       valid users = test
       ```
-   If you already have a Samba server configured, you can replace the parameters in the example code `./kos/example/smbclient/testclient/main.c` with the required parameters.
+   If you already have a Samba server configured, you can replace the parameters in the example code [./testclient/main.c](testclient/main.c) with the required parameters.
 1. Run the Samba server.
-1. To run the example on QEMU, go to the directory `./kos/examples/smbclient` and run the following command:
+1. To run the example on QEMU, go to the directory with the Samba client example and run the following command:
    ```
    $ ./cross-build.sh
    ```
