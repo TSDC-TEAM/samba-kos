@@ -1,0 +1,9 @@
+nobody:x:65534:
+nogroup:x:65533:nobody
+user-group:x:1000:
+domusers:X:65531:
+domadmins:X:65530:
+userdup:x:65529:user
+everyone:x:65528:
+force_user:x:65527:
+root:x:65532:

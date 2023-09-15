@@ -1,0 +1,29 @@
+[global]
+    netbios name = client
+    workgroup = WORKGROUP
+    interfaces = 10.53.57.11/8 10.53.57.12/8 10.53.57.13/8 10.53.57.14/8 10.53.57.15/8 10.53.57.16/8 fd00:0000:0000:0000:0000:0000:5357:5f0b/64
+
+    private dir = ${SAMBA_ST_PATH}/client/private
+    binddns dir = ${SAMBA_ST_PATH}/client/bind-dns
+    lock dir = ${SAMBA_ST_PATH}/client/lockdir
+    state directory = ${SAMBA_ST_PATH}/client/statedir
+    cache directory = ${SAMBA_ST_PATH}/client/cachedir
+    ncalrpc dir = ${SAMBA_ST_PATH}/client/ncalrpcdir
+    pid directory = ${SAMBA_ST_PATH}/client/pid
+    panic action = ${SAMBA_ST_PATH}/selftest/gdb_backtrace %d
+    max xmit = 32K
+    notify:inotify = false
+    ldb:nosync = true
+    system:anonymous = true
+    client lanman auth = Yes
+    client min protocol = CORE
+    log level = 1
+    torture:basedir = ${SAMBA_ST_PATH}/client
+    #We don't want to run 'speed' tests for very long
+    torture:timelimit = 1
+    winbind separator = /
+    tls cafile = ${SAMBA_ST_PATH}/selftest/manage-ca/CA-samba.example.com/Public/CA-samba.example.com-cert.pem
+    tls crlfile = ${SAMBA_ST_PATH}/selftest/manage-ca/CA-samba.example.com/Public/CA-samba.example.com-crl.pem
+    tls verify peer = no_check
+    include system krb5 conf = no
+    elasticsearch:mappings = ${SAMBA_ST_PATH}/selftest/rpc_server/mdssvc/elasticsearch_mappings.json

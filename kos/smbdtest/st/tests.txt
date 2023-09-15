@@ -1,0 +1,652 @@
+#
+# scan
+#
+-smb2.scan.scan.scan
+smb2.scan.getinfo.getinfo
+smb2.scan.setinfo.setinfo
+smb2.scan.find.find
+#
+# getinfo
+#
+smb2.getinfo.complex.complex
+smb2.getinfo.fsinfo.fsinfo
+smb2.getinfo.qfs_buffercheck.qfs_buffercheck
+smb2.getinfo.qfile_buffercheck.qfile_buffercheck
+smb2.getinfo.qsec_buffercheck.qsec_buffercheck
+smb2.getinfo.granted.granted
+smb2.getinfo.normalized.normalized
+#
+# lock
+#
+smb2.lock.valid-request.valid-request
+smb2.lock.rw-none.rw-none
+smb2.lock.rw-shared.rw-shared
+smb2.lock.rw-exclusive.rw-exclusive
+smb2.lock.auto-unlock.auto-unlock
+smb2.lock.lock.lock
+smb2.lock.async.async
+smb2.lock.cancel.cancel
+smb2.lock.cancel-tdis.cancel-tdis
+smb2.lock.cancel-logoff.cancel-logoff
+smb2.lock.errorcode.errorcode
+smb2.lock.zerobytelength.zerobytelength
+smb2.lock.zerobyteread.zerobyteread
+smb2.lock.unlock.unlock
+smb2.lock.multiple-unlock.multiple-unlock
+smb2.lock.stacking.stacking
+smb2.lock.contend.contend
+smb2.lock.context.context
+smb2.lock.range.range
+smb2.lock.overlap.overlap
+smb2.lock.truncate.truncate
+smb2.lock.replay_broken_windows.replay_broken_windows
+smb2.lock.replay_smb3_specification_durable.replay_smb3_specification_durable
+smb2.lock.replay_smb3_specification_multi.replay_smb3_specification_multi
+smb2.lock.ctdb-delrec-deadlock.ctdb-delrec-deadlock
+#
+# aio_delay
+#
+-smb2.aio_delay.aio_cancel.aio_cancel
+#
+# create
+#
+smb2.create.gentest.gentest
+smb2.create.blob.blob
+smb2.create.open.open
+smb2.create.brlocked.brlocked
+smb2.create.multi.multi
+smb2.create.delete.delete
+smb2.create.leading-slash.leading-slash
+smb2.create.impersonation.impersonation
+smb2.create.aclfile.aclfile
+smb2.create.acldir.acldir
+smb2.create.nulldacl.nulldacl
+smb2.create.mkdir-dup.mkdir-dup
+smb2.create.dir-alloc-size.dir-alloc-size
+smb2.create.quota-fake-file.quota-fake-file
+#
+# twrp
+#
+smb2.twrp.write.write
+smb2.twrp.stream.stream
+smb2.twrp.openroot.openroot
+#
+# fileid
+#
+smb2.fileid.fileid.fileid
+smb2.fileid.fileid-dir.fileid-dir
+#
+# acls
+#
+-smb2.acls.CREATOR.CREATOR
+-smb2.acls.GENERIC.GENERIC
+-smb2.acls.OWNER.OWNER
+-smb2.acls.INHERITANCE.INHERITANCE
+-smb2.acls.INHERITFLAGS.INHERITFLAGS
+-smb2.acls.SDFLAGSVSCHOWN.SDFLAGSVSCHOWN
+-smb2.acls.DYNAMIC.DYNAMIC
+-smb2.acls.ACCESSBASED.ACCESSBASED
+-smb2.acls.OWNER-RIGHTS.OWNER-RIGHTS
+-smb2.acls.OWNER-RIGHTS-DENY.OWNER-RIGHTS-DENY
+-smb2.acls.OWNER-RIGHTS-DENY1.OWNER-RIGHTS-DENY1
+-smb2.acls.DENY1.DENY1
+-smb2.acls.MXAC-NOT-GRANTED.MXAC-NOT-GRANTED
+#
+# acls_non_canonical
+#
+-smb2.acls_non_canonical.flags.flags
+#
+# notify
+#
+-smb2.notify.valid-req.valid-req
+-smb2.notify.tcon.tcon
+-smb2.notify.dir.dir
+-smb2.notify.mask.mask
+-smb2.notify.tdis.tdis
+-smb2.notify.tdis1.tdis1
+-smb2.notify.mask-change.mask-change
+-smb2.notify.close.close
+-smb2.notify.logoff.logoff
+-smb2.notify.session-reconnect.session-reconnect
+-smb2.notify.invalid-reauth.invalid-reauth
+-smb2.notify.tree.tree
+-smb2.notify.basedir.basedir
+-smb2.notify.double.double
+-smb2.notify.file.file
+-smb2.notify.tcp.tcp
+-smb2.notify.rec.rec
+-smb2.notify.overflow.overflow
+-smb2.notify.rmdir1.rmdir1
+-smb2.notify.rmdir2.rmdir2
+-smb2.notify.rmdir3.rmdir3
+-smb2.notify.rmdir4.rmdir4
+-smb2.notify.handle-permissions.handle-permissions
+#
+# notify-inotify
+#
+-smb2.notify-inotify.inotify-rename.inotify-rename
+#
+# change_notify_disabled
+#
+smb2.change_notify_disabled.notfiy_disabled.notfiy_disabled
+#
+# durable-open
+#
+smb2.durable-open.open-oplock.open-oplock server_path=durable
+smb2.durable-open.open-lease.open-lease server_path=durable
+smb2.durable-open.reopen1.reopen1 server_path=durable
+smb2.durable-open.reopen1a.reopen1a server_path=durable
+smb2.durable-open.reopen1a-lease.reopen1a-lease server_path=durable
+smb2.durable-open.reopen2.reopen2 server_path=durable
+smb2.durable-open.reopen2-lease.reopen2-lease server_path=durable
+smb2.durable-open.reopen2-lease-v2.reopen2-lease-v2 server_path=durable
+smb2.durable-open.reopen2a.reopen2a server_path=durable
+smb2.durable-open.reopen3.reopen3 server_path=durable
+smb2.durable-open.reopen4.reopen4 server_path=durable
+smb2.durable-open.delete_on_close1.delete_on_close1 server_path=durable
+smb2.durable-open.delete_on_close2.delete_on_close2 server_path=durable
+smb2.durable-open.file-position.file-position server_path=durable
+smb2.durable-open.oplock.oplock server_path=durable
+smb2.durable-open.lease.lease server_path=durable
+smb2.durable-open.lock-oplock.lock-oplock server_path=durable
+smb2.durable-open.lock-lease.lock-lease server_path=durable
+smb2.durable-open.open2-lease.open2-lease server_path=durable
+smb2.durable-open.open2-oplock.open2-oplock server_path=durable
+smb2.durable-open.alloc-size.alloc-size server_path=durable
+smb2.durable-open.read-only.read-only server_path=durable
+#
+# durable-open-disconnect
+#
+-smb2.durable-open-disconnect.open-oplock-disconnect.open-oplock-disconnect server_path=durable
+#
+# durable-v2-open
+#
+smb2.durable-v2-open.create-blob.create-blob server_path=durable
+smb2.durable-v2-open.open-oplock.open-oplock server_path=durable
+smb2.durable-v2-open.open-lease.open-lease server_path=durable
+smb2.durable-v2-open.reopen1.reopen1 server_path=durable
+smb2.durable-v2-open.reopen1a.reopen1a server_path=durable
+smb2.durable-v2-open.reopen1a-lease.reopen1a-lease server_path=durable
+smb2.durable-v2-open.reopen2.reopen2 server_path=durable
+smb2.durable-v2-open.reopen2b.reopen2b server_path=durable
+smb2.durable-v2-open.reopen2c.reopen2c server_path=durable
+smb2.durable-v2-open.reopen2-lease.reopen2-lease server_path=durable
+smb2.durable-v2-open.reopen2-lease-v2.reopen2-lease-v2 server_path=durable
+smb2.durable-v2-open.app-instance.app-instance server_path=durable
+smb2.durable-v2-open.persistent-open-oplock.persistent-open-oplock server_path=durable
+smb2.durable-v2-open.persistent-open-lease.persistent-open-lease server_path=durable
+#
+# durable-v2-delay
+#
+smb2.durable-v2-delay.durable_v2_reconnect_delay.durable_v2_reconnect_delay server_path=durable
+smb2.durable-v2-delay.durable_v2_reconnect_delay_msec.durable_v2_reconnect_delay_msec server_path=durable
+#
+# dir
+#
+-smb2.dir.find.find server_path=durable
+-smb2.dir.fixed.fixed server_path=durable
+-smb2.dir.one.one server_path=durable
+-smb2.dir.many.many server_path=durable
+-smb2.dir.modify.modify server_path=durable
+-smb2.dir.sorted.sorted server_path=durable
+-smb2.dir.file-index.file-index server_path=durable
+-smb2.dir.large-files.large-files server_path=durable
+#
+# lease
+#
+smb2.lease.request.request
+smb2.lease.break_twice.break_twice
+smb2.lease.nobreakself.nobreakself
+smb2.lease.statopen.statopen
+smb2.lease.statopen2.statopen2
+smb2.lease.statopen3.statopen3
+smb2.lease.statopen4.statopen4
+smb2.lease.upgrade.upgrade
+smb2.lease.upgrade2.upgrade2
+smb2.lease.upgrade3.upgrade3
+smb2.lease.break.break
+smb2.lease.oplock.oplock
+smb2.lease.multibreak.multibreak
+smb2.lease.breaking1.breaking1
+smb2.lease.breaking2.breaking2
+smb2.lease.breaking3.breaking3
+smb2.lease.v2_breaking3.v2_breaking3
+smb2.lease.breaking4.breaking4
+smb2.lease.breaking5.breaking5
+smb2.lease.breaking6.breaking6
+smb2.lease.lock1.lock1
+smb2.lease.complex1.complex1
+smb2.lease.v2_request_parent.v2_request_parent
+smb2.lease.v2_request.v2_request
+smb2.lease.v2_epoch1.v2_epoch1
+smb2.lease.v2_epoch2.v2_epoch2
+smb2.lease.v2_epoch3.v2_epoch3
+smb2.lease.v2_complex1.v2_complex1
+smb2.lease.v2_complex2.v2_complex2
+smb2.lease.v2_rename.v2_rename
+smb2.lease.dynamic_share.dynamic_share
+smb2.lease.timeout.timeout
+smb2.lease.unlink.unlink
+smb2.lease.timeout-disconnect.timeout-disconnect
+smb2.lease.rename_wait.rename_wait
+smb2.lease.duplicate_create
+smb2.lease.duplicate_open
+#
+# compound
+#
+smb2.compound.related1.related1
+smb2.compound.related2.related2
+smb2.compound.related3.related3
+smb2.compound.related4.related4
+smb2.compound.related5.related5
+smb2.compound.related6.related6
+smb2.compound.related7.related7
+smb2.compound.related8.related8
+smb2.compound.related9.related9
+smb2.compound.unrelated1.unrelated1
+smb2.compound.invalid1.invalid1
+smb2.compound.invalid2.invalid2
+smb2.compound.invalid3.invalid3
+smb2.compound.invalid4.invalid4
+smb2.compound.interim1.interim1
+smb2.compound.interim2.interim2
+smb2.compound.compound-break.compound-break
+smb2.compound.compound-padding.compound-padding
+smb2.compound.create-write-close.create-write-close
+#
+# compound_find
+#
+smb2.compound_find.compound_find_related.compound_find_related
+smb2.compound_find.compound_find_unrelated.compound_find_unrelated
+-smb2.compound_find.compound_find_close.compound_find_close
+#
+# oplock
+#
+smb2.oplock.exclusive1.exclusive1
+smb2.oplock.exclusive2.exclusive2
+smb2.oplock.exclusive3.exclusive3
+smb2.oplock.exclusive4.exclusive4
+smb2.oplock.exclusive5.exclusive5
+smb2.oplock.exclusive6.exclusive6
+smb2.oplock.exclusive9.exclusive9
+smb2.oplock.batch1.batch1
+smb2.oplock.batch2.batch2
+smb2.oplock.batch3.batch3
+smb2.oplock.batch4.batch4
+smb2.oplock.batch5.batch5
+smb2.oplock.batch6.batch6
+smb2.oplock.batch7.batch7
+smb2.oplock.batch8.batch8
+smb2.oplock.batch9.batch9
+smb2.oplock.batch9a.batch9a
+smb2.oplock.batch10.batch10
+smb2.oplock.batch11.batch11
+smb2.oplock.batch12.batch12
+smb2.oplock.batch13.batch13
+smb2.oplock.batch14.batch14
+smb2.oplock.batch15.batch15
+smb2.oplock.batch16.batch16
+smb2.oplock.batch19.batch19
+smb2.oplock.batch20.batch20
+smb2.oplock.batch21.batch21
+smb2.oplock.batch22a.batch22a
+smb2.oplock.batch22b.batch22b
+smb2.oplock.batch23.batch23
+smb2.oplock.batch24.batch24
+smb2.oplock.batch25.batch25
+smb2.oplock.batch26.batch26
+smb2.oplock.stream1.stream1
+smb2.oplock.doc.doc
+smb2.oplock.brl1.brl1
+smb2.oplock.brl2.brl2
+smb2.oplock.brl3.brl3
+smb2.oplock.levelii500.levelii500
+smb2.oplock.levelii501.levelii501
+-smb2.oplock.levelii502.levelii502
+smb2.oplock.statopen1.statopen1
+#
+# kernel-oplocks
+#
+smb2.kernel-oplocks.kernel_oplocks1.kernel_oplocks1
+smb2.kernel-oplocks.kernel_oplocks2.kernel_oplocks2
+smb2.kernel-oplocks.kernel_oplocks3.kernel_oplocks3
+smb2.kernel-oplocks.kernel_oplocks4.kernel_oplocks4
+smb2.kernel-oplocks.kernel_oplocks5.kernel_oplocks5
+smb2.kernel-oplocks.kernel_oplocks6.kernel_oplocks6
+smb2.kernel-oplocks.kernel_oplocks7.kernel_oplocks7
+smb2.kernel-oplocks.kernel_oplocks8.kernel_oplocks8
+#
+# streams
+#
+smb2.streams.dir.dir
+smb2.streams.io.io
+smb2.streams.sharemodes.sharemodes
+smb2.streams.names.names
+smb2.streams.names2.names2
+smb2.streams.names3.names3
+smb2.streams.rename.rename
+smb2.streams.rename2.rename2
+smb2.streams.create-disposition.create-disposition
+smb2.streams.delete.delete
+smb2.streams.zero-byte.zero-byte
+smb2.streams.basefile-rename-with-open-stream.basefile-rename-with-open-stream
+#
+# ioctl
+#
+smb2.ioctl.shadow_copy.shadow_copy
+smb2.ioctl.req_resume_key.req_resume_key
+smb2.ioctl.req_two_resume_keys.req_two_resume_keys
+smb2.ioctl.copy_chunk_simple.copy_chunk_simple
+smb2.ioctl.copy_chunk_multi.copy_chunk_multi
+smb2.ioctl.copy_chunk_tiny.copy_chunk_tiny
+smb2.ioctl.copy_chunk_overwrite.copy_chunk_overwrite
+smb2.ioctl.copy_chunk_append.copy_chunk_append
+smb2.ioctl.copy_chunk_limits.copy_chunk_limits
+smb2.ioctl.copy_chunk_src_lock.copy_chunk_src_lock
+smb2.ioctl.copy_chunk_dest_lock.copy_chunk_dest_lock
+smb2.ioctl.copy_chunk_bad_key.copy_chunk_bad_key
+smb2.ioctl.copy_chunk_src_is_dest.copy_chunk_src_is_dest
+smb2.ioctl.copy_chunk_src_is_dest_overlap.copy_chunk_src_is_dest_overlap
+smb2.ioctl.copy_chunk_bad_access.copy_chunk_bad_access
+smb2.ioctl.copy_chunk_write_access.copy_chunk_write_access
+smb2.ioctl.copy_chunk_src_exceed.copy_chunk_src_exceed
+smb2.ioctl.copy_chunk_src_exceed_multi.copy_chunk_src_exceed_multi
+smb2.ioctl.copy_chunk_sparse_dest.copy_chunk_sparse_dest
+smb2.ioctl.copy_chunk_max_output_sz.copy_chunk_max_output_sz
+smb2.ioctl.copy_chunk_zero_length.copy_chunk_zero_length
+smb2.ioctl.copy-chunk streams.copy-chunk streams
+smb2.ioctl.copy_chunk_across_shares.copy_chunk_across_shares
+smb2.ioctl.copy_chunk_across_shares2.copy_chunk_across_shares2
+smb2.ioctl.copy_chunk_across_shares3.copy_chunk_across_shares3
+smb2.ioctl.compress_file_flag.compress_file_flag
+smb2.ioctl.compress_dir_inherit.compress_dir_inherit
+smb2.ioctl.compress_invalid_format.compress_invalid_format
+smb2.ioctl.compress_invalid_buf.compress_invalid_buf
+smb2.ioctl.compress_query_file_attr.compress_query_file_attr
+smb2.ioctl.compress_create_with_attr.compress_create_with_attr
+smb2.ioctl.compress_inherit_disable.compress_inherit_disable
+smb2.ioctl.compress_set_file_attr.compress_set_file_attr
+smb2.ioctl.compress_perms.compress_perms
+smb2.ioctl.compress_notsup_get.compress_notsup_get
+smb2.ioctl.compress_notsup_set.compress_notsup_set
+smb2.ioctl.network_interface_info.network_interface_info
+smb2.ioctl.sparse_file_flag.sparse_file_flag
+smb2.ioctl.sparse_file_attr.sparse_file_attr
+smb2.ioctl.sparse_dir_flag.sparse_dir_flag
+smb2.ioctl.sparse_set_nobuf.sparse_set_nobuf
+smb2.ioctl.sparse_set_oversize.sparse_set_oversize
+smb2.ioctl.sparse_qar.sparse_qar
+smb2.ioctl.sparse_qar_malformed.sparse_qar_malformed
+smb2.ioctl.sparse_punch.sparse_punch
+smb2.ioctl.sparse_hole_dealloc.sparse_hole_dealloc
+smb2.ioctl.sparse_compressed.sparse_compressed
+smb2.ioctl.sparse_copy_chunk.sparse_copy_chunk
+smb2.ioctl.sparse_punch_invalid.sparse_punch_invalid
+smb2.ioctl.sparse_perms.sparse_perms
+smb2.ioctl.sparse_lock.sparse_lock
+smb2.ioctl.sparse_qar_ob1.sparse_qar_ob1
+smb2.ioctl.sparse_qar_multi.sparse_qar_multi
+smb2.ioctl.sparse_qar_overflow.sparse_qar_overflow
+smb2.ioctl.trim_simple.trim_simple
+smb2.ioctl.dup_extents_simple.dup_extents_simple
+smb2.ioctl.dup_extents_len_beyond_dest.dup_extents_len_beyond_dest
+smb2.ioctl.dup_extents_len_beyond_src.dup_extents_len_beyond_src
+smb2.ioctl.dup_extents_len_zero.dup_extents_len_zero
+smb2.ioctl.dup_extents_sparse_src.dup_extents_sparse_src
+smb2.ioctl.dup_extents_sparse_dest.dup_extents_sparse_dest
+smb2.ioctl.dup_extents_sparse_both.dup_extents_sparse_both
+smb2.ioctl.dup_extents_src_is_dest.dup_extents_src_is_dest
+smb2.ioctl.dup_extents_src_is_dest_overlap.dup_extents_src_is_dest_overlap
+smb2.ioctl.dup_extents_compressed_src.dup_extents_compressed_src
+smb2.ioctl.dup_extents_compressed_dest.dup_extents_compressed_dest
+smb2.ioctl.dup_extents_bad_handle.dup_extents_bad_handle
+smb2.ioctl.dup_extents_src_lock.dup_extents_src_lock
+smb2.ioctl.dup_extents_dest_lock.dup_extents_dest_lock
+smb2.ioctl.bug14607.bug14607
+smb2.ioctl.bug14769.bug14769
+smb2.ioctl.bug14788.VALIDATE_NEGOTIATE
+smb2.ioctl.bug14788.NETWORK_INTERFACE
+#
+# rename
+#
+smb2.rename.simple.simple
+smb2.rename.simple_nodelete.simple_nodelete
+smb2.rename.no_sharing.no_sharing
+smb2.rename.share_delete_and_delete_access.share_delete_and_delete_access
+smb2.rename.no_share_delete_but_delete_access.no_share_delete_but_delete_access
+smb2.rename.share_delete_no_delete_access.share_delete_no_delete_access
+smb2.rename.no_share_delete_no_delete_access.no_share_delete_no_delete_access
+smb2.rename.msword.msword
+smb2.rename.rename_dir_openfile.rename_dir_openfile
+smb2.rename.rename_dir_bench.rename_dir_bench
+#
+# sharemode
+#
+smb2.sharemode.sharemode-access.sharemode-access
+smb2.sharemode.access-sharemode.access-sharemode
+smb2.sharemode.bug14375.bug14375
+#
+# session
+#
+smb2.session.reconnect1.reconnect1
+smb2.session.reconnect2.reconnect2
+smb2.session.reauth1.reauth1
+smb2.session.reauth2.reauth2
+smb2.session.reauth3.reauth3
+smb2.session.reauth4.reauth4
+smb2.session.reauth5.reauth5
+smb2.session.reauth6.reauth6
+smb2.session.expire1n.expire1n
+smb2.session.expire1s.expire1s
+smb2.session.expire1e.expire1e
+smb2.session.expire2s.expire2s
+smb2.session.expire2e.expire2e
+smb2.session.expire_disconnect.expire_disconnect
+smb2.session.bind1.bind1
+smb2.session.bind2.bind2
+smb2.session.bind_invalid_auth.bind_invalid_auth
+smb2.session.bind_different_user.bind_different_user
+smb2.session.bind_negative_smb202.bind_negative_smb202
+smb2.session.bind_negative_smb210s.bind_negative_smb210s
+smb2.session.bind_negative_smb210d.bind_negative_smb210d
+smb2.session.bind_negative_smb2to3s.bind_negative_smb2to3s
+smb2.session.bind_negative_smb2to3d.bind_negative_smb2to3d
+smb2.session.bind_negative_smb3to2s.bind_negative_smb3to2s
+smb2.session.bind_negative_smb3to2d.bind_negative_smb3to2d
+smb2.session.bind_negative_smb3to3s.bind_negative_smb3to3s
+smb2.session.bind_negative_smb3to3d.bind_negative_smb3to3d
+smb2.session.bind_negative_smb3encGtoCs.bind_negative_smb3encGtoCs
+smb2.session.bind_negative_smb3encGtoCd.bind_negative_smb3encGtoCd
+smb2.session.bind_negative_smb3signCtoHs.bind_negative_smb3signCtoHs
+smb2.session.bind_negative_smb3signCtoHd.bind_negative_smb3signCtoHd
+smb2.session.bind_negative_smb3signCtoGs.bind_negative_smb3signCtoGs
+smb2.session.bind_negative_smb3signCtoGd.bind_negative_smb3signCtoGd
+smb2.session.bind_negative_smb3signHtoCs.bind_negative_smb3signHtoCs
+smb2.session.bind_negative_smb3signHtoCd.bind_negative_smb3signHtoCd
+smb2.session.bind_negative_smb3signHtoGs.bind_negative_smb3signHtoGs
+smb2.session.bind_negative_smb3signHtoGd.bind_negative_smb3signHtoGd
+smb2.session.bind_negative_smb3signGtoCs.bind_negative_smb3signGtoCs
+smb2.session.bind_negative_smb3signGtoCd.bind_negative_smb3signGtoCd
+smb2.session.bind_negative_smb3signGtoHs.bind_negative_smb3signGtoHs
+smb2.session.bind_negative_smb3signGtoHd.bind_negative_smb3signGtoHd
+smb2.session.bind_negative_smb3sneGtoCs.bind_negative_smb3sneGtoCs
+smb2.session.bind_negative_smb3sneGtoCd.bind_negative_smb3sneGtoCd
+smb2.session.bind_negative_smb3sneGtoHs.bind_negative_smb3sneGtoHs
+smb2.session.bind_negative_smb3sneGtoHd.bind_negative_smb3sneGtoHd
+smb2.session.bind_negative_smb3sneCtoGs.bind_negative_smb3sneCtoGs
+smb2.session.bind_negative_smb3sneCtoGd.bind_negative_smb3sneCtoGd
+smb2.session.bind_negative_smb3sneHtoGs.bind_negative_smb3sneHtoGs
+smb2.session.bind_negative_smb3sneHtoGd.bind_negative_smb3sneHtoGd
+smb2.session.bind_negative_smb3signC30toGs.bind_negative_smb3signC30toGs
+smb2.session.bind_negative_smb3signC30toGd.bind_negative_smb3signC30toGd
+smb2.session.bind_negative_smb3signH2XtoGs.bind_negative_smb3signH2XtoGs
+smb2.session.bind_negative_smb3signH2XtoGd.bind_negative_smb3signH2XtoGd
+smb2.session.bind_negative_smb3signGtoC30s.bind_negative_smb3signGtoC30s
+smb2.session.bind_negative_smb3signGtoC30d.bind_negative_smb3signGtoC30d
+smb2.session.bind_negative_smb3signGtoH2Xs.bind_negative_smb3signGtoH2Xs
+smb2.session.bind_negative_smb3signGtoH2Xd.bind_negative_smb3signGtoH2Xd
+smb2.session.two_logoff.two_logoff
+smb2.session.signing-hmac-sha-256.signing-hmac-sha-256
+smb2.session.signing-aes-128-cmac.signing-aes-128-cmac
+smb2.session.signing-aes-128-gmac.signing-aes-128-gmac
+smb2.session.encryption-aes-128-ccm.encryption-aes-128-ccm
+smb2.session.encryption-aes-128-gcm.encryption-aes-128-gcm
+smb2.session.encryption-aes-256-ccm.encryption-aes-256-ccm
+smb2.session.encryption-aes-256-gcm.encryption-aes-256-gcm
+smb2.session.ntlmssp_bug14932
+#
+# replay
+#
+smb2.replay.replay-commands.replay-commands server_path=durable
+smb2.replay.replay-regular.replay-regular server_path=durable
+smb2.replay.replay-dhv2-oplock1.replay-dhv2-oplock1 server_path=durable
+smb2.replay.replay-dhv2-oplock2.replay-dhv2-oplock2 server_path=durable
+smb2.replay.replay-dhv2-oplock3.replay-dhv2-oplock3 server_path=durable
+smb2.replay.replay-dhv2-oplock-lease.replay-dhv2-oplock-lease server_path=durable
+smb2.replay.replay-dhv2-lease1.replay-dhv2-lease1 server_path=durable
+smb2.replay.replay-dhv2-lease2.replay-dhv2-lease2 server_path=durable
+smb2.replay.replay-dhv2-lease3.replay-dhv2-lease3 server_path=durable
+smb2.replay.replay-dhv2-lease-oplock.replay-dhv2-lease-oplock server_path=durable
+-smb2.replay.dhv2-pending1n-vs-violation-lease-close-sane.dhv2-pending1n-vs-violation-lease-close-sane server_path=durable
+-smb2.replay.dhv2-pending1n-vs-violation-lease-ack-sane.dhv2-pending1n-vs-violation-lease-ack-sane server_path=durable
+-smb2.replay.dhv2-pending1n-vs-violation-lease-close-windows.dhv2-pending1n-vs-violation-lease-close-windows server_path=durable
+-smb2.replay.dhv2-pending1n-vs-violation-lease-ack-windows.dhv2-pending1n-vs-violation-lease-ack-windows server_path=durable
+-smb2.replay.dhv2-pending1n-vs-oplock-sane.dhv2-pending1n-vs-oplock-sane server_path=durable
+-smb2.replay.dhv2-pending1n-vs-oplock-windows.dhv2-pending1n-vs-oplock-windows server_path=durable
+-smb2.replay.dhv2-pending1n-vs-lease-sane.dhv2-pending1n-vs-lease-sane server_path=durable
+-smb2.replay.dhv2-pending1n-vs-lease-windows.dhv2-pending1n-vs-lease-windows server_path=durable
+-smb2.replay.dhv2-pending1l-vs-oplock-sane.dhv2-pending1l-vs-oplock-sane server_path=durable
+-smb2.replay.dhv2-pending1l-vs-oplock-windows.dhv2-pending1l-vs-oplock-windows server_path=durable
+-smb2.replay.dhv2-pending1l-vs-lease-sane.dhv2-pending1l-vs-lease-sane server_path=durable
+-smb2.replay.dhv2-pending1l-vs-lease-windows.dhv2-pending1l-vs-lease-windows server_path=durable
+-smb2.replay.dhv2-pending1o-vs-oplock-sane.dhv2-pending1o-vs-oplock-sane server_path=durable
+-smb2.replay.dhv2-pending1o-vs-oplock-windows.dhv2-pending1o-vs-oplock-windows server_path=durable
+-smb2.replay.dhv2-pending1o-vs-lease-sane.dhv2-pending1o-vs-lease-sane server_path=durable
+-smb2.replay.dhv2-pending1o-vs-lease-windows.dhv2-pending1o-vs-lease-windows server_path=durable
+-smb2.replay.dhv2-pending2n-vs-oplock-sane.dhv2-pending2n-vs-oplock-sane server_path=durable
+-smb2.replay.dhv2-pending2n-vs-oplock-windows.dhv2-pending2n-vs-oplock-windows server_path=durable
+-smb2.replay.dhv2-pending2n-vs-lease-sane.dhv2-pending2n-vs-lease-sane server_path=durable
+-smb2.replay.dhv2-pending2n-vs-lease-windows.dhv2-pending2n-vs-lease-windows server_path=durable
+-smb2.replay.dhv2-pending2l-vs-oplock-sane.dhv2-pending2l-vs-oplock-sane server_path=durable
+-smb2.replay.dhv2-pending2l-vs-oplock-windows.dhv2-pending2l-vs-oplock-windows server_path=durable
+-smb2.replay.dhv2-pending2l-vs-lease-sane.dhv2-pending2l-vs-lease-sane server_path=durable
+-smb2.replay.dhv2-pending2l-vs-lease-windows.dhv2-pending2l-vs-lease-windows server_path=durable
+-smb2.replay.dhv2-pending2o-vs-oplock-sane.dhv2-pending2o-vs-oplock-sane server_path=durable
+-smb2.replay.dhv2-pending2o-vs-oplock-windows.dhv2-pending2o-vs-oplock-windows server_path=durable
+-smb2.replay.dhv2-pending2o-vs-lease-sane.dhv2-pending2o-vs-lease-sane server_path=durable
+-smb2.replay.dhv2-pending2o-vs-lease-windows.dhv2-pending2o-vs-lease-windows server_path=durable
+-smb2.replay.dhv2-pending3n-vs-oplock-sane.dhv2-pending3n-vs-oplock-sane server_path=durable
+-smb2.replay.dhv2-pending3n-vs-oplock-windows.dhv2-pending3n-vs-oplock-windows server_path=durable
+-smb2.replay.dhv2-pending3n-vs-lease-sane.dhv2-pending3n-vs-lease-sane server_path=durable
+-smb2.replay.dhv2-pending3n-vs-lease-windows.dhv2-pending3n-vs-lease-windows server_path=durable
+-smb2.replay.dhv2-pending3l-vs-oplock-sane.dhv2-pending3l-vs-oplock-sane server_path=durable
+-smb2.replay.dhv2-pending3l-vs-oplock-windows.dhv2-pending3l-vs-oplock-windows server_path=durable
+-smb2.replay.dhv2-pending3l-vs-lease-sane.dhv2-pending3l-vs-lease-sane server_path=durable
+-smb2.replay.dhv2-pending3l-vs-lease-windows.dhv2-pending3l-vs-lease-windows server_path=durable
+-smb2.replay.dhv2-pending3o-vs-oplock-sane.dhv2-pending3o-vs-oplock-sane server_path=durable
+-smb2.replay.dhv2-pending3o-vs-oplock-windows.dhv2-pending3o-vs-oplock-windows server_path=durable
+-smb2.replay.dhv2-pending3o-vs-lease-sane.dhv2-pending3o-vs-lease-sane server_path=durable
+-smb2.replay.dhv2-pending3o-vs-lease-windows.dhv2-pending3o-vs-lease-windows server_path=durable
+smb2.replay.channel-sequence.channel-sequence server_path=durable
+smb2.replay.replay3.replay3 server_path=durable
+smb2.replay.replay4.replay4 server_path=durable
+smb2.replay.replay5.replay5 server_path=durable
+smb2.replay.replay6.replay6 server_path=durable
+smb2.replay.replay7.replay7 server_path=durable
+#
+# credits
+#
+smb2.credits.session_setup_credits_granted.session_setup_credits_granted
+smb2.credits.single_req_credits_granted.single_req_credits_granted
+-smb2.credits.skipped_mid.skipped_mid
+#
+# delete-on-close-perms
+#
+smb2.delete-on-close-perms.OVERWRITE_IF.OVERWRITE_IF
+# smb2.delete-on-close-perms.OVERWRITE_IF Existing.OVERWRITE_IF Existing
+smb2.delete-on-close-perms.CREATE.CREATE
+# smb2.delete-on-close-perms.CREATE Existing.CREATE Existing
+smb2.delete-on-close-perms.CREATE_IF.CREATE_IF
+# smb2.delete-on-close-perms.CREATE_IF Existing.CREATE_IF Existing
+smb2.delete-on-close-perms.FIND_and_set_DOC.FIND_and_set_DOC
+smb2.delete-on-close-perms.READONLY.READONLY
+smb2.delete-on-close-perms.BUG14427.BUG14427
+#
+# multichannel
+#
+smb2.multichannel.generic.interface_info.interface_info
+smb2.multichannel.generic.num_channels.num_channels
+smb2.multichannel.oplocks.test1.test1
+smb2.multichannel.oplocks.test2.test2
+smb2.multichannel.oplocks.test3_windows.test3_windows
+smb2.multichannel.oplocks.test3_specification.test3_specification
+smb2.multichannel.leases.test1.test1
+smb2.multichannel.leases.test2.test2
+smb2.multichannel.leases.test3.test3
+smb2.multichannel.leases.test4.test4
+#
+# samba3misc
+#
+smb2.samba3misc.localposixlock1.localposixlock1
+#
+# timestamps
+#
+smb2.timestamps.test_close_not_attrib.test_close_not_attrib
+smb2.timestamps.time_t_15032385535.time_t_15032385535
+smb2.timestamps.time_t_10000000000.time_t_10000000000
+smb2.timestamps.time_t_4294967295.time_t_4294967295
+smb2.timestamps.time_t_1.time_t_1
+smb2.timestamps.time_t_0.time_t_0
+smb2.timestamps.time_t_-1.time_t_-1
+smb2.timestamps.time_t_-2.time_t_-2
+smb2.timestamps.time_t_1968.time_t_1968
+smb2.timestamps.freeze-thaw
+smb2.timestamps.delayed-write-vs-seteof.delayed-write-vs-seteof
+smb2.timestamps.delayed-write-vs-flush.delayed-write-vs-flush
+smb2.timestamps.delayed-write-vs-setbasic.delayed-write-vs-setbasic
+smb2.timestamps.delayed-1write.delayed-1write
+smb2.timestamps.delayed-2write.delayed-2write
+#
+# timestamp_resolution
+#
+smb2.timestamp_resolution.resolution1.resolution1
+#
+# rw
+#
+smb2.rw.rw1.rw1
+smb2.rw.rw2.rw2
+smb2.rw.invalid.invalid
+#
+# charset
+#
+# smb2.charset.Testing composite character (a umlaut).Testing composite character (a umlaut)
+# smb2.charset.Testing naked diacritical (umlaut).Testing naked diacritical (umlaut)
+# smb2.charset.Testing partial surrogate.Testing partial surrogate
+# smb2.charset.Testing wide-a.Testing wide-a
+#
+# deny
+#
+smb2.deny.deny1.deny1
+smb2.deny.deny2.deny2
+#
+# other
+#
+smb2.connect.connect
+-smb2.setinfo.setinfo
+-smb2.set-sparse-ioctl.set-sparse-ioctl
+-smb2.zero-data-ioctl.zero-data-ioctl
+-smb2.bench-oplock.bench-oplock
+-smb2.hold-oplock.hold-oplock
+-smb2.dosmode.dosmode
+-smb2.maxfid.maxfid
+-smb2.hold-sharemode.hold-sharemode
+smb2.check-sharemode.check-sharemode
+smb2.openattr.openattr
+smb2.winattr.winattr
+smb2.sdread.sdread
+smb2.maximum_allowed.maximum_allowed
+smb2.mangle.mangle
+smb2.tcon.tcon
+smb2.mkdir.mkdir
+smb2.secleak.secleak
+smb2.session-id.session-id
