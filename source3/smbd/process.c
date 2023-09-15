@@ -4044,10 +4044,12 @@ void smbd_process(struct tevent_context *ev_ctx,
 		sconn->using_smb2 = true;
 	}
 
+#ifndef KOS_NO_FORK
 	if (!interactive) {
 		smbd_setup_sig_term_handler(sconn);
 		smbd_setup_sig_hup_handler(sconn);
 	}
+#endif
 
 	status = smbd_add_connection(client, sock_fd, now, &xconn);
 	if (NT_STATUS_EQUAL(status, NT_STATUS_NETWORK_ACCESS_DENIED)) {
