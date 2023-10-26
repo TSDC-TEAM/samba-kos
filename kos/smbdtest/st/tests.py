@@ -22,9 +22,10 @@ result_codes = {
 }
 
 result_text = {
-    Result.PASS: Fore.GREEN + "PASS" + Fore.WHITE,
-    Result.SKIP: Fore.LIGHTBLACK_EX + "SKIP" + Fore.WHITE,
-    Result.FAIL: Fore.RED + "FAIL" + Fore.WHITE,
+    Result.PASS: Fore.GREEN + "PASS" + Fore.RESET,
+    Result.SKIP: Fore.LIGHTBLACK_EX + "SKIP" + Fore.RESET,
+    Result.FAIL: Fore.RED + "FAIL" + Fore.RESET,
+    Result.UNKNOWN: Fore.WHITE + "UNKNOWN" + Fore.RESET,
 }
 
 
@@ -39,7 +40,7 @@ def get_result_text(code):
     try:
         return result_text[code]
     except KeyError:
-        return Result.UNKNOWN
+        return ""
 
 
 def find_test_result(text):
@@ -130,6 +131,10 @@ def action_stat(argv):
     s.print()
 
 
+def print_diff(old_result, new_result, file):
+    print("{} -> {} {}".format(get_result_text(old_result), get_result_text(new_result), file))
+
+
 def action_diff(argv):
     check_argv(argv, 4, "diff <old log file> <new log file>")
 
@@ -138,15 +143,13 @@ def action_diff(argv):
     for file in new_results:
         if file in old_results:
             if old_results[file] != new_results[file]:
-                print(get_result_text(new_results[file]), file)
+                print_diff(old_results[file], new_results[file], file)
+        else:
+            print_diff(Result.UNKNOWN, new_results[file], file)
 
     for file in old_results:
         if file not in new_results:
-            print("Absent in {}: {}".format(argv[3], file))
-
-    for file in new_results:
-        if file not in old_results:
-            print("Absent in {}: {}".format(argv[2], file))
+            print_diff(old_results[file], Result.UNKNOWN, file)
 
 
 def action_filter(argv):
@@ -160,18 +163,6 @@ def action_filter(argv):
     for res, file in tests_iterator(argv[3]):
         if res == rc:
             print(file)
-
-
-def action_tmp(argv):
-    host = "//127.0.0.1"
-    try:
-        opts, args = getopt.getopt(argv[2:], "h:")
-    except getopt.GetoptError:
-        sys.exit(os.EX_USAGE)
-    for opt, arg in opts:
-        if opt == '-h':
-            host = arg
-    print(host)
 
 
 def main(argv):
