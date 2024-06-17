@@ -90,9 +90,15 @@ int dcesrv_setup_ncacn_listener(
 	rc = listen(state->fd, SMBD_LISTEN_BACKLOG);
 	if (rc < 0) {
 		err = errno;
+#ifdef __KOS__
+		DBG_NOTICE("listen(%d) failed: %s\n",
+			state->fd,
+			strerror(err));
+#else
 		DBG_ERR("listen(%d) failed: %s\n",
 			state->fd,
 			strerror(err));
+#endif
 		goto fail;
 	}
 

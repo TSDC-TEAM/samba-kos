@@ -1617,6 +1617,13 @@ int kos_net_init(void) {
 	};
 	bool ok;
 
+#ifdef __KOS__
+    if (!wait_for_network()) {
+        perror("wait_for_network failed\n");
+        return EXIT_FAILURE;
+    }
+#endif
+
 	/*
 	 * Do this before any other talloc operation
 	 */

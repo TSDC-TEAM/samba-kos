@@ -104,8 +104,10 @@ Running `cross-build.sh` creates a KasperskyOS-based solution image that include
     * [Create an account](https://www.cyberciti.biz/faq/adding-a-user-to-a-samba-smb-share/) with the username `test` and password `12345678`.
     * Add the following parameters to the `/etc/samba/smb.conf` file:
       ```
-      path = /home/share
+      [public]
+      path = /home/test
       valid users = test
+      writeable = yes
       ```
    If you already have a Samba server configured, you can replace the parameters in the example code [./testclient/main.c](testclient/main.c) with the required parameters.
 1. Run the Samba server.

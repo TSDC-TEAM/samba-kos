@@ -42,6 +42,7 @@
 #include "lib/util/string_wrappers.h"
 #include "lib/cmdline/cmdline.h"
 #include "kos_client.h"
+#include "kos_net.h"
 
 #ifndef REGISTER
 #define REGISTER 0
@@ -6732,17 +6733,21 @@ static char *kos_client_add_prefix(const char *address) {
 
 int kos_client_connect(const char *address, int port, const char *user, const char *password) {
     if (!cli) {
+#ifdef __KOS__
+        bool ok = lp_load_global("/usr/local/samba/etc/smb.conf");
+#else
         bool ok = lp_load_global("./smb.conf");
+#endif
         if (!ok) {
             fprintf(stderr, "Can't load conf file\n");
-            exit(1);
+            return EXIT_FAILURE;
         }
 
         TALLOC_CTX *frame = talloc_stackframe();
         struct cli_credentials *creds = NULL;
 
         if (!client_set_cur_dir("\\")) {
-            return 1;
+            return EXIT_FAILURE;
         }
 
         smb_init_locale();
@@ -6760,6 +6765,12 @@ int kos_client_connect(const char *address, int port, const char *user, const ch
 
         NTSTATUS status;
 
+#ifdef __KOS__
+        if (!wait_for_network()) {
+            perror("wait_for_network failed\n");
+            return EXIT_FAILURE;
+        }
+#endif
         status = cli_cm_open(talloc_tos(), NULL,
                              desthost,
                              address,
@@ -6768,13 +6779,13 @@ int kos_client_connect(const char *address, int port, const char *user, const ch
                              name_type,
                              &cli);
         if (!NT_STATUS_IS_OK(status)) {
-            return 1;
+            return EXIT_FAILURE;
         }
 
         cli_set_timeout(cli, io_timeout * 1000);
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 void kos_client_disconnect() {

@@ -1287,8 +1287,13 @@ int set_maxfiles(int requested_max)
 	int saved_current_limit;
 
 	if(getrlimit(RLIMIT_NOFILE, &rlp)) {
-		DEBUG(0,("set_maxfiles: getrlimit (1) for RLIMIT_NOFILE failed with error %s\n",
+#ifdef __KOS__
+		DEBUG(DBGLVL_NOTICE,("set_maxfiles: getrlimit (1) for RLIMIT_NOFILE failed with error %s\n",
 			strerror(errno) ));
+#else
+        DEBUG(0,("set_maxfiles: getrlimit (1) for RLIMIT_NOFILE failed with error %s\n",
+            strerror(errno) ));
+#endif
 		/* just guess... */
 		return requested_max;
 	}
@@ -1329,7 +1334,7 @@ int set_maxfiles(int requested_max)
 	saved_current_limit = rlp.rlim_cur = MIN(requested_max,rlp.rlim_max);
 
 	if(setrlimit(RLIMIT_NOFILE, &rlp)) {
-		DEBUG(0,("set_maxfiles: setrlimit for RLIMIT_NOFILE for %d files failed with error %s\n", 
+		DEBUG(0,("set_maxfiles: setrlimit for RLIMIT_NOFILE for %d files failed with error %s\n",
 			(int)rlp.rlim_cur, strerror(errno) ));
 		/* just guess... */
 		return saved_current_limit;

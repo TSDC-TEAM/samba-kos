@@ -277,10 +277,17 @@ NTSTATUS dcesrv_setup_endpoint_sockets(struct tevent_context *ev_ctx,
 			term_data,
 			&listen_states[i]);
 		if (ret != 0) {
+#ifdef __KOS__
+			DBG_NOTICE("dcesrv_setup_ncacn_listener failed for "
+				"socket %d: %s\n",
+				fds[i],
+				strerror(ret));
+#else
 			DBG_ERR("dcesrv_setup_ncacn_listener failed for "
 				"socket %d: %s\n",
 				fds[i],
 				strerror(ret));
+#endif
 			break;
 		}
 	}
