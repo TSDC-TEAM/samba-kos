@@ -1,12 +1,13 @@
 project (einit)
 
-# Toolkit for working with NK parser.
+# Include the CMake library named image,
+# which contains the solution image build scripts.
 include (platform/image)
 
-# Set compilation flags.
+# Set the linker and compiler flags.
 project_header_default ("STANDARD_GNU_11:YES" "STRICT_WARNINGS:NO")
 
-# Define an ENTITIES variable with a list of entities.
+# Define an ENTITIES variable with a list of programs.
 set (ENTITIES
     TestClient
     ${precompiled_vfsVfsNet}
@@ -35,7 +36,7 @@ else()
     set (FILES ${CMAKE_BINARY_DIR}/einit/${DISK_IMAGE})
 endif()
 
-# Information about selected configuration files sourse
+# Information about selected configuration files source.
 message ("Used DHCP client daemon configuration from ${ROOTFS_DEVICE}:/etc/dhcpcd.conf")
 message ("Used NTP client daemon configuration from ${ROOTFS_DEVICE}:/etc/ntp.conf")
 
@@ -52,7 +53,7 @@ set (EXTRA_CONNECTIONS "\
   - target: ${ROOTFS_ENTITY}
     id: ${ROOTFS_ENTITY}")
 
-# Set additional connections for rump_DHCPCD_ENTITY entity
+# Set additional connections for Dhcpcd program.
 set_target_properties (${rump_DHCPCD_ENTITY} PROPERTIES
     DEPENDS_ON_ENTITY ""
     EXTRA_CONNECTIONS ${EXTRA_CONNECTIONS}
@@ -71,7 +72,8 @@ set (DISK_IMAGE_DIR ${CMAKE_SOURCE_DIR}/resources/hdd)
 add_custom_target (${DISK_IMAGE}
     COMMAND ${CREATE_DISK_IMAGE} -d ${DISK_IMAGE_DIR} -img ${DISK_IMAGE} -f ${DISK_IMAGE_FS})
 
-# KasperskyOS image for the target hardware platform.
+# Create a top-level CMake target named kos-image which can be used
+# when building a solution image to be started on the hardware platform.
 build_kos_hw_image (kos-image
                     EINIT_ENTITY EinitHw
                     CONNECTIONS_CFG "src/init.yaml.in"
@@ -79,12 +81,14 @@ build_kos_hw_image (kos-image
                     IMAGE_FILES ${ENTITIES}
                                 ${FILES})
 
-# kos-image depends on disk image generation only if ramdisk used
+# Add a dependency on disk image generation to the kos-image target only if a ramdisk is used.
+# The disk image must be generated before the kos-image target is built.
 if (NOT ROOTFS_SDCARD)
     add_dependencies (kos-image ${DISK_IMAGE})
 endif ()
 
-# KasperskyOS image for QEMU with simulation targets (sim, gdbsim, gdb).
+# Create a top-level CMake target named kos-qemu-image which
+# can be used when building a solution image to be started in QEMU.
 build_kos_qemu_image(kos-qemu-image
                         EINIT_ENTITY EinitQemu
                         CONNECTIONS_CFG "src/init.yaml.in"

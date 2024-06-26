@@ -19,3 +19,18 @@ foreach(file ${files})
     message(STATUS "File $ENV{DESTDIR}${file} does not exist.")
   endif()
 endforeach()
+
+# Remove directories
+foreach(file ${files})
+  get_filename_component(FILE_DIR_NAME "$ENV{DESTDIR}${file}" DIRECTORY)
+  if (EXISTS "${FILE_DIR_NAME}")
+    file(GLOB FILES_IN_DIR "${FILE_DIR_NAME}/*")
+    list(LENGTH FILES_IN_DIR FILES_COUNT_IN_DIR)
+
+    # If directory is empty
+    if(FILES_COUNT_IN_DIR EQUAL 0)
+      message(STATUS "Uninstalling ${FILE_DIR_NAME}")
+      file(REMOVE_RECURSE ${FILE_DIR_NAME})
+    endif()
+  endif()
+endforeach()

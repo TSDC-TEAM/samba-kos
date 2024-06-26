@@ -1,7 +1,23 @@
+/* Description of a solution security policy. */
+
+/* This solution security policy allows any interaction between any processes,
+ * and between these processes and the KasperskyOS kernel.
+ * The "granted" decision will always be received
+ * when these processes query the Kaspersky Security Module.
+ * This policy can be used only as a stub during the early stages
+ * of development of a KasperskyOS-based solution
+ * so that the Kaspersky Security Module does not interfere with interactions.
+ * It would be unacceptable to apply such a policy
+ * in a real-world KasperskyOS-based solution. */
+
+/* Assign the execute interface. */
 execute: kl.core.Execute
 
+/* Include the base.psl file containing a formal
+ * description of the Base security model. */
 use nk.base._
 
+/* Include EDL files. */
 use EDL kl.core.Core
 use EDL Einit
 use EDL testclient.TestClient
@@ -17,22 +33,35 @@ use EDL kl.drivers.GPIO
 use EDL kl.drivers.DNetSrv
 use EDL kl.drivers.Bcm2711MboxArmToVc
 
+/* The KasperskyOS kernel and any process in the solution are
+ * allowed to start any process. */
 execute {
     grant ()
 }
 
+/* Any client in the solution is allowed to query
+ * any server and the KasperskyOS kernel. */
 request {
     grant ()
 }
 
+/* Any server and the KasperskyOS kernel are allowed to respond to
+ * queries of any client. */
 response {
     grant ()
 }
 
+/* Any server and the KasperskyOS kernel are allowed
+ * to notify any client regarding errors that occur
+ * when the client queries the server or the kernel
+ * by calling any method. */
 error {
     grant ()
 }
 
+/* Any process will receive the "granted" decision
+ * from the Kaspersky Security Module by calling
+ * any method of the security interface. */
 security {
     grant ()
 }

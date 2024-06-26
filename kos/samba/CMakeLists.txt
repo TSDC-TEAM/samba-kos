@@ -27,28 +27,32 @@ set(PRODUCT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
 set(RESOURCES_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resources)
 
 if (KOS)
-    # Initialize CMake library for Kaspersky OS SDK.
+    # Initialize CMake library for the KasperskyOS SDK.
     include (platform)
+    # Statically link executable files.
     initialize_platform (FORCE_STATIC)
 
-    # Connect artifact installation functions.
+    # Include the CMake library named install,
+    # which contains artifact installation functions.
     include (platform/install)
 
-    # Platform definitions
+    # Include the CMake library named options,
+    # which contains platform definitions.
     include (platform/options)
 
-    # Build idl/cdl/edl files
+    # # Include the CMake library named nk
+    # for working with the NK compiler (nk-gen-c).
     include (platform/nk)
 
     # Attach a package with the virtual file system implementation.
     find_package (vfs REQUIRED)
     include_directories (${vfs_INCLUDE})
 
-    # Attach a package with the dhcpcd entity implementation.
+    # Attach a package with the Dhcpcd program implementation.
     find_package (rump REQUIRED COMPONENTS DHCPCD_ENTITY)
     include_directories (${rump_INCLUDE})
 
-    # Attach a package with VFS entities implementation
+    # Attach a package with the VFS program implementation.
     find_package (precompiled_vfs REQUIRED)
     include_directories (${precompiled_vfs_INCLUDE})
 
@@ -56,10 +60,10 @@ if (KOS)
     # If none of the option is selected, the ramfs device is used.
     option(ROOTFS_SDCARD   "Use SD card to get configuration file"       OFF)
 
-    # Build configuration header files from a configuration file template
-    #configure_file(resources/include/config.h.in config.h)
+    # Build configuration header files from a configuration file template.
+    # configure_file(resources/include/config.h.in config.h)
 
-    # Attach the directory with the generated config header files
+    # Attach the directory with the generated config header files.
     include_directories(${CMAKE_CURRENT_BINARY_DIR})
 endif ()
 
@@ -67,7 +71,7 @@ add_subdirectory(libs)
 add_subdirectory(smbd)
 
 #
-# Package configure file
+# Package configure file.
 #
 include(CMakePackageConfigHelpers)
 

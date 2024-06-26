@@ -2,16 +2,21 @@ cmake_minimum_required(VERSION 3.14)
 
 project (smbdtest)
 
-# Add functions for installing artefacts.
+# Include the CMake library named install,
+# which contains artifact installation functions.
 include (platform/install)
 
-# Platform definitions.
+# Include the CMake library named options,
+# which contains platform definitions.
 include (platform/options)
 
-# Initialize CMake library for KasperskyOS SDK.
+# Initialize CMake library for the KasperskyOS SDK.
 include (platform)
+# Statically link executable files.
 initialize_platform (FORCE_STATIC)
 
+# Include the CMake library named nk
+# for working with the NK compiler (nk-gen-c).
 include (platform/nk)
 
 find_package (smbd REQUIRED)
