@@ -1,4 +1,4 @@
-/* 
+/*
    Unix SMB/CIFS implementation.
    process incoming packets - main loop
    Copyright (C) Andrew Tridgell 1992-1998
@@ -47,6 +47,7 @@
 #include "lib/util/time_basic.h"
 #include "smb1_utils.h"
 #include <source3/smbd/kos/kos_thread.h>
+#include "source3/smbd/kos/kos_compat.h"
 
 /* Internal message queue for deferred opens. */
 struct pending_message_list {

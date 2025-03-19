@@ -211,11 +211,11 @@ def main(argv):
     test_file = os.path.join(os.getcwd(), "tests.txt")
 
     try:
-        opts, args = getopt.getopt(argv[1:], "h:f:")
+        opts, args = getopt.getopt(argv[1:], "n:f:")
     except getopt.GetoptError:
         sys.exit(os.EX_USAGE)
     for opt, arg in opts:
-        if opt == '-h':
+        if opt == '-n':
             host = arg
         if opt == '-f':
             test_file = arg

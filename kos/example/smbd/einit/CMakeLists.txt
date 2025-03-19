@@ -2,35 +2,38 @@ project (einit)
 
 # Include the CMake library named nk for working with the NK compiler (nk-gen-c).
 include (platform/image)
+include (${KL_SDK_ROOT_PATH}/common/build-sd-image.cmake)
 
 # Set the linker and compiler flags.
-project_header_default ("STANDARD_GNU_11:YES" "STRICT_WARNINGS:NO")
+project_header_default ("STANDARD_GNU_17:YES" "STRICT_WARNINGS:NO")
 
 # Define an ENTITIES variable with a list of programs.
 set (ENTITIES
     NetInit
     Smbd
-    ${precompiled_vfsVfsNet}
-    ${rump_DHCPCD_ENTITY}
+    precompiled_vfs::VfsNet
+    rump::dhcpcd_entity
 )
 
-if ("${CMAKE_SYSTEM_PROCESSOR}" MATCHES "aarch64")
-    set (SECURITY_PSL_FILE "src/security.psl")
-else ()
-    message (FATAL_ERROR "${CMAKE_SYSTEM_PROCESSOR} architecture is not supported." )
-endif ()
+set (SECURITY_PSL_FILE "src/security.psl.in")
+set (INIT_YAML_FILE "src/init.yaml.in")
+
+# Add a target for making and copying the disk image to the example build
+# directory.
+set (CREATE_DISK_IMAGE $ENV{SDK_PREFIX}/common/prepare_hdd_img.sh)
+set (DISK_IMAGE_DIR ${CMAKE_SOURCE_DIR}/resources/hdd)
 
 if (ROOTFS_SDCARD)
     set (ROOTFS_ENTITY "kl.VfsSdCardFs")
     set (ROOTFS_DEVICE "sdcard")
-    set (FS_BACKEND ${precompiled_vfsVfsSdCardFs})
+    set (FS_BACKEND precompiled_vfs::VfsSdCardFs)
     set (DISK_IMAGE sdcard0.img)
     set (DISK_IMAGE_FS fat32)
     set (QEMU_FLAGS "-m 2048 -sd ${DISK_IMAGE}")
 else()
     set (ROOTFS_ENTITY "kl.VfsRamFs")
     set (ROOTFS_DEVICE "ramfs")
-    set (FS_BACKEND ${precompiled_vfsVfsRamFs})
+    set (FS_BACKEND precompiled_vfs::VfsRamFs)
     set (DISK_IMAGE ramdisk0.img)
     set (DISK_IMAGE_FS ext4)
     set (FILES ${CMAKE_BINARY_DIR}/einit/${DISK_IMAGE})
@@ -54,7 +57,7 @@ set (EXTRA_CONNECTIONS "\
     id: ${ROOTFS_ENTITY}")
 
 # Set additional connections for Dhcpcd progam.
-set_target_properties (${rump_DHCPCD_ENTITY} PROPERTIES
+set_target_properties (rump::dhcpcd_entity PROPERTIES
     DEPENDS_ON_ENTITY ""
     EXTRA_CONNECTIONS ${EXTRA_CONNECTIONS}
     EXTRA_ENV "\
@@ -65,10 +68,6 @@ set_target_properties (${rump_DHCPCD_ENTITY} PROPERTIES
     - '-f'
     - /etc/dhcpcd.conf")
 
-# Add a target for making and copying the disk image to the example build
-# directory.
-set (CREATE_DISK_IMAGE $ENV{SDK_PREFIX}/common/prepare_hdd_img.sh)
-set (DISK_IMAGE_DIR ${CMAKE_SOURCE_DIR}/resources/hdd)
 add_custom_target (${DISK_IMAGE}
     COMMAND ${CREATE_DISK_IMAGE} -d ${DISK_IMAGE_DIR} -img ${DISK_IMAGE} -f ${DISK_IMAGE_FS})
 
@@ -76,10 +75,16 @@ add_custom_target (${DISK_IMAGE}
 # when building a solution image to be started on the hardware platform.
 build_kos_hw_image (kos-image
                     EINIT_ENTITY EinitHw
-                    CONNECTIONS_CFG "src/init.yaml.in"
-                    SECURITY_PSL "src/security.psl"
+                    CONNECTIONS_CFG ${INIT_YAML_FILE}
+                    SECURITY_PSL ${SECURITY_PSL_FILE}
                     IMAGE_FILES ${ENTITIES}
                                 ${FILES})
+
+# Create a top-level CMake target named sd-image which can be used
+# when building an SD card image to be started on the hardware platform.
+build_sd_image (sd-image
+                KOS_IMAGE_TARGET kos-image
+                IMAGE_FS ${IMAGE_FS})
 
 # Add a dependency on disk image generation to the kos-image target only if a ramdisk is used.
 # The disk image must be generated before the kos-image target is built.
@@ -89,14 +94,11 @@ endif ()
 
 # Create a top-level CMake target named kos-qemu-image which
 # can be used when building a solution image to be started in QEMU.
-build_kos_qemu_image(kos-qemu-image
-                        EINIT_ENTITY EinitQemu
-                        CONNECTIONS_CFG "src/init.yaml.in"
-                        SECURITY_PSL ${SECURITY_PSL_FILE}
-                        QEMU_FLAGS "${QEMU_FLAGS} -nic user,hostfwd=tcp::1490-:1490 -display none"
-                        IMAGE_FILES ${ENTITIES}
-                                    ${FILES})
+build_kos_qemu_image (kos-qemu-image
+                      EINIT_ENTITY EinitQemu
+                      CONNECTIONS_CFG ${INIT_YAML_FILE}
+                      SECURITY_PSL ${SECURITY_PSL_FILE}
+                      QEMU_FLAGS "${QEMU_FLAGS} -nic user,hostfwd=tcp::1490-:1490 -display none"
+                      IMAGE_FILES ${ENTITIES}
+                                  ${FILES})
 add_dependencies (kos-qemu-image ${DISK_IMAGE})
-
-#set_target_properties (EinitHw PROPERTIES LINK_FLAGS ${VULN_LDFLAGS})
-#set_target_properties (EinitQemu PROPERTIES LINK_FLAGS ${VULN_LDFLAGS})

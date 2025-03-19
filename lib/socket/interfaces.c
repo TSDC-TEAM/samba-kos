@@ -19,7 +19,6 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include "includes.h"
 #include "system/network.h"
 #include "interfaces.h"
@@ -277,7 +276,11 @@ static int _get_interfaces(TALLOC_CTX *mem_ctx, struct iface_struct **pifaces)
 #endif
 
 		memcpy(&ifaces[total].ip, ifptr->ifa_addr, copy_size);
+#ifdef __KOS__
+		memcpy(&ifaces[total].netmask, ifptr->ifa_netmask, ifptr->ifa_netmask->sa_len);
+#else
 		memcpy(&ifaces[total].netmask, ifptr->ifa_netmask, copy_size);
+#endif
 
 		/* calculate broadcast address */
 #if defined(HAVE_IPV6)

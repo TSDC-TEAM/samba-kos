@@ -70,7 +70,7 @@ void gnutls_hmac_output(gnutls_hmac_hd_t handle, void *digest)
             fprintf(stderr, "HMAC: output failed\n");
         }
 
-        int res_init = HMAC_Init_ex(ctx, NULL, NULL, NULL, NULL);
+        int res_init = HMAC_Init_ex(ctx, NULL, 0, NULL, NULL);
         if (!res_init) {
             fprintf(stderr, "HMAC: reinitialization failed\n");
         }

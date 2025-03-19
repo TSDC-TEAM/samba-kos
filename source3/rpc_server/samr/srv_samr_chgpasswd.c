@@ -56,6 +56,7 @@
 #include "lib/util/sys_rw.h"
 
 #include "lib/crypto/gnutls_helpers.h"
+#include "source3/smbd/kos/kos_compat.h"
 
 
 

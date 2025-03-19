@@ -12,13 +12,13 @@ set(TARGET_LIBS
 )
 
 add_library(
-        ${TARGET_NAME}
-        STATIC
+        ${TARGET_NAME}_obj
+        OBJECT
         ${TARGET_SRC}
 )
 
 target_include_directories(
-        ${TARGET_NAME}
+        ${TARGET_NAME}_obj
         PUBLIC
         ${SMB_SRC_ROOT}/source3/client
         ${SMB_SRC_ROOT}
@@ -69,7 +69,7 @@ target_include_directories(
 )
 
 target_compile_definitions(
-        ${TARGET_NAME}
+        ${TARGET_NAME}_obj
         PRIVATE
         _SAMBA_BUILD_=4
         HAVE_CONFIG_H=1

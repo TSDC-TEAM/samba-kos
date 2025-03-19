@@ -10,22 +10,23 @@ set(TARGET_SRC
 )
 
 add_library(
-        ${TARGET_NAME}
-        STATIC
+        ${TARGET_NAME}_obj
+        OBJECT
         ${TARGET_SRC}
 )
 
 target_include_directories(
-        ${TARGET_NAME}
+        ${TARGET_NAME}_obj
         PRIVATE
+        ${SMB_SRC_ROOT}/third_party/openssl/include/
 )
 
 target_compile_definitions(
-        ${TARGET_NAME}
+        ${TARGET_NAME}_obj
         PRIVATE
 )
 
 target_compile_options(
-        ${TARGET_NAME}
+        ${TARGET_NAME}_obj
         PRIVATE
 )

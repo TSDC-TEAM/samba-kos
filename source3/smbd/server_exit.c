@@ -88,6 +88,10 @@ static void exit_server_common(enum server_exit_reason how,
         pthread_mutex_init(&m, NULL);
         first_run = 0;
     }
+	else
+	{
+		return;
+	}
     pthread_mutex_lock(&m);
 
 	struct smbXsrv_client *client = kos_get_global_smbXsrv_client();

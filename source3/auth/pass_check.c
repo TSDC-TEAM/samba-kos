@@ -24,6 +24,11 @@
 #include "system/passwd.h"
 #include "auth.h"
 
+#if __has_feature(address_sanitizer) || defined(__SANITIZE_ADDRESS__)
+#warning "KOS: crypt() implementation is disabled for asan!"
+#undef HAVE_CRYPT
+#endif
+
 #undef DBGC_CLASS
 #define DBGC_CLASS DBGC_AUTH
 

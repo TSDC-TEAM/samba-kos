@@ -1,14 +1,24 @@
-cmake_minimum_required (VERSION 3.12)
+cmake_minimum_required (VERSION 3.25)
 
 option(KOS_HW "Build for KOS HW (default is FALSE)" OFF)
 
 project(samba LANGUAGES C CXX)
 
-set(SANITIZE 1)
+set(SANITIZE 0)
 
 if(SANITIZE AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    add_compile_options("-fsanitize=address" "-fno-omit-frame-pointer")
+    add_compile_options("-fsanitize=address"
+                        "-fno-omit-frame-pointer"
+                        "-Wno-unused-command-line-argument"
+                        "-Wno-macro-redefined"
+                        "-Wno-unknown-warning-option"
+                        "-Wno-deprecated-declarations")
     add_link_options("-fsanitize=address")
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    add_compile_options("-Wno-unused-command-line-argument"
+                        "-Wno-macro-redefined"
+                        "-Wno-unknown-warning-option"
+                        "-Wno-deprecated-declarations")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     set(GCCDEFS "-fstack-clash-protection")
 endif()
@@ -123,4 +133,3 @@ if(NOT TARGET uninstall)
     add_custom_target(uninstall
             COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
 endif()
-

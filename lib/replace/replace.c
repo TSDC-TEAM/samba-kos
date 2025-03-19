@@ -404,7 +404,11 @@ int rep_chroot(const char *dname)
 
 /*****************************************************************
  Possibly replace mkstemp if it is broken.
-*****************************************************************/  
+*****************************************************************/
+
+#ifdef __KOS__
+extern char *mktemp(char *template);
+#endif
 
 #ifndef HAVE_SECURE_MKSTEMP
 int rep_mkstemp(char *template)

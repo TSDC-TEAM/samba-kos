@@ -37,6 +37,10 @@
 #include "lib/util/signal.h" /* Avoid /usr/include/signal.h */
 #include "fault.h"
 
+#ifdef __KOS__
+extern void smbd_exit_server_cleanly(const char *const reason);
+#endif
+
 static struct {
 	bool disabled;
 	smb_panic_handler_t panic_handler;

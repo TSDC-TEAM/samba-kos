@@ -22,6 +22,7 @@
 #include "lib/async_req/async_sock.h"
 #include "include/messages.h"
 #include "background.h"
+#include "source3/smbd/kos/kos_compat.h"
 
 struct background_job_state {
 	struct tevent_context *ev;

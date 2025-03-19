@@ -1,6 +1,10 @@
 #include "kosgnutls.h"
 #include <openssl/evp.h>
 
+#ifdef __KOS__
+#include <string.h>
+#endif
+
 
 #define MIN(a,b) (a) < (b) ? (a) : (b)
 

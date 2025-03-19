@@ -1,0 +1,27 @@
+/* Description of a solution security policy. */
+
+/* Include the base.psl file containing a formal description of the Base security model. */
+use nk.base._
+
+/* Include EDL files. */
+use EDL kl.core.Core
+use EDL Einit
+use EDL netinit.NetInit
+use EDL samba.Smbd
+@INIT_EXTERNAL_ENTITIES@
+
+/* Assign the execute interface. */
+execute: kl.core.Execute
+
+/**
+ * This solution security policy allows any interaction between any processes,
+ * and between these processes and the KasperskyOS kernel.
+ * The "granted" decision will always be received
+ * when these processes query the Kaspersky Security Module.
+ * This policy can be used only as a stub during the early stages
+ * of development of a KasperskyOS-based solution
+ * so that the Kaspersky Security Module does not interfere with interactions.
+ * It would be unacceptable to apply such a policy
+ * in a real-world KasperskyOS-based solution.
+ */
+use nonsecurity._

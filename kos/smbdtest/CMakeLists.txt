@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.25)
 
 project (smbdtest)
 
@@ -19,6 +19,15 @@ initialize_platform (FORCE_STATIC)
 # for working with the NK compiler (nk-gen-c).
 include (platform/nk)
 
+# Detect board.
+if (CMAKE_SYSTEM_SOC STREQUAL "BCM2711")
+    set (BOARD "RPI4_BCM2711")
+elseif (CMAKE_SYSTEM_SOC STREQUAL "RK3568")
+    set (BOARD "RADXA_ROCK_3A")
+else ()
+    message (FATAL_ERROR "Unsupported board for SoC '${CMAKE_SYSTEM_SOC}'")
+endif ()
+
 find_package (smbd REQUIRED)
 
 # Add a package for working with the virtual file system.
@@ -29,7 +38,7 @@ include_directories (${vfs_INCLUDE})
 find_package (rump REQUIRED COMPONENTS DHCPCD_ENTITY)
 include_directories (${rump_INCLUDE})
 
-# Add a package with VFS progam implementations.
+# Add a package with the VFS progam implementations.
 find_package (precompiled_vfs REQUIRED)
 include_directories (${precompiled_vfs_INCLUDE})
 

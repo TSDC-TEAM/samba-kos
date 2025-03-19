@@ -46,6 +46,7 @@
 #include <arpa/nameser.h>
 #endif
 #include <kos/samba/libs/resolv/kosresolv.h>
+#include "source3/smbd/kos/kos_compat.h"
 
 struct dns_ex_state {
 	bool do_fallback;

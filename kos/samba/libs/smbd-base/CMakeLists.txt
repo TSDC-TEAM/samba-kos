@@ -516,13 +516,13 @@ else()
 endif()
 
 add_library(
-        ${TARGET_NAME}
-        STATIC
+        ${TARGET_NAME}_obj
+        OBJECT
         ${TARGET_SRC}
 )
 
 target_include_directories(
-        ${TARGET_NAME}
+        ${TARGET_NAME}_obj
         PRIVATE
         ${SMB_SRC_ROOT}/source3/rpc_server
         ${SMB_SRC_ROOT}/bin/default/source3/rpc_server
@@ -724,7 +724,7 @@ target_include_directories(
 
 if (NOT KOS)
     target_include_directories(
-            ${TARGET_NAME}
+            ${TARGET_NAME}_obj
             PRIVATE
             ${SMB_SRC_ROOT}/third_party/gpfs
             ${SMB_SRC_ROOT}/bin/default/third_party/gpfs
@@ -733,7 +733,7 @@ endif()
 
 if (KOS)
     target_compile_definitions(
-            ${TARGET_NAME}
+            ${TARGET_NAME}_obj
             PRIVATE
             _SAMBA_BUILD_=4
             HAVE_CONFIG_H=1
@@ -949,7 +949,7 @@ if (KOS)
     )
 else()
     target_compile_definitions(
-            ${TARGET_NAME}
+            ${TARGET_NAME}_obj
             PRIVATE
             _SAMBA_BUILD_=4
             HAVE_CONFIG_H=1
@@ -1177,7 +1177,7 @@ else()
 endif()
 
 target_compile_options(
-        ${TARGET_NAME}
+        ${TARGET_NAME}_obj
         PRIVATE
         -MMD
         -fPIC

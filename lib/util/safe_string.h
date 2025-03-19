@@ -18,6 +18,10 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifdef __KOS__
+#define _SAFE_STRING_H
+#endif
+
 #ifndef _SAFE_STRING_H
 #define _SAFE_STRING_H
 #ifndef _SPLINT_ /* http://www.splint.org */

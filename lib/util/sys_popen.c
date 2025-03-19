@@ -23,6 +23,7 @@
 #include <talloc.h>
 #include "lib/util/sys_popen.h"
 #include "lib/util/debug.h"
+#include "source3/smbd/kos/kos_compat.h"
 
 /**************************************************************************
  Wrapper for popen. Safer as it doesn't search a path.

@@ -66,13 +66,13 @@ set(TARGET_SRC
         )
 
 add_library(
-        ${TARGET_NAME}
-        STATIC
+        ${TARGET_NAME}_obj
+        OBJECT
         ${TARGET_SRC}
 )
 
 target_include_directories(
-        ${TARGET_NAME}
+        ${TARGET_NAME}_obj
         PRIVATE
         ${SMB_SRC_ROOT}/include/public
         ${SMB_SRC_ROOT}/bin/default/include/public
@@ -104,7 +104,7 @@ target_include_directories(
 
 if (KOS)
     target_compile_definitions(
-            ${TARGET_NAME}
+            ${TARGET_NAME}_obj
             PRIVATE
             _SAMBA_BUILD_=4
             HAVE_CONFIG_H=1
@@ -181,7 +181,7 @@ if (KOS)
     )
 else()
     target_compile_definitions(
-            ${TARGET_NAME}
+            ${TARGET_NAME}_obj
             PRIVATE
             _SAMBA_BUILD_=4
             HAVE_CONFIG_H=1
@@ -255,7 +255,7 @@ else()
 endif()
 
 target_compile_options(
-        ${TARGET_NAME}
+        ${TARGET_NAME}_obj
         PRIVATE
         -MMD
         -fPIC

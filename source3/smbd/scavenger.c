@@ -30,6 +30,7 @@
 #include "lib/util/server_id.h"
 #include "lib/util/util_process.h"
 #include "lib/util/sys_rw_data.h"
+#include "source3/smbd/kos/kos_compat.h"
 
 #undef DBGC_CLASS
 #define DBGC_CLASS DBGC_SCAVENGER

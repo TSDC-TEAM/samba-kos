@@ -46,6 +46,9 @@
 #endif
 #include <errno.h>
 
+#include "kos/samba/libs/bsd/kosbsd.h"
+#include "source3/smbd/kos/kos_compat.h"
+
 #include "roken.h"
 
 #define EX_NOEXEC	126

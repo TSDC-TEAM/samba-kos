@@ -28,6 +28,10 @@
 #include <stdint.h>
 #include <talloc.h>
 
+#ifdef __KOS__
+#include <sys/time.h>
+#endif
+
 #ifndef TIME_T_MIN
 /* we use 0 here, because (time_t)-1 means error */
 #define TIME_T_MIN 0

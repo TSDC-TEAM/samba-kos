@@ -34,6 +34,7 @@
 #include "../lib/util/tevent_unix.h"
 #include "../lib/util/tfork.h"
 #include "../lib/util/sys_rw.h"
+#include "source3/smbd/kos/kos_compat.h"
 
 struct samba_runcmd_state {
 	int stdout_log_level;

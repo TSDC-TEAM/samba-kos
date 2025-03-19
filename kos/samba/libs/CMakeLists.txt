@@ -2,8 +2,6 @@ if (NOT KOS)
     add_subdirectory(resolv)
 endif()
 
-set(C_LIB ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/libkossmb.a)
-
 set(DEF_DEPENDS
         replace
         talloc
@@ -120,27 +118,18 @@ if (NOT KOS)
     list(APPEND DEF_DEPENDS resolv)
 endif()
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(CMAKE_AR ar)
-endif()
+list(TRANSFORM DEF_DEPENDS APPEND "_obj" OUTPUT_VARIABLE DEF_DEPENDS_OBJS)
 
-add_custom_target(combined
-        COMMAND rm -f ${C_LIB}
-        COMMAND ${CMAKE_AR} crsT ${C_LIB} *.a
-        WORKING_DIRECTORY ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
-        DEPENDS ${DEF_DEPENDS}
-)
+foreach(lib ${DEF_DEPENDS})
+    add_library(${lib} STATIC)
+    target_link_libraries(${lib} ${lib}_obj)
+endforeach()
 
-add_library(c STATIC IMPORTED GLOBAL)
-add_dependencies(c combined)
-
-set_target_properties(c
-        PROPERTIES
-        IMPORTED_LOCATION ${C_LIB}
-)
+add_library(kossmb STATIC)
+target_link_libraries(kossmb ${DEF_DEPENDS_OBJS})
 
 set(SAMBA_EXT_MODULES
-        c
+        kossmb
         PARENT_SCOPE
 )
 

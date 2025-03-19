@@ -9,13 +9,13 @@ set(TARGET_SRC
         )
 
 add_library(
-        ${TARGET_NAME}
-        STATIC
+        ${TARGET_NAME}_obj
+        OBJECT
         ${TARGET_SRC}
 )
 
 target_include_directories(
-        ${TARGET_NAME}
+        ${TARGET_NAME}_obj
         PRIVATE
         ${SMB_SRC_ROOT}/lib/krb5_wrap
         ${SMB_SRC_ROOT}/bin/default/lib/krb5_wrap
@@ -84,7 +84,7 @@ target_include_directories(
 )
 
 target_compile_definitions(
-        ${TARGET_NAME}
+        ${TARGET_NAME}_obj
         PRIVATE
         _SAMBA_BUILD_=4
         HAVE_CONFIG_H=1
@@ -98,7 +98,7 @@ target_compile_definitions(
 )
 
 target_compile_options(
-        ${TARGET_NAME}
+        ${TARGET_NAME}_obj
         PRIVATE
         -MMD
         -fPIC

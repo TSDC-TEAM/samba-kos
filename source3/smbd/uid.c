@@ -732,7 +732,11 @@ gid_t get_current_gid(connection_struct *conn)
 
 const struct security_unix_token *get_current_utok(connection_struct *conn)
 {
+#ifdef KOS_NO_FORK /* our become_root is empty */
+    return conn->session_info->unix_token;
+#else
 	return &current_user.ut;
+#endif 
 }
 
 /****************************************************************************

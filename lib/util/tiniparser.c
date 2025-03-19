@@ -46,6 +46,10 @@
 #include "tini.h"
 #include "tiniparser.h"
 
+#ifdef __KOS__
+#include <strings.h>
+#endif
+
 struct tiniparser_entry {
 	struct tiniparser_entry *next_entry;
 	char *key;

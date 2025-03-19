@@ -26,6 +26,7 @@
 #include "lib/util/smb_strtox.h"
 #include "lib/util_matching.h"
 #include "lib/global_contexts.h"
+#include "source3/smbd/kos/kos_compat.h"
 
 static int vfs_preopen_debug_level = DBGC_VFS;
 

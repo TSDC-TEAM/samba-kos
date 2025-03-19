@@ -28,6 +28,8 @@
 #include "lib/util/debug.h"
 #include "lib/util/util_process.h"
 #include "hdr_replace.h"
+#include "kos/samba/libs/bsd/kosbsd.h"
+#include "source3/smbd/kos/kos_compat.h"
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>

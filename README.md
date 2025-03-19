@@ -11,7 +11,7 @@ information about the original Samba that is not related to this project.
 Currently, subprocess creation isn't available in KasperskyOS Community Edition. Therefore, separate
 threads are created to execute client requests. A thread executes a client request and then terminates.
 Other limitations and known issues are described in the
-[KasperskyOS Community Edition Online Help](https://click.kaspersky.com/?hl=en-us&link=online_help&pid=kos&version=1.2&customization=KCE_limitations_and_known_problems).
+[KasperskyOS Community Edition Online Help](https://click.kaspersky.com/?hl=en-us&link=online_help&pid=kos&version=1.3&customization=KCE&helpid=limitations_and_known_problems).
 
 ## Table of contents
 
@@ -64,11 +64,11 @@ Other limitations and known issues are described in the
 
 ### Prerequisites
 
-1. [Install](https://click.kaspersky.com/?hl=en-us&link=online_help&pid=kos&version=1.2&customization=KCE_sdk_install_and_remove)
+1. [Install](https://click.kaspersky.com/?hl=en-us&link=online_help&pid=kos&version=1.3&customization=KCE&helpid=sdk_install_and_remove)
 the KasperskyOS Community Edition SDK. You can download the latest version of KasperskyOS Community
 Edition for free from [os.kaspersky.com](https://os.kaspersky.com/development/). Minimum required
-version of the KasperskyOS Community Edition SDK is 1.2. For more information, see
-[System requirements](https://click.kaspersky.com/?hl=en-us&link=online_help&pid=kos&version=1.2&customization=KCE_system_requirements).
+version of the KasperskyOS Community Edition SDK is 1.3. For more information, see
+[System requirements](https://click.kaspersky.com/?hl=en-us&link=online_help&pid=kos&version=1.3&customization=KCE&helpid=system_requirements).
 1. Copy source files to your project directory. All files that are required to build the Samba
 for KasperskyOS and examples of KasperskyOS-based solutions are located in the [`./kos`](kos) directory.
 1. Set the environment variable `SDK_PREFIX` to `/opt/KasperskyOS-Community-Edition-<version>`, where
@@ -106,7 +106,7 @@ script with root privileges:
 ## Usage
 
 When you develop a KasperskyOS-based solution, use the
-[recommended structure of project directories](https://click.kaspersky.com/?hl=en-us&link=online_help&pid=kos&version=1.2&customization=KCE_cmake_using_sdk_cmake)
+[recommended structure of project directories](https://click.kaspersky.com/?hl=en-us&link=online_help&pid=kos&version=1.3&customization=KCE&helpid=cmake_using_sdk_cmake)
 to simplify usage of CMake scripts.
 
 To include a Samba server in your KasperskyOS-based solution, follow these steps:
@@ -117,7 +117,7 @@ root file to find and load the `smbd` package.
    find_package (smbd REQUIRED)
    ```
    For more information about the `./kos/example/smbd/CMakeLists.txt` root file, see the
-[KasperskyOS Community Edition Online Help](https://click.kaspersky.com/?hl=en-us&link=online_help&pid=kos&version=1.2&customization=KCE_cmake_lists_root).
+[KasperskyOS Community Edition Online Help](https://click.kaspersky.com/?hl=en-us&link=online_help&pid=kos&version=1.3&customization=KCE&helpid=cmake_lists_root).
 1. Add the `Smbd` program to a list of program executable files defined in the
 [`./kos/example/smbd/einit/CMakeLists.txt`](kos/example/smbd/einit/CMakeLists.txt) file as follows:
    ```
@@ -127,14 +127,14 @@ root file to find and load the `smbd` package.
    ```
    For more information about the `./kos/example/smbd/einit/CMakeLists.txt` file for building
 the `Einit` initializing program, see the
-[KasperskyOS Community Edition Online Help](https://click.kaspersky.com/?hl=en-us&link=online_help&pid=kos&version=1.2&customization=KCE_cmake_lists_einit).
+[KasperskyOS Community Edition Online Help](https://click.kaspersky.com/?hl=en-us&link=online_help&pid=kos&version=1.3&customization=KCE&helpid=cmake_lists_einit).
 1. Specify a list of IPC channels that connect the  `Smbd` program to `VfsNet` and `VfsRamFs` programs
 in the [`./kos/example/smbd/einit/src/init.yaml.in`](kos/example/smbd/einit/src/init.yaml.in)
 template file. For more information about the `init.yaml.in` template file, see the
-[KasperskyOS Community Edition Online Help](https://click.kaspersky.com/?hl=en-us&link=online_help&pid=kos&version=1.2&customization=KCE_cmake_yaml_templates).
-1. Create a solution security policy description in the [`./kos/example/smbd/einit/src/security.psl`](kos/example/smbd/einit/src/security.psl)
-file. For more information about the `security.psl` file, see the
-[KasperskyOS Community Edition Online Help](https://click.kaspersky.com/?hl=en-us&link=online_help&pid=kos&version=1.2&customization=KCE_cmake_psl_templates).
+[KasperskyOS Community Edition Online Help](https://click.kaspersky.com/?hl=en-us&link=online_help&pid=kos&version=1.3&customization=KCE&helpid=cmake_yaml_templates).
+1. Create a solution security policy template in the [`./kos/example/smbd/einit/src/security.psl.in`](kos/example/smbd/einit/src/security.psl.in)
+file. For more information about the `security.psl.in` file, see the
+[KasperskyOS Community Edition Online Help](https://click.kaspersky.com/?hl=en-us&link=online_help&pid=kos&version=1.3&customization=KCE&helpid=cmake_psl_templates).
 1. Add Samba configuration files to the directory [`./kos/example/smbd/resources`](kos/example/smbd/resources).
 
 A Samba client can be included in your KasperskyOS-based solution in a similar way.

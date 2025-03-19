@@ -26,6 +26,7 @@
 */
 #include "tdb_private.h"
 #include "system/threads.h"
+#include "source3/smbd/kos/kos_compat.h"
 
 #ifdef USE_TDB_MUTEX_LOCKING
 

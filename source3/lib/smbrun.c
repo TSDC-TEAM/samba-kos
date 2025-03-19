@@ -19,6 +19,8 @@
 
 #include "includes.h"
 #include "system/filesys.h"
+#include "kos/samba/libs/bsd/kosbsd.h"
+#include "source3/smbd/kos/kos_compat.h"
 
 /* need to move this from here!! need some sleep ... */
 struct current_user current_user;

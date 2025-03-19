@@ -55,13 +55,12 @@ passes them to the virtual file system
 
 The [`./einit/src/init.yaml.in`](einit/src/init.yaml.in) template is used to automatically generate part of the solution initialization
 description file `init.yaml`. For more information about the `init.yaml.in` template file, see the
-[KasperskyOS Community Edition Online Help](https://click.kaspersky.com/?hl=en-us&link=online_help&pid=kos&version=1.2&customization=KCE_cmake_yaml_templates).
+[KasperskyOS Community Edition Online Help](https://click.kaspersky.com/?hl=en-us&link=online_help&pid=kos&version=1.3&customization=KCE&helpid=cmake_yaml_templates).
 
 ### Security policy description
 
-The [`./einit/src/security.psl`](einit/src/security.psl) file contains part of a solution security policy description.
-For more information about the `security.psl` file, see
-[Describing a security policy for a KasperskyOS-based solution](https://click.kaspersky.com/?hl=en-us&link=online_help&pid=kos&version=1.2&customization=KCE_ssp_descr).
+The [`./einit/src/security.psl.in`](einit/src/security.psl.in) template is used to automatically generate part of the solution security policy description file `security.psl`. For more information about the `security.psl.in` file, see
+[KasperskyOS Community Edition Online Help](https://click.kaspersky.com/?hl=en-us&link=online_help&pid=kos&version=1.3&customization=KCE&helpid=cmake_psl_templates).
 
 [⬆ Back to Top](#Table-of-contents)
 
@@ -69,9 +68,14 @@ For more information about the `security.psl` file, see
 
 ### Prerequisites
 
-1. To install [KasperskyOS Community Edition SDK](https://os.kaspersky.com/development/) and run tests on QEMU, make sure you meet all the
-[System requirements](https://click.kaspersky.com/?hl=en-us&link=online_help&pid=kos&version=1.2&customization=KCE_system_requirements)
-listed in the KasperskyOS Community Edition Developer's Guide.
+1. Make sure that you have installed the latest version of the
+[KasperskyOS Community Edition SDK](https://os.kaspersky.com/development/).
+1. Set the environment variable `SDK_PREFIX` to `/opt/KasperskyOS-Community-Edition-<version>`,
+where `version` is the version of the KasperskyOS Community Edition SDK that you installed. To do this,
+run the following command:
+   ```
+   $ export SDK_PREFIX=/opt/KasperskyOS-Community-Edition-<version>
+   ```
 1. Make sure you have at least Python 3 version 3.10.0 installed. To install the latest version of
 Python 3, run the following command:
     ```sh
@@ -90,13 +94,17 @@ Python 3, run the following command:
 
 The Samba server in KasperskyOS is built using the CMake build system, which is provided in the KasperskyOS Community Edition SDK.
 
-To build and run the Samba server in KasperskyOS, run the following command in this directory:
-```sh
-$ SDK_PREFIX=/opt/KasperskyOS-Community-Edition-<version> ./cross-build.sh
+To build and run the Samba server on QEMU, run the following command in this directory:
 ```
-where the `SDK_PREFIX` environment variable specifies the path to the installed version of the KasperskyOS Community Edition SDK.
-The value of this environment variable must be set.
-The `cross-build.sh` script both builds the Samba server on QEMU and runs it.
+$ ./cross-build.sh qemu
+```
+To build and run the Samba server on a Raspberry Pi 4 B or Radxa ROCK 3A, use the following command:
+```
+$ ./cross-build.sh hw
+```
+For more information about running tests on Raspberry Pi 4 B or Radxa ROCK 3A see the following [link](https://click.kaspersky.com/?hl=en-us&link=online_help&pid=kos&version=1.3&customization=KCE&helpid=running_sample_programs_rpi).
+
+The `cross-build.sh` script both builds the Samba server on the selected target and runs it.
 
 #### CMake input files
 
@@ -121,13 +129,13 @@ The `cross-build.sh` script both builds the Samba server on QEMU and runs it.
     In this directory is located the script `run-tests.py`, developed for easy testing of KasperskyOS-implementation of the Samba server
   and output of results tests. Syntax for using the `run-tests.py` script:
     ```sh
-    python3 ./run-tests.py [-h ADDRESS] [-f FILE]
+    python3 ./run-tests.py [-n SERVER_NAME] [-f FILE]
     ```
     where:
 
-    * `-h ADDRESS`
+    * `-n SERVER_NAME`
 
-    Host address where the Samba server is running. If not specified, the default address `//127.0.0.0.1` will be used.
+    Host name where the Samba server is running. If not specified, the default address `//127.0.0.1` will be used.
     * `-f FILE`
 
     Full path to the file containing the list of tests implemented in the `smbtorture` utility.
@@ -139,7 +147,7 @@ The `cross-build.sh` script both builds the Samba server on QEMU and runs it.
   You can redirect the output of the results to a file.
 1. Run the `run-tests.py` script from a separate terminal window:
     ```sh
-    python3 ./run-tests.py -h 127.0.0.1 -f tests.txt > tests_results.txt
+    python3 ./run-tests.py -n //127.0.0.1 -f tests.txt > tests_results.txt
     ```
     This command will run the tests listed in the `tests.txt` file.
     The results of the tests will be written to the `tests_results.txt` file.

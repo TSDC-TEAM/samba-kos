@@ -34,6 +34,7 @@
 #include "rpc_server/rpc_sock_helper.h"
 #include "rpc_server/epmapper/srv_epmapper.h"
 #include "rpc_server/epmd.h"
+#include "source3/smbd/kos/kos_compat.h"
 
 #undef DBGC_CLASS
 #define DBGC_CLASS DBGC_RPC_SRV

@@ -21,7 +21,7 @@ set(TARGET_LIBS
 
 if (KOS)
     # Setting compilation flags.
-    project_header_default ("STANDARD_GNU_11:YES" "STRICT_WARNINGS:NO")
+    project_header_default ("STANDARD_GNU_17:YES" "STRICT_WARNINGS:NO")
 
     nk_build_edl_files (${TARGET_EDL}
             NK_MODULE ${PROJECT_NAME}
@@ -33,10 +33,10 @@ if (KOS)
 
     add_dependencies(${TARGET_NAME} ${TARGET_EDL})
 
-    target_link_libraries(${TARGET_NAME} ${TARGET_LIBS} ${vfs_CLIENT_LIB})
+    target_link_libraries(${TARGET_NAME} ${TARGET_LIBS} vfs::client)
 
-    # We do not need default VFS entity here, which comes from ${vfs_CLIENT_LIB}
-    set_target_properties (${TARGET_NAME} PROPERTIES ${vfs_ENTITY}_REPLACEMENT "")
+    # We do not need default VFS entity here, which comes from vfs::client
+    set_target_properties (${TARGET_NAME} PROPERTIES vfs::entity_REPLACEMENT "")
 else ()
     add_executable(${TARGET_NAME} ${TARGET_SRC})
 

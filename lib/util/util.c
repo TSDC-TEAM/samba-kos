@@ -36,6 +36,7 @@
 #include "samba_util.h"
 #include "lib/util/select.h"
 #include <libgen.h>
+#include "source3/smbd/kos/kos_compat.h"
 
 #ifdef HAVE_SYS_PRCTL_H
 #include <sys/prctl.h>

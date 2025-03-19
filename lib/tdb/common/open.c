@@ -26,6 +26,7 @@
 */
 
 #include "tdb_private.h"
+#include "source3/smbd/kos/kos_compat.h"
 
 /* all contexts, to ensure no double-opens (fcntl locks don't nest!) */
 static struct tdb_context *tdbs = NULL;

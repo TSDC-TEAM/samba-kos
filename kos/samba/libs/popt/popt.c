@@ -18,6 +18,17 @@
 
 #include "poptint.h"
 
+#ifdef __KOS__
+#include <errno.h>
+
+static int __kos_exec(void)
+{
+    errno = EPERM;
+    return -1;
+}
+#define execvp(...) __kos_exec()
+#endif
+
 #ifdef HAVE_STDALIGN_H
 #include <stdalign.h>
 #define ALIGNOF(x) alignof(x)

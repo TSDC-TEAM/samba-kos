@@ -34,6 +34,7 @@
 #include "rpc_server/rpc_service_setup.h"
 #include "rpc_server/rpc_sock_helper.h"
 #include "rpc_server/fssd.h"
+#include "source3/smbd/kos/kos_compat.h"
 
 #undef DBGC_CLASS
 #define DBGC_CLASS DBGC_RPC_SRV

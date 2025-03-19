@@ -32,6 +32,7 @@
 #include "debug.h"
 
 #include "become_daemon.h"
+#include "source3/smbd/kos/kos_compat.h"
 
 static bool sd_notifications = true;
 

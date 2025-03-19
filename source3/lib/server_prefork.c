@@ -27,6 +27,7 @@
 #include "server_prefork.h"
 #include "../lib/util/samba_util.h"
 #include "../lib/util/tevent_unix.h"
+#include "source3/smbd/kos/kos_compat.h"
 
 struct prefork_pool {
 	int listen_fd_size;
