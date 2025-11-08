@@ -1,34 +1,19 @@
-cmake_minimum_required(VERSION 3.25)
-
+cmake_minimum_required (VERSION 3.25)
 project (example_smbclient)
 
-# Include the CMake library named install,
-# which contains artifact installation functions.
-include (platform/install)
-
-# Include the CMake library named options,
-# which contains platform definitions.
-include (platform/options)
-
-# Initialize CMake library for the KasperskyOS SDK.
+# Initialize CMake library for KasperskyOS SDK.
 include (platform)
 # Statically link executable files.
 initialize_platform (FORCE_STATIC)
 
-# Include the CMake library named nk for working with
-# the NK compiler (nk-gen-c).
+# Set the linker and compiler flags.
+project_header_default ("STANDARD_GNU_17:YES" "STRICT_WARNINGS:YES")
+
+# Toolchain for working with the NK-parser.
 include (platform/nk)
 
-# Detect board.
-if (CMAKE_SYSTEM_SOC STREQUAL "BCM2711")
-    set (BOARD "RPI4_BCM2711")
-elseif (CMAKE_SYSTEM_SOC STREQUAL "RK3568")
-    set (BOARD "RADXA_ROCK_3A")
-else ()
-    message (FATAL_ERROR "Unsupported board for SoC '${CMAKE_SYSTEM_SOC}'")
-endif ()
-
-find_package (smblib REQUIRED)
+# Add a package with smblib library implementation.
+find_package (samba REQUIRED)
 
 # Add a package for working with the virtual file system.
 find_package (vfs REQUIRED)
@@ -38,13 +23,14 @@ include_directories (${vfs_INCLUDE})
 find_package (rump REQUIRED COMPONENTS DHCPCD_ENTITY)
 include_directories (${rump_INCLUDE})
 
-# Add a package with the VFS progam implementations.
+# Add a package with the VFS program implementations.
 find_package (precompiled_vfs REQUIRED)
 include_directories (${precompiled_vfs_INCLUDE})
 
-# Choose the storage devices for the configuration files.
-# If none of the options are selected, the ramfs device is used.
-option (ROOTFS_SDCARD   "Use SD card to get configuration file" OFF)
+set (RESOURCES ${CMAKE_SOURCE_DIR}/resources)
+
+add_compile_options (-fPIE -Wall -Wextra -Wconversion -Wsign-conversion
+                     -Wformat=2 -Wformat-security -Werror=format-security)
 
 add_subdirectory (testclient)
 add_subdirectory (einit)

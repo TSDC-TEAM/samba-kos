@@ -3,19 +3,18 @@
 #ifdef __KOS__
 
 #include <errno.h>
-#include <rtl/compiler.h>
 #include <hal/page.h>
 
 #define getpagesize(...) (PAGE_SIZE)
 #define WIFSTOPPED(...) (0)
 
-static __rtl_unused int fork(void)
+static __unused int fork(void)
 {
     errno = ENOSYS;
     return -1;
 }
 
-static __rtl_unused int __kos_exec(void)
+static __unused int __kos_exec(void)
 {
     errno = EPERM;
     return -1;

@@ -3,7 +3,7 @@
 int main(void)
 {
     /* Initialisation of network interface "en0". */
-    if (!configure_net_iface(DEFAULT_INTERFACE, DEFAULT_ADDR, DEFAULT_MASK, DEFAULT_GATEWAY, DEFAULT_MTU))
+    if (!wait_for_iface(NULL, IWF_IP4 | IWF_GW4, DEFAULT_TIMEOUT))
     {
         perror("can not init network");
         return EXIT_FAILURE;

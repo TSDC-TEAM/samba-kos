@@ -1,0 +1,88 @@
+/* Solution security policy of the "example_smbd" example. */
+
+/* Include the base.psl file containing a formal description of the Base security model. */
+use nk.base._
+
+/* Including EDL files. */
+use EDL kl.core.Core
+use EDL Einit
+
+/* EDL descriptions of NetInit and Smbd. */
+use EDL netinit.NetInit
+
+{% if BOARD == "RPI4_BCM2711" %}
+use kl.drivers.Bcm2711MboxArmToVc._
+{% elif BOARD == "RADXA_ROCK_3A" %}
+use kl.drivers.PinCtrl._
+use kl.drivers.GPIO._
+{% endif %}
+use kl.EntropyEntity._
+use kl.VfsNet._
+use kl.core.DCM._
+use kl.drivers.BSP._
+use kl.drivers.DNetSrv._
+use kl.rump.Dhcpcd._
+use kl.VfsSdCardFs._
+use kl.drivers.SDCard._
+use samba.Smbd._
+
+/* Assigning the execute interface. */
+execute: kl.core.Execute
+
+execute {
+    /* Allows the KasperskyOS kernel to start itself and the Einit class task. */
+    match src = kl.core.Core {
+        match dst = kl.core.Core { grant () }
+        match dst = Einit        { grant () }
+    }
+
+    /* Allows the Einit class task to run specific tasks. */
+    match src = Einit {
+{% if BOARD == "RPI4_BCM2711" %}
+        match dst = kl.drivers.Bcm2711MboxArmToVc { grant () }
+{% elif BOARD == "RADXA_ROCK_3A" %}
+        match dst = kl.drivers.PinCtrl { grant () }
+        match dst = kl.drivers.GPIO    { grant () }
+{% endif %}
+        match dst = kl.VfsSdCardFs     { grant () }
+        match dst = kl.drivers.SDCard  { grant () }
+        match dst = kl.EntropyEntity   { grant () }
+        match dst = kl.VfsNet          { grant () }
+        match dst = kl.core.DCM        { grant () }
+        match dst = kl.drivers.BSP     { grant () }
+        match dst = kl.drivers.DNetSrv { grant () }
+        match dst = kl.rump.Dhcpcd     { grant () }
+        match dst = netinit.NetInit    { grant () }
+        match dst = samba.Smbd         { grant () }
+    }
+}
+
+request {
+    /* Allows specified tasks to send requests to kl.VfsSdCardFs. */
+    match dst = kl.VfsSdCardFs {
+        match src = kl.rump.Dhcpcd  { grant () }
+        match src = netinit.NetInit { grant () }
+        match src = samba.Smbd      { grant () }
+    }
+    /* Allows specified tasks to send requests to kl.core.Core. */
+    match dst = kl.core.Core {
+        match src = Einit           { grant () }
+        match src = netinit.NetInit { grant () }
+    }
+    /* Allows specified tasks to send requests to kl.VfsNet. */
+    match dst = kl.VfsNet {
+        match src = kl.rump.Dhcpcd  { grant () }
+        match src = netinit.NetInit { grant () }
+        match src = samba.Smbd      { grant () }
+    }
+}
+
+/* Allows any task to send responses. */
+response {
+    grant ()
+}
+
+/* Allows any task to return errors. */
+error {
+    grant ()
+}

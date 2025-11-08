@@ -25,7 +25,7 @@ void LsDir(const char* mask);
 int main(void)
 {
     /* Initialisation of network interface "en0". */
-    if (!configure_net_iface(DEFAULT_INTERFACE, DEFAULT_ADDR, DEFAULT_MASK, DEFAULT_GATEWAY, DEFAULT_MTU))
+    if (!wait_for_iface(NULL, IWF_IP4 | IWF_GW4, DEFAULT_TIMEOUT))
     {
         fprintf(stderr, "Can not init network");
         return EXIT_FAILURE;
@@ -132,11 +132,18 @@ void LsDir(const char* mask)
 {
     fprintf(stderr, "LsDir mask=%s\n", mask);
     kos_client_ls_stat_t *head = NULL;
-    kos_client_ls(mask, &head);
-    fprintf(stderr, "%5s %12s %s\n", "Type", "Size", "Name");
-    for (kos_client_ls_stat_t *it = head; it != NULL; it = it->next)
+    int res = kos_client_ls(mask, &head);
+    if (0 == res)
     {
-        fprintf(stderr, "%5c %12zu %s\n", it->is_dir == 0 ? 'f' : 'd', it->size, it->name);
+        fprintf(stderr, "%5s %12s %s\n", "Type", "Size", "Name");
+        for (kos_client_ls_stat_t *it = head; it != NULL; it = it->next)
+        {
+            fprintf(stderr, "%5c %12zu %s\n", it->is_dir == 0 ? 'f' : 'd', it->size, it->name);
+        }
+    }
+    else
+    {
+        fprintf(stderr, "LsDir.Error\n");
     }
     kos_client_ls_stat_free(head);
 }

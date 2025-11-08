@@ -423,7 +423,6 @@
 #define HAVE_ERR_H 1
 #define HAVE_SYS_BSWAP_H 1
 #define HAVE_SYS_TIMES_H 1
-#define HAVE_NETINET6_IN6_H 1
 #define HAVE_ATEXIT 1
 /* #undef HAVE_CGETENT */
 /* #undef HAVE_SETPROGNAME */

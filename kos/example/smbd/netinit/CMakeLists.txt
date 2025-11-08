@@ -1,20 +1,10 @@
-project (netinit)
+set (TARGET_NAME NetInit)
+set (TARGET_EDL edl_files_${TARGET_NAME})
 
-set(TARGET_NAME NetInit)
+generate_edl_file (${TARGET_NAME} PREFIX "netinit")
+nk_build_edl_files (${TARGET_EDL} NK_MODULE "netinit" EDL "${EDL_FILE}")
 
-set(TARGET_EDL netinit_netinit)
-
-# Include the CMake library named nk for working with the NK compiler (nk-gen-c).
-include (platform/nk)
-
-# Set the linker and compiler flags.
-project_header_default ("STANDARD_GNU_17:YES" "STRICT_WARNINGS:NO")
-
-nk_build_edl_files (${TARGET_EDL}
-		NK_MODULE ${PROJECT_NAME}
-		EDL ${TARGET_NAME}.edl)
-
-add_executable (${TARGET_NAME} "main.c")
+add_executable (${TARGET_NAME} "src/main.c")
 add_dependencies (${TARGET_NAME} ${TARGET_EDL})
 target_link_libraries (${TARGET_NAME} vfs::client)
 

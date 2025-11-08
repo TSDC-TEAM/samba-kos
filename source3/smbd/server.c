@@ -1619,8 +1619,8 @@ int kos_net_init(void) {
 	bool ok;
 
 #ifdef __KOS__
-    if (!wait_for_network()) {
-        perror("wait_for_network failed\n");
+    if (!wait_for_iface(NULL, IWF_IP4 | IWF_GW4, DEFAULT_TIMEOUT)) {
+        perror("wait_for_iface failed\n");
         return EXIT_FAILURE;
     }
 #endif

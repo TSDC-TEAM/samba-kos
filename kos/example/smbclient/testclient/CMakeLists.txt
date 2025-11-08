@@ -1,27 +1,13 @@
-project (testclient)
+set (TARGET_NAME TestClient)
+set (TARGET_EDL edl_files_${TARGET_NAME})
 
-set(TARGET_NAME TestClient)
+generate_edl_file (${TARGET_NAME} PREFIX "testclient")
+nk_build_edl_files (${TARGET_EDL} NK_MODULE "testclient" EDL "${EDL_FILE}")
 
-set(TARGET_EDL testclient_testclient)
-
-# Include the CMake library named nk for working with the NK compiler (nk-gen-c).
-include (platform/nk)
-
-# Set the linker and compiler flags.
-project_header_default ("STANDARD_GNU_17:YES" "STRICT_WARNINGS:NO")
-
-nk_build_edl_files (${TARGET_EDL}
-		NK_MODULE ${PROJECT_NAME}
-		EDL ${TARGET_NAME}.edl)
-
-add_executable (${TARGET_NAME} "main.c")
+add_executable (${TARGET_NAME} "src/main.c")
 add_dependencies (${TARGET_NAME} ${TARGET_EDL})
-
-target_link_libraries (${TARGET_NAME}
-	kossmb
-	c pthread ssl crypto z
-	vfs::client
-)
+target_link_libraries (${TARGET_NAME} samba::smblib
+									  vfs::client)
 
 # The macro @INIT_<program_name>_ENTITY_CONNECTIONS@ can be used to automatically
 # generate strings for a static channel with VFS.

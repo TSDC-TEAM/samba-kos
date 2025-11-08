@@ -1,0 +1,9 @@
+use EDL samba.Smbd
+
+request src=samba.Smbd {
+    match dst=kl.core.Core { grant () }
+}
+
+response dst=samba.Smbd {
+    match src=kl.core.Core { grant () }
+}

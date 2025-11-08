@@ -1,104 +1,106 @@
-project (einit)
-
-# Include the CMake library named nk for working with the NK compiler (nk-gen-c).
+# Tools for working with KasperskyOS images.
 include (platform/image)
-include (${KL_SDK_ROOT_PATH}/common/build-sd-image.cmake)
 
-# Set the linker and compiler flags.
-project_header_default ("STANDARD_GNU_17:YES" "STRICT_WARNINGS:NO")
+set (SECURITY_PSL_FILE       "src/security.psl")
+set (CONNECTIONS_CFG_FILE    "src/init.yaml.in")
+set (IMAGE_FS                "${CMAKE_BINARY_DIR}/hdd")
+set (QEMU_DISK_IMAGE         sdcard0.img)
+set (QEMU_DEPENDENCIES       ${QEMU_DISK_IMAGE})
+set (QEMU_FLAGS              "-drive file=${QEMU_DISK_IMAGE},if=sd,format=raw")
+set (QEMU_USER_NETWORK_FLAGS "hostfwd=tcp::1490-:1490")
+# Add the hosts file to the common list of files included in the ROMFS image.
+# This is required so that the VfsNet executable file can access the network settings in the hosts file.
+set (FILES                   "${RESOURCES}/hdd/etc/hosts")
+set (GINGER_DEFINITIONS      "BOARD=${CMAKE_SYSTEM_BOARD}")
 
-# Define an ENTITIES variable with a list of programs.
-set (ENTITIES
-    NetInit
-    Smbd
-    precompiled_vfs::VfsNet
-    rump::dhcpcd_entity
-)
+# Define an ENTITIES variable with a list of entities.
+set (ENTITIES NetInit
+              samba::Smbd
+              precompiled_vfs::VfsSdCardFs
+              precompiled_vfs::VfsNet
+              rump::dhcpcd_entity)
 
-set (SECURITY_PSL_FILE "src/security.psl.in")
-set (INIT_YAML_FILE "src/init.yaml.in")
+# Set additional connections for NetInit.
+set (NETINIT_ENV "
+    VFS_NETWORK_BACKEND: client:kl.VfsNet
+    VFS_FILESYSTEM_BACKEND: client:kl.VfsSdCardFs")
 
-# Add a target for making and copying the disk image to the example build
-# directory.
-set (CREATE_DISK_IMAGE $ENV{SDK_PREFIX}/common/prepare_hdd_img.sh)
-set (DISK_IMAGE_DIR ${CMAKE_SOURCE_DIR}/resources/hdd)
+set_target_properties (NetInit PROPERTIES
+                       DEPENDS_ON_ENTITY "precompiled_vfs::VfsSdCardFs;precompiled_vfs::VfsNet"
+                       EXTRA_ENV         ${NETINIT_ENV}
+                       EXTRA_OPTIONS     "  wait_for: exit_success\n  before:\n  - samba::Smbd")
 
-if (ROOTFS_SDCARD)
-    set (ROOTFS_ENTITY "kl.VfsSdCardFs")
-    set (ROOTFS_DEVICE "sdcard")
-    set (FS_BACKEND precompiled_vfs::VfsSdCardFs)
-    set (DISK_IMAGE sdcard0.img)
-    set (DISK_IMAGE_FS fat32)
-    set (QEMU_FLAGS "-m 2048 -sd ${DISK_IMAGE}")
-else()
-    set (ROOTFS_ENTITY "kl.VfsRamFs")
-    set (ROOTFS_DEVICE "ramfs")
-    set (FS_BACKEND precompiled_vfs::VfsRamFs)
-    set (DISK_IMAGE ramdisk0.img)
-    set (DISK_IMAGE_FS ext4)
-    set (FILES ${CMAKE_BINARY_DIR}/einit/${DISK_IMAGE})
-endif()
+# Set additional connections for samba::Smbd.
+set (SMBD_ENV "
+    VFS_NETWORK_BACKEND: client:kl.VfsNet
+    VFS_FILESYSTEM_BACKEND: client:kl.VfsSdCardFs")
 
-# Information about selected configuration files source.
-message ("Used DHCP client daemon configuration from ${ROOTFS_DEVICE}:/etc/dhcpcd.conf")
-message ("Used NTP client daemon configuration from ${ROOTFS_DEVICE}:/etc/ntp.conf")
+set_target_properties (samba::Smbd PROPERTIES
+                       DEPENDS_ON_ENTITY "precompiled_vfs::VfsSdCardFs;precompiled_vfs::VfsNet"
+                       EXTRA_ENV         ${SMBD_ENV})
 
-list (APPEND ENTITIES ${FS_BACKEND})
+# Set additional connections for rump::dhcpcd_entity.
+set (DHCPCD_ENV "
+    VFS_FILESYSTEM_BACKEND: client{fs->net}:kl.VfsSdCardFs
+    VFS_NETWORK_BACKEND:    client:kl.VfsNet")
 
-set_target_properties(${FS_BACKEND} PROPERTIES
-    EXTRA_ARGS "\
-    - -l
-    - devfs /dev devfs 0")
-
-set (EXTRA_CONNECTIONS "\
-  - target: kl.VfsNet
-    id: kl.VfsNet
-  - target: ${ROOTFS_ENTITY}
-    id: ${ROOTFS_ENTITY}")
-
-# Set additional connections for Dhcpcd progam.
-set_target_properties (rump::dhcpcd_entity PROPERTIES
-    DEPENDS_ON_ENTITY ""
-    EXTRA_CONNECTIONS ${EXTRA_CONNECTIONS}
-    EXTRA_ENV "\
-    VFS_FILESYSTEM_BACKEND: client{fs->net}:${ROOTFS_ENTITY}
-    VFS_NETWORK_BACKEND: client:kl.VfsNet"
-    EXTRA_ARGS "\
+set (DHCPCD_ARGS "
     - '-4'
     - '-f'
     - /etc/dhcpcd.conf")
 
-add_custom_target (${DISK_IMAGE}
-    COMMAND ${CREATE_DISK_IMAGE} -d ${DISK_IMAGE_DIR} -img ${DISK_IMAGE} -f ${DISK_IMAGE_FS})
+set_target_properties (rump::dhcpcd_entity PROPERTIES
+                       DEPENDS_ON_ENTITY "precompiled_vfs::VfsSdCardFs;precompiled_vfs::VfsNet"
+                       EXTRA_ENV         ${DHCPCD_ENV}
+                       EXTRA_ARGS        ${DHCPCD_ARGS})
 
-# Create a top-level CMake target named kos-image which can be used
-# when building a solution image to be started on the hardware platform.
-build_kos_hw_image (kos-image
-                    EINIT_ENTITY EinitHw
-                    CONNECTIONS_CFG ${INIT_YAML_FILE}
-                    SECURITY_PSL ${SECURITY_PSL_FILE}
-                    IMAGE_FILES ${ENTITIES}
-                                ${FILES})
+set_target_properties (precompiled_vfs::VfsNet PROPERTIES
+    EXTRA_ARGS "\
+    - -l
+    - devfs /dev devfs 0
+    - -l
+    - romfs /etc romfs ro")
 
-# Create a top-level CMake target named sd-image which can be used
-# when building an SD card image to be started on the hardware platform.
-build_sd_image (sd-image
-                KOS_IMAGE_TARGET kos-image
-                IMAGE_FS ${IMAGE_FS})
+# Add a target to create filesystem for disk image.
+add_custom_target (disk_image_fs
+                   COMMAND ${CMAKE_COMMAND} -E copy_directory ${RESOURCES}/hdd ${IMAGE_FS})
 
-# Add a dependency on disk image generation to the kos-image target only if a ramdisk is used.
-# The disk image must be generated before the kos-image target is built.
-if (NOT ROOTFS_SDCARD)
-    add_dependencies (kos-image ${DISK_IMAGE})
+add_custom_target (${QEMU_DISK_IMAGE}
+                   DEPENDS disk_image_fs
+                   COMMAND ${KL_SDK_ROOT_PATH}/common/prepare_hdd_img.sh
+                           -d ${IMAGE_FS} -s 64 -f fat32 -img ${QEMU_DISK_IMAGE})
+
+if (NOT "${CMAKE_SYSTEM_BOARD}" STREQUAL "QEMU")
+    include (${KL_SDK_ROOT_PATH}/common/build-sd-image.cmake)
+
+    # KasperskyOS image for the target hardware platform.
+    build_kos_hw_image (kos-image
+                        EINIT_ENTITY       EinitHw
+                        CONNECTIONS_CFG    ${CONNECTIONS_CFG_FILE}
+                        SECURITY_PSL       ${SECURITY_PSL_FILE}
+                        GINGER_ENABLE      TRUE
+                        GINGER_DEFINITIONS ${GINGER_DEFINITIONS}
+                        IMAGE_FILES        ${ENTITIES}
+                                           ${FILES})
+
+    add_dependencies (kos-image disk_image_fs)
+
+    # SD card image with KasperskyOS for the target hardware platform.
+    build_sd_image (sd-image
+                    KOS_IMAGE_TARGET      kos-image
+                    PATH_PARTITION1_IMAGE ${IMAGE_FS})
+
+else ()
+    # KasperskyOS image for QEMU with simulation targets (sim, gdbsim, gdb).
+    build_kos_qemu_image (kos-qemu-image
+                          EINIT_ENTITY            EinitQemu
+                          CONNECTIONS_CFG         ${CONNECTIONS_CFG_FILE}
+                          SECURITY_PSL            ${SECURITY_PSL_FILE}
+                          GINGER_ENABLE           TRUE
+                          GINGER_DEFINITIONS      ${GINGER_DEFINITIONS}
+                          QEMU_FLAGS              "${QEMU_FLAGS}"
+                          QEMU_USER_NETWORK_FLAGS "${QEMU_USER_NETWORK_FLAGS}"
+                          QEMU_DEPENDENCIES       "${QEMU_DEPENDENCIES}"
+                          IMAGE_FILES             ${ENTITIES}
+                                                  ${FILES})
 endif ()
-
-# Create a top-level CMake target named kos-qemu-image which
-# can be used when building a solution image to be started in QEMU.
-build_kos_qemu_image (kos-qemu-image
-                      EINIT_ENTITY EinitQemu
-                      CONNECTIONS_CFG ${INIT_YAML_FILE}
-                      SECURITY_PSL ${SECURITY_PSL_FILE}
-                      QEMU_FLAGS "${QEMU_FLAGS} -nic user,hostfwd=tcp::1490-:1490 -display none"
-                      IMAGE_FILES ${ENTITIES}
-                                  ${FILES})
-add_dependencies (kos-qemu-image ${DISK_IMAGE})
